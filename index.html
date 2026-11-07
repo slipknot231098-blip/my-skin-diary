@@ -239,22 +239,11 @@
         }
         .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* НОВАЯ ПЛАШКА С ДАТАМИ НЕДЕЛИ */
+        .week-dates-container { text-align: center; margin-bottom: 15px; }
         .week-dates {
-            text-align: center;
-            margin-bottom: 15px;
-            font-size: 15px;
-            font-weight: bold;
-            color: var(--primary);
-            background: var(--card-bg);
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-        }
-        .week-dates-container {
-            text-align: center;
+            display: inline-block; font-size: 15px; font-weight: bold; color: var(--primary);
+            background: var(--card-bg); padding: 8px 20px; border-radius: 20px;
+            border: 1px solid var(--border-color); box-shadow: var(--shadow);
         }
 
         tr.today-row { background-color: var(--today-bg); }
@@ -314,10 +303,67 @@
         .history-stats { font-size: 14px; color: #7f8c8d; margin-bottom: 10px; }
         .history-notes { font-size: 14px; font-style: italic; line-height: 1.4; white-space: pre-wrap; }
 
+        /* --- МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ) --- */
         @media (max-width: 900px) {
             .topbar { flex-wrap: wrap; justify-content: center; }
             .nav-group { flex: auto; justify-content: center; width: 100%; }
-            .nav-group.right { justify-content: center; }
+
+            .table-wrapper { border: none; box-shadow: none; background: transparent; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            
+            tr { 
+                border: 1px solid var(--border-color); 
+                margin-bottom: 15px; 
+                border-radius: 14px; 
+                background: var(--card-bg); 
+                box-shadow: var(--shadow); 
+                padding: 5px 10px;
+            }
+
+            td { 
+                border: none; 
+                border-bottom: 1px solid var(--border-color); 
+                padding: 12px 15px; 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                text-align: right;
+            }
+            td:last-child { border-bottom: none; }
+            
+            /* Показываем названия процедур слева */
+            td::before { 
+                content: attr(data-label); 
+                font-weight: 600; 
+                text-align: left; 
+                flex: 1; 
+                padding-right: 15px;
+                font-size: 13px;
+                color: var(--text);
+            }
+
+            /* Особый стиль для заголовка карточки (День) */
+            td.day-cell { 
+                font-size: 18px; 
+                color: var(--primary); 
+                border-bottom: 2px solid var(--primary); 
+                margin-bottom: 5px; 
+                display: block; 
+                text-align: left; 
+                padding: 10px 5px; 
+            }
+            td.day-cell::before { content: none; }
+
+            /* Поле заметок во всю ширину */
+            td.notes-cell { flex-direction: column; align-items: stretch; text-align: left; }
+            td.notes-cell::before { margin-bottom: 8px; }
+            textarea.notes-input { width: 100%; height: 60px; }
+
+            .charts-container { grid-template-columns: 1fr; }
+            .chart-box { height: 300px; }
+            .header-title h1 { font-size: 24px; }
+            .week-dates { font-size: 13px; padding: 6px 15px; }
         }
     </style>
 </head>
@@ -393,7 +439,6 @@
         <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Кожа спокойна')">Кожа спокойна</button>
     </div>
 
-    <!-- НОВАЯ ПЛАШКА С ДАТАМИ -->
     <div class="week-dates-container">
         <div class="week-dates" id="weekDatesDisplay">📅 Загрузка дат...</div>
     </div>
@@ -473,12 +518,9 @@
 </div>
 
 <script>
-    // --- РАСЧЕТ ДАТ ТЕКУЩЕЙ НЕДЕЛИ ---
     function updateWeekDates() {
         const today = new Date();
-        const dayOfWeek = today.getDay(); // 0 - Вс, 1 - Пн...
-        
-        // Вычисляем, сколько дней отнять/прибавить до понедельника
+        const dayOfWeek = today.getDay(); 
         const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); 
         
         const monday = new Date(today.setDate(diffToMonday));
@@ -627,7 +669,6 @@
         fetchWeatherByCity(city);
     }
 
-    // --- ОСТАЛЬНАЯ ЛОГИКА ---
     function saveTitle() {
         const titleText = document.getElementById('mainTitle').innerText.trim();
         if (titleText) {
@@ -648,7 +689,7 @@
         document.getElementById('city-input').value = savedCity;
         fetchWeatherByCity(savedCity);
         
-        updateWeekDates(); // Обновляем даты при загрузке
+        updateWeekDates(); 
     });
 
     function playDing() {
@@ -688,8 +729,8 @@
     const daysOfWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
     const columns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
     const columnNames = {
-        spf: "СПФ (Утро)", micellar: "Мицеллярка", cleanser: "Пенка", 
-        efizel: "Эффезел", moisturizer: "Крем (Лицо)", bodyGel: "Гель (Тело)"
+        spf: "1. СПФ", micellar: "1. Мицеллярка", cleanser: "2. Пенка", 
+        efizel: "3. Эффезел", moisturizer: "4. Крем (лицо)", bodyGel: "🧴 Гель (тело)"
     };
 
     const defaultSettings = {
@@ -748,13 +789,17 @@
             const tr = document.createElement('tr');
             if (dayIndex === todayIndex) tr.classList.add('today-row');
 
+            // День
             const tdDay = document.createElement('td');
             tdDay.className = 'day-cell';
             tdDay.textContent = dayData.day + (dayIndex === todayIndex ? ' (Сегодня)' : '');
             tr.appendChild(tdDay);
 
+            // Чекбоксы (с data-label для мобильной версии)
             columns.forEach((colName) => {
                 const td = document.createElement('td');
+                td.setAttribute('data-label', columnNames[colName]); // Добавили label
+                
                 const label = document.createElement('label');
                 label.className = 'checkbox-container';
                 
@@ -774,12 +819,18 @@
                 tr.appendChild(td);
             });
 
+            // Стрик
             const tdStreak = document.createElement('td');
             tdStreak.className = 'streak-cell';
             tdStreak.id = `streak-${dayIndex}`;
+            tdStreak.setAttribute('data-label', 'Стрик'); // Добавили label
             tr.appendChild(tdStreak);
 
+            // Заметки
             const tdNotes = document.createElement('td');
+            tdNotes.className = 'notes-cell'; // Добавили класс для мобильной версии
+            tdNotes.setAttribute('data-label', 'Заметки'); // Добавили label
+            
             const noteInput = document.createElement('textarea');
             noteInput.className = 'notes-input';
             noteInput.placeholder = 'Заметки...';
