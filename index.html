@@ -54,6 +54,58 @@
         }
         .container { max-width: 1250px; margin: 0 auto; }
         
+        /* ПОГОДНЫЙ ВИДЖЕТ */
+        .weather-widget {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .weather-widget span {
+            background: var(--card-bg);
+            padding: 6px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+        .weather-widget .uv-high {
+            color: #e74c3c;
+            border-color: rgba(231, 76, 60, 0.3);
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+
+        #uv-alert {
+            display: none;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.01); }
+            100% { transform: scale(1); }
+        }
+        .uv-danger {
+            animation: uv-glow 1.5s infinite alternate;
+        }
+        @keyframes uv-glow {
+            from { box-shadow: inset 0 0 0 rgba(255,0,0,0); }
+            to { box-shadow: inset 0 0 20px rgba(255,0,0,0.8); background-color: #ff6b6b; color: white;}
+        }
+
         .topbar {
             display: flex;
             justify-content: space-between;
@@ -93,7 +145,7 @@
 
         .header-title {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -116,7 +168,7 @@
         .header-title h1:focus { border-bottom-color: #4F81BD; }
         .header-title span { font-size: 32px; }
 
-        .dashboard { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .dashboard { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; margin-top: 20px;}
         .stat-card {
             background: var(--card-bg); padding: 18px 15px; border-radius: 14px;
             box-shadow: var(--shadow); border: 1px solid var(--border-color); 
@@ -163,7 +215,7 @@
         .table-wrapper { width: 100%; margin-top: 10px; overflow-x: auto; border-radius: 14px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
         table { width: 100%; border-collapse: collapse; background: var(--card-bg); min-width: 900px; }
         th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        th { background-color: var(--primary); color: white; font-weight: 600; font-size: 12px; position: relative; }
+        th { background-color: var(--primary); color: white; font-weight: 600; font-size: 12px; position: relative; transition: 0.3s; }
         th.morning { background-color: #E2A74A; }
         th.evening { background-color: #5B9BD5; }
         th.body-gel { background-color: #8e44ad; }
@@ -224,6 +276,9 @@
 <body>
 
 <div class="container">
+    <!-- Баннер предупреждения о высоком UV -->
+    <div id="uv-alert"></div>
+
     <div class="topbar">
         <div class="nav-group left">
             <button class="btn btn-danger" onclick="resetWeek()">🔄 Новая неделя</button>
@@ -246,6 +301,13 @@
     <div class="header-title">
         <span>📊</span>
         <h1 id="mainTitle" contenteditable="true" onblur="saveTitle()" title="Нажмите, чтобы изменить название">Мой Дневник Ухода</h1>
+    </div>
+
+    <!-- ВИДЖЕТ ПОГОДЫ -->
+    <div class="weather-widget" id="weather-widget">
+        <span id="weather-loading">⏳ Загрузка погоды...</span>
+        <span id="weather-temp" style="display:none;"></span>
+        <span id="weather-uv" style="display:none;"></span>
     </div>
 
     <div class="dashboard">
@@ -287,14 +349,14 @@
             <thead>
                 <tr>
                     <th rowspan="2">День</th>
-                    <th class="morning">УТРО</th>
+                    <th class="morning" id="th-spf-main">УТРО</th>
                     <th class="evening" colspan="4">ВЕЧЕР (ЛИЦО)</th>
                     <th class="body-gel">ТЕЛО</th>
                     <th class="fire" rowspan="2">Стрик</th>
                     <th rowspan="2" style="width: 200px;">Заметки</th>
                 </tr>
                 <tr>
-                    <th class="morning"><div class="th-title" title="Наносить утром на чистую кожу.">1. СПФ</div></th>
+                    <th class="morning" id="th-spf"><div class="th-title" title="Наносить утром на чистую кожу.">1. СПФ</div></th>
                     <th class="evening"><div class="th-title" id="th-micellar" title="Наносить на СУХУЮ кожу, затем смыть водой!">1. Мицеллярка</div></th>
                     <th class="evening"><div class="th-title" id="th-cleanser" title="Вспенить, нанести, смыть.">2. Пенка</div></th>
                     <th class="evening"><div class="th-title" id="th-efizel" title="Наносить ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
@@ -357,6 +419,76 @@
 </div>
 
 <script>
+    // --- ПОГОДНЫЙ ВИДЖЕТ ---
+    async function initWeather() {
+        const loading = document.getElementById('weather-loading');
+        const tempEl = document.getElementById('weather-temp');
+        const uvEl = document.getElementById('weather-uv');
+
+        const fetchOpenMeteo = async (lat, lon) => {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,uv_index&timezone=auto`;
+                const res = await fetch(url);
+                const data = await res.json();
+                
+                const temp = data.current.temperature_2m;
+                const uv = data.current.uv_index;
+
+                loading.style.display = 'none';
+                tempEl.style.display = 'inline-block';
+                uvEl.style.display = 'inline-block';
+
+                tempEl.textContent = `🌡️ ${temp}°C`;
+                
+                if (uv >= 3) {
+                    uvEl.innerHTML = `☀️ UV: <b style="color:#e74c3c;">${uv}</b> (Высокий!)`;
+                    uvEl.classList.add('uv-high');
+                    
+                    const alertBox = document.getElementById('uv-alert');
+                    alertBox.style.display = 'block';
+                    alertBox.innerHTML = `⚠️ Внимание! Сегодня высокий UV-индекс (${uv}). Эффезел делает кожу уязвимой! Не забудьте нанести СПФ.`;
+                    
+                    document.getElementById('th-spf-main').classList.add('uv-danger');
+                    document.getElementById('th-spf').classList.add('uv-danger');
+                } else {
+                    uvEl.textContent = `☀️ UV: ${uv}`;
+                    uvEl.classList.remove('uv-high');
+                }
+            } catch (e) {
+                console.error(e);
+                loading.textContent = '☁️ Погода: нет данных';
+            }
+        };
+
+        // 1. Пытаемся получить геолокацию через браузер (с таймаутом 5 сек)
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    fetchOpenMeteo(position.coords.latitude, position.coords.longitude);
+                },
+                async (error) => {
+                    // 2. Если браузер запретил доступ, пробуем по IP
+                    loading.textContent = '⏳ Определение по IP...';
+                    try {
+                        const res = await fetch('https://ipwho.is/');
+                        const data = await res.json();
+                        if (data.success) {
+                            fetchOpenMeteo(data.latitude, data.longitude);
+                        } else {
+                            throw new Error('IP fail');
+                        }
+                    } catch (e) {
+                        loading.textContent = '☁️ Погода: нет данных';
+                    }
+                },
+                { timeout: 5000, maximumAge: 600000 } // 5 секунд таймаут
+            );
+        } else {
+            loading.textContent = '☁️ Геолокация не поддерживается';
+        }
+    }
+
+    // --- ОСТАЛЬНАЯ ЛОГИКА (без изменений) ---
     function saveTitle() {
         const titleText = document.getElementById('mainTitle').innerText.trim();
         if (titleText) {
@@ -372,26 +504,22 @@
         if (savedTitle) {
             document.getElementById('mainTitle').innerText = savedTitle;
         }
+        initWeather(); // Запускаем погоду
     });
 
-    // --- ЗВУК И КОНФЕТТИ ---
     function playDing() {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             const ctx = new AudioContext();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            
             osc.connect(gain);
             gain.connect(ctx.destination);
-            
             osc.type = 'sine';
             osc.frequency.setValueAtTime(880, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-            
             gain.gain.setValueAtTime(0.3, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-            
             osc.start(ctx.currentTime);
             osc.stop(ctx.currentTime + 0.5);
         } catch(e) { console.log("Аудио не поддерживается"); }
@@ -405,7 +533,6 @@
             const rect = rows[dayIndex].getBoundingClientRect();
             originY = (rect.top + rect.height / 2) / window.innerHeight;
         }
-
         confetti({
             particleCount: 100,
             spread: 80,
@@ -414,7 +541,6 @@
         });
     }
 
-    // --- ОСТАЛЬНАЯ ЛОГИКА ---
     const daysOfWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
     const columns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
     const columnNames = {
@@ -433,7 +559,6 @@
 
     let currentSettings = JSON.parse(localStorage.getItem('userSchedule')) || defaultSettings;
     let weekSchedule = [];
-    
     let barChartInstance = null;
     let dailyChartInstance = null;
     let lineChartInstance = null;
@@ -737,7 +862,6 @@
         columns.forEach(col => {
             const tr = document.createElement('tr');
             let html = `<td>${columnNames[col]}</td>`;
-            
             for (let i = 0; i < 7; i++) {
                 const checked = currentSettings[col][i] === 1 ? 'checked' : '';
                 html += `<td><input type="checkbox" id="set-${col}-${i}" ${checked} style="width:18px; height:18px; cursor:pointer;"></td>`;
