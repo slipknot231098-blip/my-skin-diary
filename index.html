@@ -239,11 +239,11 @@
         }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
-        /* ПОЛЕ ЗАМЕТОК */
+        /* ПОЛЕ ЗАМЕТОК (Авто-растяжение) */
         textarea.notes-input {
             display: block;
             width: 100%; 
-            height: 42px; 
+            min-height: 44px; 
             padding: 10px; 
             border: 1px solid var(--border-color); 
             border-radius: 8px;
@@ -251,20 +251,19 @@
             color: var(--text); 
             font-family: inherit;
             font-size: 13px; 
+            line-height: 1.4;
             transition: 0.2s; 
-            resize: none; /* Отключаем ручное изменение размера */
+            resize: none;
             box-sizing: border-box;
-            overflow-y: auto;
+            overflow: hidden; /* Скрываем скроллбар */
             position: relative;
-            z-index: 10; /* Вытаскиваем на передний план, чтобы можно было кликнуть */
+            z-index: 10; 
         }
         textarea.notes-input:focus { 
             outline: none; 
             border-color: var(--primary); 
             box-shadow: 0 0 0 3px var(--primary-light); 
         }
-        textarea.notes-input::-webkit-scrollbar { width: 4px; }
-        textarea.notes-input::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
         /* СТИЛЬНЫЕ ПОДСКАЗКИ */
         .th-title { 
@@ -437,7 +436,7 @@
             td.day-cell::before { content: none; }
             td.notes-cell { flex-direction: column; align-items: stretch; text-align: left; }
             td.notes-cell::before { margin-bottom: 8px; }
-            textarea.notes-input { width: 100%; height: 60px; }
+            textarea.notes-input { width: 100%; min-height: 50px; }
 
             tr.today-row .day-cell { box-shadow: none; }
 
@@ -532,7 +531,6 @@
 
         <div class="table-wrapper">
             <table>
-                <!-- ЖЕСТКАЯ СЕТКА ДЛЯ КОЛОНОК -->
                 <colgroup>
                     <col style="width: 7%;">  <!-- День -->
                     <col style="width: 11%;"> <!-- Утро СПФ -->
@@ -687,6 +685,12 @@
 </div>
 
 <script>
+    // --- АВТО-РАСТЯЖЕНИЕ ПОЛЯ ЗАМЕТОК ---
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
     // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
     function switchTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -831,9 +835,18 @@
             const tdStreak = document.createElement('td'); tdStreak.className = 'streak-cell'; tdStreak.id = `streak-${dayIndex}`; tdStreak.setAttribute('data-label', 'Стрик'); tr.appendChild(tdStreak);
             const tdNotes = document.createElement('td'); tdNotes.className = 'notes-cell'; tdNotes.setAttribute('data-label', 'Заметки');
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
+            
+            // АВТО-РАСТЯЖЕНИЕ
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
-            noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); });
+            noteInput.addEventListener('input', (e) => { 
+                localStorage.setItem(e.target.id, e.target.value); 
+                autoResize(e.target);
+            });
+            
             tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
+            
+            // Запуск для уже существующего текста
+            setTimeout(() => autoResize(noteInput), 0);
         });
         previousPerfectDays.clear();
         skinWeekSchedule.forEach((dayData, dayIndex) => {
@@ -845,8 +858,11 @@
 
     function addTag(text) {
         if (lastFocusedNoteInput) {
-            const currentVal = lastFocusedNoteInput.value.trim(); lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
-            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); lastFocusedNoteInput.focus(); lastFocusedNoteInput.scrollTop = lastFocusedNoteInput.scrollHeight;
+            const currentVal = lastFocusedNoteInput.value.trim(); 
+            lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
+            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
+            lastFocusedNoteInput.focus(); 
+            autoResize(lastFocusedNoteInput); // Растягиваем поле после добавления тега
         } else { alert("Сначала кликните в поле 'Заметки' напротив нужного дня!"); }
     }
 
@@ -1101,7 +1117,12 @@
             localStorage.setItem('habitWeeklyHistory', JSON.stringify(habitHistory));
 
             skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
-            daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`note-${dayIndex}`); document.getElementById(`note-${dayIndex}`).value = ""; });
+            daysOfWeek.forEach((_, dayIndex) => { 
+                localStorage.removeItem(`note-${dayIndex}`); 
+                const noteEl = document.getElementById(`note-${dayIndex}`);
+                noteEl.value = ""; 
+                noteEl.style.height = '44px'; // Сбрасываем высоту
+            });
 
             habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
 
