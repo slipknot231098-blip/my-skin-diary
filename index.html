@@ -54,7 +54,6 @@
         }
         .container { max-width: 1250px; margin: 0 auto; }
         
-        /* ВИДЖЕТ ПОГОДЫ */
         .weather-widget {
             text-align: center;
             margin-bottom: 20px;
@@ -333,7 +332,6 @@
         <h1 id="mainTitle" contenteditable="true" onblur="saveTitle()" title="Нажмите, чтобы изменить название">Мой Дневник Ухода</h1>
     </div>
 
-    <!-- УЛУЧШЕННЫЙ ВИДЖЕТ ПОГОДЫ -->
     <div class="weather-widget">
         <input type="text" id="city-input" class="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" placeholder="Ваш город">
         <button class="city-btn" onclick="setCity()" title="Обновить погоду">🔄</button>
@@ -452,7 +450,6 @@
 </div>
 
 <script>
-    // Словарь координат для мгновенной загрузки без запросов в сеть
     const cityCache = {
         'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' },
         'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' },
@@ -471,19 +468,36 @@
         'волгоград': { lat: 48.708048, lon: 44.513303, name: 'Волгоград' }
     };
 
-    // Обертка для fetch с автоматическим использованием прокси при ошибке сети
-    async function fetchWithFallback(url) {
+    async function getWeatherData(lat, lon, cityName) {
+        const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,uv_index&timezone=auto`;
+
+        // Способ 1: Прямой запрос к Open-Meteo
         try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Network response was not ok');
-            return await res.json();
-        } catch (error) {
-            console.warn('Прямой запрос не удался, пробуем через прокси...', error);
-            const proxy = 'https://api.allorigins.win/raw?url=';
-            const proxyRes = await fetch(proxy + encodeURIComponent(url));
-            if (!proxyRes.ok) throw new Error('Proxy response was not ok');
-            return await proxyRes.json();
-        }
+            const res = await fetch(openMeteoUrl);
+            if (res.ok) return await res.json();
+        } catch (e) { console.log('Способ 1 не удался'); }
+
+        // Способ 2: Через прокси corsproxy.io
+        try {
+            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(openMeteoUrl)}`);
+            if (res.ok) return await res.json();
+        } catch (e) { console.log('Способ 2 не удался'); }
+
+        // Способ 3: Резервный API wttr.in (очень надежный для РФ)
+        try {
+            const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`);
+            if (res.ok) {
+                const data = await res.json();
+                return {
+                    current: {
+                        temperature_2m: parseFloat(data.current_condition[0].temp_C),
+                        uv_index: parseFloat(data.current_condition[0].uvIndex)
+                    }
+                };
+            }
+        } catch (e) { console.log('Способ 3 не удался'); }
+
+        throw new Error("Все способы получения погоды не удались");
     }
 
     async function fetchWeatherByCity(city) {
@@ -504,16 +518,22 @@
         try {
             let lat, lon, actualName;
 
-            // 1. Проверяем локальный кэш
             if (cityCache[cityLower]) {
                 lat = cityCache[cityLower].lat;
                 lon = cityCache[cityLower].lon;
                 actualName = cityCache[cityLower].name;
                 document.getElementById('city-input').value = actualName;
             } else {
-                // 2. Если нет в кэше, ищем в интернете (с фоллбэком на прокси)
                 const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
-                const geoData = await fetchWithFallback(geoUrl);
+                let geoData;
+                
+                try {
+                    const geoRes = await fetch(geoUrl);
+                    geoData = await geoRes.json();
+                } catch(e) {
+                    const geoRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(geoUrl)}`);
+                    geoData = await geoRes.json();
+                }
 
                 if (!geoData.results || geoData.results.length === 0) {
                     loading.textContent = '❌ Город не найден';
@@ -528,9 +548,7 @@
                 localStorage.setItem('userCity', actualName);
             }
 
-            // 3. Получаем погоду
-            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,uv_index&timezone=auto`;
-            const weatherData = await fetchWithFallback(weatherUrl);
+            const weatherData = await getWeatherData(lat, lon, actualName);
             
             const temp = weatherData.current.temperature_2m;
             const uv = weatherData.current.uv_index;
@@ -586,7 +604,6 @@
             document.getElementById('mainTitle').innerText = savedTitle;
         }
         
-        // Загрузка города
         const savedCity = localStorage.getItem('userCity') || 'Казань';
         document.getElementById('city-input').value = savedCity;
         fetchWeatherByCity(savedCity);
