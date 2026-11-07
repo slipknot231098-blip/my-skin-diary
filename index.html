@@ -164,13 +164,22 @@
         /* ТАБЛИЦА */
         .table-wrapper { 
             width: 100%; margin-top: 10px; 
-            overflow-x: auto; /* Для мобильной версии */
+            overflow-x: auto;
             border-radius: 20px; border: 1px solid var(--border-color); 
             box-shadow: var(--shadow); background: var(--card-bg);
-            padding-top: 50px; margin-top: -50px; /* Место для тултипов */
+            padding-top: 50px; margin-top: -50px; 
         }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 900px; }
-        th, td { padding: 16px 12px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        
+        th, td { 
+            padding: 16px 12px; 
+            text-align: center; 
+            border-bottom: 1px solid var(--border-color); 
+            border-right: 1px solid var(--border-color); /* Разделитель колонок */
+        }
+        
+        th:last-child, td:last-child { border-right: none; } /* Убираем лишнюю линию справа */
+        
         th { 
             background-color: var(--hover-bg); color: var(--text-muted); 
             font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
@@ -218,7 +227,7 @@
         }
         textarea.notes-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
-        /* --- НОВЫЕ СТИЛЬНЫЕ ПОДСКАЗКИ --- */
+        /* СТИЛЬНЫЕ ПОДСКАЗКИ */
         .th-title { 
             position: relative;
             cursor: help; 
@@ -229,11 +238,10 @@
         }
         .th-title:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
-        /* Сама плашка */
         .th-title::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: 150%; /* Появляется сверху */
+            bottom: 150%;
             left: 50%;
             transform: translateX(-50%) translateY(10px);
             background: var(--tooltip-bg);
@@ -256,7 +264,6 @@
             letter-spacing: normal;
         }
 
-        /* Стрелочка */
         .th-title::before {
             content: "";
             position: absolute;
@@ -273,7 +280,6 @@
             pointer-events: none;
         }
 
-        /* Анимация появления */
         .th-title:hover::after, 
         .th-title:hover::before {
             opacity: 1;
@@ -305,7 +311,7 @@
         .close-btn:hover { color: var(--red); }
         
         .settings-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
-        .settings-table th, .settings-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .settings-table th, .settings-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); border-right: none; }
         .settings-table th { background: transparent; color: var(--text-muted); font-size: 13px; }
         .settings-table td:first-child { text-align: left; font-weight: 600; }
 
@@ -384,6 +390,7 @@
             td { 
                 border: none; border-bottom: 1px solid var(--border-color); padding: 14px 0;
                 display: flex; justify-content: space-between; align-items: center; text-align: right; 
+                border-right: none; /* Отключаем вертикальные линии на телефоне */
             }
             td:last-child { border-bottom: none; }
             td::before { content: attr(data-label); font-weight: 600; text-align: left; flex: 1; padding-right: 15px; font-size: 14px; color: var(--text-muted); }
