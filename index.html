@@ -337,7 +337,7 @@
         <button class="city-btn" onclick="setCity()" title="Обновить погоду">🔄</button>
         
         <span id="weather-temp" style="display:none;">🌡️ --°C</span>
-        <span id="weather-uv" style="display:none;">☀️ UV: --</span>
+        <span id="weather-uv" style="display:none;">☀️ Макс. UV: --</span>
         <span id="weather-loading" style="display:inline-block;">⏳ Загрузка...</span>
     </div>
 
@@ -468,30 +468,30 @@
         'волгоград': { lat: 48.708048, lon: 44.513303, name: 'Волгоград' }
     };
 
+    // Запрашиваем максимальный UV на сегодня, а не текущий (ночью текущий всегда 0)
     async function getWeatherData(lat, lon, cityName) {
-        const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,uv_index&timezone=auto`;
+        const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&daily=uv_index_max&timezone=auto`;
 
-        // Способ 1: Прямой запрос к Open-Meteo
         try {
             const res = await fetch(openMeteoUrl);
             if (res.ok) return await res.json();
         } catch (e) { console.log('Способ 1 не удался'); }
 
-        // Способ 2: Через прокси corsproxy.io
         try {
             const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(openMeteoUrl)}`);
             if (res.ok) return await res.json();
         } catch (e) { console.log('Способ 2 не удался'); }
 
-        // Способ 3: Резервный API wttr.in (очень надежный для РФ)
         try {
             const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`);
             if (res.ok) {
                 const data = await res.json();
                 return {
                     current: {
-                        temperature_2m: parseFloat(data.current_condition[0].temp_C),
-                        uv_index: parseFloat(data.current_condition[0].uvIndex)
+                        temperature_2m: parseFloat(data.current_condition[0].temp_C)
+                    },
+                    daily: {
+                        uv_index_max: [parseFloat(data.weather[0].uvIndex)]
                     }
                 };
             }
@@ -551,7 +551,7 @@
             const weatherData = await getWeatherData(lat, lon, actualName);
             
             const temp = weatherData.current.temperature_2m;
-            const uv = weatherData.current.uv_index;
+            const uv = weatherData.daily.uv_index_max[0]; // Берем МАКСИМАЛЬНЫЙ UV за день
 
             loading.style.display = 'none';
             tempEl.style.display = 'inline-block';
@@ -560,17 +560,17 @@
             tempEl.textContent = `🌡️ ${temp}°C`;
             
             if (uv >= 3) {
-                uvEl.innerHTML = `☀️ UV: <b style="color:#e74c3c;">${uv}</b> (Высокий!)`;
+                uvEl.innerHTML = `☀️ Макс. UV: <b style="color:#e74c3c;">${uv}</b> (Высокий!)`;
                 uvEl.classList.add('uv-high');
                 
                 const alertBox = document.getElementById('uv-alert');
                 alertBox.style.display = 'block';
-                alertBox.innerHTML = `⚠️ Внимание! В ${actualName} сегодня высокий UV-индекс (${uv}). Эффезел делает кожу уязвимой! Не забудьте нанести СПФ.`;
+                alertBox.innerHTML = `⚠️ Внимание! В ${actualName} сегодня днем ожидается высокий UV-индекс (${uv}). Эффезел делает кожу уязвимой! Не забудьте нанести СПФ.`;
                 
                 document.getElementById('th-spf-main').classList.add('uv-danger');
                 document.getElementById('th-spf').classList.add('uv-danger');
             } else {
-                uvEl.textContent = `☀️ UV: ${uv}`;
+                uvEl.textContent = `☀️ Макс. UV: ${uv}`;
                 uvEl.classList.remove('uv-high');
                 document.getElementById('uv-alert').style.display = 'none';
                 document.getElementById('th-spf-main').classList.remove('uv-danger');
