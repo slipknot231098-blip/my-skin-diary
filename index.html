@@ -153,8 +153,12 @@
         }
         .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
 
-        /* ДАТЫ НЕДЕЛИ */
-        .week-dates-container { text-align: center; margin-top: 10px; margin-bottom: 20px; }
+        /* ДАТЫ НЕДЕЛИ (Исправлены отступы) */
+        .week-dates-container { 
+            text-align: center; 
+            margin-top: 10px;
+            margin-bottom: 25px; /* Увеличен отступ снизу */
+        }
         .week-dates {
             display: inline-block; font-size: 14px; font-weight: 700; color: var(--primary);
             background: var(--primary-light); padding: 10px 24px; border-radius: 30px;
@@ -164,6 +168,7 @@
         /* ТАБЛИЦА */
         .table-wrapper { 
             width: 100%; 
+            margin-top: 5px; /* Четкий отступ от плашки */
             overflow-x: auto;
             border-radius: 20px; 
             border: 1px solid var(--border-color); 
@@ -171,13 +176,12 @@
             background: var(--card-bg);
         }
         
-        /* ЖЕСТКАЯ ФИКСАЦИЯ ШИРИНЫ */
         table { 
             width: 100%; 
             border-collapse: separate; 
             border-spacing: 0; 
             min-width: 900px; 
-            table-layout: fixed; /* Распределяет ширину строго по заданным значениям */
+            table-layout: fixed; /* Жесткая фиксация ширины */
         }
         
         th, td { 
@@ -185,7 +189,7 @@
             text-align: center; 
             border-bottom: 1px solid var(--border-color); 
             border-right: 1px solid var(--border-color);
-            box-sizing: border-box; /* Учитываем padding в ширине */
+            box-sizing: border-box;
         }
         
         th:last-child, td:last-child { border-right: none; } 
@@ -208,12 +212,19 @@
         tr.today-row:hover { background-color: var(--today-bg); }
         tr.today-row .day-cell { font-weight: 800; color: var(--primary); }
 
-        /* Задаем точную ширину колонкам */
+        /* Фиксация ширины колонок */
         .day-col, .day-cell { width: 70px; text-align: left; padding-left: 15px !important; }
-        .streak-col, .streak-cell { width: 80px; text-align: center; }
-        .notes-col, .notes-cell { width: 200px; }
         
+        /* Жесткое центрирование Стрика */
+        .streak-col, .streak-cell { 
+            width: 80px; 
+            text-align: center !important; 
+            vertical-align: middle; 
+            padding: 16px 0 !important; /* Убираем боковые отступы */
+        }
         .streak-cell { font-size: 20px; }
+        
+        .notes-col, .notes-cell { width: 220px; }
 
         /* ЧЕКБОКСЫ */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
@@ -241,7 +252,7 @@
         }
         textarea.notes-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
-        /* СТИЛЬНЫЕ ПОДСКАЗКИ (ВНИЗ) */
+        /* СТИЛЬНЫЕ ПОДСКАЗКИ */
         .th-title { 
             position: relative;
             cursor: help; 
