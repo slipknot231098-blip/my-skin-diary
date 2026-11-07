@@ -184,7 +184,7 @@
             width: 100%; 
             border-collapse: separate; 
             border-spacing: 0; 
-            min-width: 900px; 
+            min-width: 950px; 
             table-layout: fixed; 
         }
         
@@ -222,16 +222,6 @@
             box-shadow: inset 4px 0 0 0 var(--primary); 
         }
 
-        /* ЖЕСТКАЯ ШИРИНА КОЛОНОК */
-        .day-col { width: 8%; }
-        .day-cell { width: 8%; text-align: center; padding-left: 5px !important; white-space: nowrap; }
-        
-        .streak-col { width: 8%; }
-        .streak-cell { width: 8%; font-size: 20px; text-align: center; }
-        
-        .notes-col { width: 24%; }
-        .notes-cell { width: 24%; padding: 8px !important; }
-
         /* ЧЕКБОКСЫ */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
         .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
@@ -249,11 +239,11 @@
         }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
-        /* ПОЛЕ ЗАМЕТОК */
+        /* ПОЛЕ ЗАМЕТОК (Компактное) */
         textarea.notes-input {
             width: 100%; 
-            height: 44px; 
-            padding: 8px 10px; 
+            height: 38px; 
+            padding: 8px; 
             border: 1px solid var(--border-color); 
             border-radius: 8px;
             background-color: var(--bg); 
@@ -263,12 +253,13 @@
             transition: 0.2s; 
             resize: none;
             box-sizing: border-box;
-            overflow-y: auto; 
+            overflow-y: hidden; 
         }
         textarea.notes-input:focus { 
             outline: none; 
             border-color: var(--primary); 
             box-shadow: 0 0 0 3px var(--primary-light); 
+            overflow-y: auto;
         }
         textarea.notes-input::-webkit-scrollbar { width: 4px; }
         textarea.notes-input::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
@@ -539,6 +530,18 @@
 
         <div class="table-wrapper">
             <table>
+                <!-- ЖЕСТКАЯ СЕТКА ДЛЯ КОЛОНОК -->
+                <colgroup>
+                    <col style="width: 7%;">  <!-- День -->
+                    <col style="width: 11%;"> <!-- Утро СПФ -->
+                    <col style="width: 11%;"> <!-- Мицеллярка -->
+                    <col style="width: 11%;"> <!-- Пенка -->
+                    <col style="width: 11%;"> <!-- Эффезел -->
+                    <col style="width: 11%;"> <!-- Крем -->
+                    <col style="width: 11%;"> <!-- Гель -->
+                    <col style="width: 7%;">  <!-- Стрик -->
+                    <col style="width: 20%;"> <!-- Заметки -->
+                </colgroup>
                 <thead>
                     <tr>
                         <th rowspan="2" class="day-col">День</th>
@@ -591,6 +594,15 @@
 
         <div class="table-wrapper">
             <table>
+                <colgroup>
+                    <col style="width: 10%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                    <col style="width: 15%;">
+                </colgroup>
                 <thead>
                     <tr>
                         <th class="day-col">День</th>
