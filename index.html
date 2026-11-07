@@ -239,11 +239,12 @@
         }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
-        /* ПОЛЕ ЗАМЕТОК (Компактное) */
+        /* ПОЛЕ ЗАМЕТОК */
         textarea.notes-input {
+            display: block;
             width: 100%; 
-            height: 38px; 
-            padding: 8px; 
+            height: 42px; 
+            padding: 10px; 
             border: 1px solid var(--border-color); 
             border-radius: 8px;
             background-color: var(--bg); 
@@ -251,15 +252,16 @@
             font-family: inherit;
             font-size: 13px; 
             transition: 0.2s; 
-            resize: none;
+            resize: none; /* Отключаем ручное изменение размера */
             box-sizing: border-box;
-            overflow-y: hidden; 
+            overflow-y: auto;
+            position: relative;
+            z-index: 10; /* Вытаскиваем на передний план, чтобы можно было кликнуть */
         }
         textarea.notes-input:focus { 
             outline: none; 
             border-color: var(--primary); 
             box-shadow: 0 0 0 3px var(--primary-light); 
-            overflow-y: auto;
         }
         textarea.notes-input::-webkit-scrollbar { width: 4px; }
         textarea.notes-input::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
