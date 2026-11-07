@@ -153,8 +153,12 @@
         }
         .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
 
-        /* ДАТЫ НЕДЕЛИ */
-        .week-dates-container { text-align: center; margin-bottom: 20px; }
+        /* ДАТЫ НЕДЕЛИ (Поправлены отступы) */
+        .week-dates-container { 
+            text-align: center; 
+            margin-top: 10px;
+            margin-bottom: 20px; 
+        }
         .week-dates {
             display: inline-block; font-size: 14px; font-weight: 700; color: var(--primary);
             background: var(--primary-light); padding: 10px 24px; border-radius: 30px;
@@ -163,12 +167,15 @@
 
         /* ТАБЛИЦА */
         .table-wrapper { 
-            width: 100%; margin-top: 10px; 
+            width: 100%; 
             overflow-x: auto;
-            border-radius: 20px; border: 1px solid var(--border-color); 
-            box-shadow: var(--shadow); background: var(--card-bg);
-            padding-top: 50px; margin-top: -50px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border-color); 
+            box-shadow: var(--shadow); 
+            background: var(--card-bg);
+            /* Убрали лишние отступы, так как подсказки теперь открываются вниз */
         }
+        
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 900px; }
         
         th, td { 
@@ -178,7 +185,7 @@
             border-right: 1px solid var(--border-color); /* Разделитель колонок */
         }
         
-        th:last-child, td:last-child { border-right: none; } /* Убираем лишнюю линию справа */
+        th:last-child, td:last-child { border-right: none; } 
         
         th { 
             background-color: var(--hover-bg); color: var(--text-muted); 
@@ -198,8 +205,14 @@
         tr.today-row:hover { background-color: var(--today-bg); }
         tr.today-row .day-cell { font-weight: 800; color: var(--primary); }
 
-        .day-cell { font-weight: 700; text-align: left; padding-left: 20px; color: var(--text); }
-        .streak-cell { font-size: 20px; }
+        .day-cell { font-weight: 700; text-align: left; padding-left: 20px; color: var(--text); width: 80px; }
+        
+        /* Поправлен столбец Стрик */
+        .streak-cell { 
+            font-size: 20px; 
+            text-align: center; 
+            width: 80px; /* Фиксированная ширина */
+        }
 
         /* ЧЕКБОКСЫ */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
@@ -227,7 +240,7 @@
         }
         textarea.notes-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
-        /* СТИЛЬНЫЕ ПОДСКАЗКИ */
+        /* СТИЛЬНЫЕ ПОДСКАЗКИ (ТЕПЕРЬ ОТКРЫВАЮТСЯ ВНИЗ) */
         .th-title { 
             position: relative;
             cursor: help; 
@@ -241,9 +254,9 @@
         .th-title::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: 150%;
+            top: 150%; /* Вниз */
             left: 50%;
-            transform: translateX(-50%) translateY(10px);
+            transform: translateX(-50%) translateY(-10px);
             background: var(--tooltip-bg);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -267,12 +280,12 @@
         .th-title::before {
             content: "";
             position: absolute;
-            bottom: 120%;
+            top: 120%; /* Вниз */
             left: 50%;
-            transform: translateX(-50%) translateY(10px);
+            transform: translateX(-50%) translateY(-10px);
             border-width: 6px;
             border-style: solid;
-            border-color: var(--tooltip-bg) transparent transparent transparent;
+            border-color: transparent transparent var(--tooltip-bg) transparent; /* Стрелка вверх */
             opacity: 0;
             visibility: hidden;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -380,7 +393,7 @@
             .tab-btn { font-size: 13px; padding: 10px 5px; }
             .header-title h1 { font-size: 26px; }
 
-            .table-wrapper { border: none; box-shadow: none; background: transparent; padding-top: 0; margin-top: 10px;}
+            .table-wrapper { border: none; box-shadow: none; background: transparent; }
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
             tr { 
@@ -394,7 +407,7 @@
             }
             td:last-child { border-bottom: none; }
             td::before { content: attr(data-label); font-weight: 600; text-align: left; flex: 1; padding-right: 15px; font-size: 14px; color: var(--text-muted); }
-            td.day-cell { font-size: 20px; color: var(--primary); border-bottom: 2px solid var(--border-color); margin-bottom: 8px; display: block; text-align: left; padding: 10px 0; }
+            td.day-cell { font-size: 20px; color: var(--primary); border-bottom: 2px solid var(--border-color); margin-bottom: 8px; display: block; text-align: left; padding: 10px 0; width: auto; }
             td.day-cell::before { content: none; }
             td.notes-cell { flex-direction: column; align-items: stretch; text-align: left; }
             td.notes-cell::before { margin-bottom: 8px; }
@@ -405,6 +418,7 @@
             .dashboard { flex-direction: column; }
             .stat-card { padding: 20px; }
             .stat-value { font-size: 32px; }
+            .streak-cell { width: auto; }
         }
     </style>
 </head>
@@ -493,11 +507,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th rowspan="2" style="text-align: left; padding-left: 20px;">День</th>
+                        <th rowspan="2" style="text-align: left; padding-left: 20px; width: 80px;">День</th>
                         <th class="morning" id="th-spf-main">УТРО</th>
                         <th class="evening" colspan="4">ВЕЧЕР (ЛИЦО)</th>
                         <th class="body-gel">ТЕЛО</th>
-                        <th class="fire" rowspan="2">Стрик</th>
+                        <th class="fire" rowspan="2" style="width: 80px;">Стрик</th>
                         <th rowspan="2" style="width: 220px;">Заметки</th>
                     </tr>
                     <tr>
