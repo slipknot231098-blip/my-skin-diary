@@ -29,7 +29,6 @@
             --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             --hover-bg: #F7FAF8;
             
-            /* Цвет текущего дня (Светлая тема) */
             --today-bg: #EBF4EF; 
             --today-text: #4A7C59; 
             
@@ -45,7 +44,6 @@
             --hover-bg: #374151;
             --primary-light: #344C43;
             
-            /* Цвет текущего дня (Темная тема) */
             --today-bg: #263A33; 
             --today-text: #81B29A; 
             
@@ -105,6 +103,8 @@
         .btn-danger:hover { background: #FCA5A5; color: #7F1D1D; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); color: white; box-shadow: 0 4px 12px rgba(124, 154, 136, 0.3); }
+        .btn-warning { background: #FEF3C7; color: #92400E; border-color: #FDE68A; }
+        .btn-warning:hover { background: #FDE68A; color: #78350F; }
 
         /* ЗАГОЛОВОК */
         .header-title {
@@ -178,23 +178,21 @@
             border: 1px solid var(--border-color); 
             box-shadow: var(--shadow); 
             background: var(--card-bg);
-            /* Эти два свойства заставляют браузер строго обрезать всё по закругленным углам */
             transform: translateZ(0); 
             isolation: isolate; 
         }
         
         table { 
             width: 100%; 
-            border-collapse: separate; /* ИСПРАВЛЕНИЕ: Отключаем склеивание границ */
+            border-collapse: separate; 
             border-spacing: 0; 
-            min-width: 900px; 
+            min-width: 100%; 
             table-layout: fixed; 
         }
         
         th, td { 
             padding: 12px 8px; 
             text-align: center; 
-            /* Задаем только правую и нижнюю границу, чтобы избежать двойных линий */
             border-right: 1px solid var(--border-color); 
             border-bottom: 1px solid var(--border-color);
             box-sizing: border-box;
@@ -202,11 +200,12 @@
         }
         
         th:last-child, td:last-child { border-right: none; } 
-        tr:last-child td { border-bottom: none; } /* Убираем нижнюю границу у последнего ряда */
+        tr:last-child td { border-bottom: none; } 
         
         th { 
             background-color: var(--hover-bg); color: var(--text-muted); 
             font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+            position: relative; /* Для ползунка */
         }
         th.morning { color: #C28B5E; }
         th.evening { color: #6A8FA6; }
@@ -217,25 +216,13 @@
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
         
-        /* Стили для текущего дня */
         tr.today-row { background-color: var(--today-bg); }
         tr.today-row:hover { background-color: var(--today-bg); }
         tr.today-row .day-cell { 
             font-weight: 800; 
             color: var(--today-text); 
-            /* ИСПРАВЛЕНИЕ: Вместо border-left используем внутреннюю тень, она не вылезает за границы */
             box-shadow: inset 4px 0 0 0 var(--primary); 
         }
-
-        /* ЖЕСТКАЯ ШИРИНА КОЛОНОК */
-        .day-col { width: 8%; }
-        .day-cell { width: 8%; text-align: center; padding-left: 5px !important; white-space: nowrap; }
-        
-        .streak-col { width: 8%; }
-        .streak-cell { width: 8%; font-size: 20px; text-align: center; }
-        
-        .notes-col { width: 24%; }
-        .notes-cell { width: 24%; padding: 8px !important; }
 
         /* ЧЕКБОКСЫ */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
@@ -256,88 +243,56 @@
 
         /* ПОЛЕ ЗАМЕТОК */
         textarea.notes-input {
-            width: 100%; 
-            height: 44px; 
-            padding: 8px 10px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px;
-            background-color: var(--bg); 
-            color: var(--text); 
-            font-family: inherit;
-            font-size: 13px; 
-            transition: 0.2s; 
-            resize: none; /* Убираем уголок для растягивания */
-            box-sizing: border-box;
-            overflow-y: auto; /* Включаем скролл, если текста много */
+            width: 100%; height: 44px; padding: 8px 10px; 
+            border: 1px solid var(--border-color); border-radius: 8px;
+            background-color: var(--bg); color: var(--text); font-family: inherit;
+            font-size: 13px; transition: 0.2s; resize: none; box-sizing: border-box; overflow-y: auto;
         }
-        textarea.notes-input:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 3px var(--primary-light); 
-        }
-        /* Убираем стандартные стрелочки скроллбара в Webkit (Chrome/Safari) */
+        textarea.notes-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
         textarea.notes-input::-webkit-scrollbar { width: 4px; }
         textarea.notes-input::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
 
+        /* ПОЛЗУНОК ШИРИНЫ */
+        .col-resizer {
+            position: absolute;
+            top: 0;
+            right: -3px;
+            width: 6px;
+            height: 100%;
+            cursor: col-resize;
+            z-index: 10;
+            user-select: none;
+        }
+        .col-resizer:hover, .col-resizer.resizing {
+            background-color: var(--primary);
+            opacity: 0.4;
+        }
+
         /* СТИЛЬНЫЕ ПОДСКАЗКИ */
         .th-title { 
-            position: relative;
-            cursor: help; 
-            border-bottom: 1px dashed var(--text-muted); 
-            display: inline-block; 
-            padding-bottom: 2px;
-            transition: color 0.2s, border-color 0.2s;
+            position: relative; cursor: help; border-bottom: 1px dashed var(--text-muted); 
+            display: inline-block; padding-bottom: 2px; transition: color 0.2s, border-color 0.2s;
         }
         .th-title:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
         .th-title::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: 150%;
-            left: 50%;
+            content: attr(data-tooltip); position: absolute; top: 150%; left: 50%;
             transform: translateX(-50%) translateY(-10px);
-            background: var(--tooltip-bg);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #fff;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 500;
-            white-space: nowrap;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            pointer-events: none;
-            text-transform: none;
-            letter-spacing: normal;
+            background: var(--tooltip-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 12px; font-weight: 500;
+            white-space: nowrap; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.1); opacity: 0; visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; pointer-events: none;
+            text-transform: none; letter-spacing: normal;
         }
 
         .th-title::before {
-            content: "";
-            position: absolute;
-            top: 120%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            border-width: 6px;
-            border-style: solid;
-            border-color: transparent transparent var(--tooltip-bg) transparent;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            pointer-events: none;
+            content: ""; position: absolute; top: 120%; left: 50%; transform: translateX(-50%) translateY(-10px);
+            border-width: 6px; border-style: solid; border-color: transparent transparent var(--tooltip-bg) transparent;
+            opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; pointer-events: none;
         }
 
-        .th-title:hover::after, 
-        .th-title:hover::before {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
+        .th-title:hover::after, .th-title:hover::before { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
         /* ГРАФИКИ */
         .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px; }
@@ -376,8 +331,7 @@
         .history-card h4 { margin: 0; color: var(--primary); font-size: 16px; }
         .btn-delete-small { 
             background-color: transparent; color: var(--red); border: 1px solid transparent;
-            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; 
-            transition: 0.2s; font-weight: 600;
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: 0.2s; font-weight: 600;
         }
         .btn-delete-small:hover { background-color: var(--red-bg); }
         
@@ -441,8 +395,7 @@
             }
             td { 
                 border: none; border-bottom: 1px solid var(--border-color); padding: 14px 0;
-                display: flex; justify-content: space-between; align-items: center; text-align: right; 
-                border-right: none;
+                display: flex; justify-content: space-between; align-items: center; text-align: right; border-right: none;
             }
             td:last-child { border-bottom: none; }
             td::before { content: attr(data-label); font-weight: 600; text-align: left; flex: 1; padding-right: 15px; font-size: 14px; color: var(--text-muted); }
@@ -544,23 +497,73 @@
         </div>
 
         <div class="table-wrapper">
-            <table>
+            <table id="skinTable">
+                <colgroup>
+                    <col style="width: 8%;">
+                    <col style="width: 10%;">
+                    <col style="width: 12%;">
+                    <col style="width: 12%;">
+                    <col style="width: 12%;">
+                    <col style="width: 12%;">
+                    <col style="width: 12%;">
+                    <col style="width: 8%;">
+                    <col style="width: 14%;">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th rowspan="2" class="day-col">День</th>
+                        <th rowspan="2" class="day-col">
+                            День
+                            <div class="col-resizer" data-col="0"></div>
+                        </th>
                         <th class="morning" id="th-spf-main">УТРО</th>
                         <th class="evening" colspan="4">ВЕЧЕР (ЛИЦО)</th>
                         <th class="body-gel">ТЕЛО</th>
-                        <th class="fire streak-col" rowspan="2">Стрик</th>
-                        <th class="notes-col" rowspan="2">Заметки</th>
+                        <th class="fire streak-col" rowspan="2">
+                            Стрик
+                            <div class="col-resizer" data-col="7"></div>
+                        </th>
+                        <th class="notes-col" rowspan="2">
+                            Заметки
+                            <div class="col-resizer" data-col="8"></div>
+                        </th>
                     </tr>
                     <tr>
-                        <th class="morning" id="th-spf"><div class="th-title" data-tooltip="Наносить утром на чистую кожу.">1. СПФ</div></th>
-                        <th class="evening"><div class="th-title" id="th-micellar" data-tooltip="Наносить на СУХУЮ кожу, затем смыть водой!">1. Мицеллярка</div></th>
-                        <th class="evening"><div class="th-title" id="th-cleanser" data-tooltip="Вспенить, нанести, смыть.">2. Пенка</div></th>
-                        <th class="evening"><div class="th-title" id="th-efizel" data-tooltip="Наносить ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
-                        <th class="evening"><div class="th-title" id="th-moisturizer" data-tooltip="Через 20-30 минут ПОСЛЕ Эффезела.">4. Крем (лицо)</div></th>
-                        <th class="body-gel"><div class="th-title" id="th-bodyGel" data-tooltip="Гель с кислотами для тела. Нанести на 3-4 минуты и смыть.">🧴 Гель (тело)</div></th>
+                        <th class="morning" id="th-spf">
+                            <div class="th-title" data-tooltip="Наносить утром на чистую кожу.">
+                                <span class="th-label">1. СПФ</span>
+                            </div>
+                            <div class="col-resizer" data-col="1"></div>
+                        </th>
+                        <th class="evening">
+                            <div class="th-title" id="th-micellar" data-tooltip="Наносить на СУХУЮ кожу, затем смыть водой!">
+                                <span class="th-label">1. Мицеллярка</span>
+                            </div>
+                            <div class="col-resizer" data-col="2"></div>
+                        </th>
+                        <th class="evening">
+                            <div class="th-title" id="th-cleanser" data-tooltip="Вспенить, нанести, смыть.">
+                                <span class="th-label">2. Пенка</span>
+                            </div>
+                            <div class="col-resizer" data-col="3"></div>
+                        </th>
+                        <th class="evening">
+                            <div class="th-title" id="th-efizel" data-tooltip="Наносить ТОЛЬКО на сухую кожу!">
+                                <span class="th-label">3. Эффезел</span>
+                            </div>
+                            <div class="col-resizer" data-col="4"></div>
+                        </th>
+                        <th class="evening">
+                            <div class="th-title" id="th-moisturizer" data-tooltip="Через 20-30 минут ПОСЛЕ Эффезела.">
+                                <span class="th-label">4. Крем (лицо)</span>
+                            </div>
+                            <div class="col-resizer" data-col="5"></div>
+                        </th>
+                        <th class="body-gel">
+                            <div class="th-title" id="th-bodyGel" data-tooltip="Гель с кислотами для тела. Нанести на 3-4 минуты и смыть.">
+                                <span class="th-label">🧴 Гель (тело)</span>
+                            </div>
+                            <div class="col-resizer" data-col="6"></div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="skinTableBody"></tbody>
@@ -596,16 +599,46 @@
         </div>
 
         <div class="table-wrapper">
-            <table>
+            <table id="habitsTable">
+                <colgroup>
+                    <col style="width: 12%;">
+                    <col style="width: 14.6%;">
+                    <col style="width: 14.6%;">
+                    <col style="width: 14.6%;">
+                    <col style="width: 14.6%;">
+                    <col style="width: 14.6%;">
+                    <col style="width: 15%;">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th class="day-col">День</th>
-                        <th class="habit-col">🇬🇧 Английский</th>
-                        <th class="habit-col">📚 Чтение</th>
-                        <th class="habit-col">🏋️ Тренировка</th>
-                        <th class="habit-col">🚫 Без сладкого</th>
-                        <th class="habit-col">🧴 Утренняя рутина</th>
-                        <th class="habit-col">💊 Витамины</th>
+                        <th class="day-col">
+                            День
+                            <div class="col-resizer" data-col="0"></div>
+                        </th>
+                        <th class="habit-col">
+                            🇬🇧 Английский
+                            <div class="col-resizer" data-col="1"></div>
+                        </th>
+                        <th class="habit-col">
+                            📚 Чтение
+                            <div class="col-resizer" data-col="2"></div>
+                        </th>
+                        <th class="habit-col">
+                            🏋️ Тренировка
+                            <div class="col-resizer" data-col="3"></div>
+                        </th>
+                        <th class="habit-col">
+                            🚫 Без сладкого
+                            <div class="col-resizer" data-col="4"></div>
+                        </th>
+                        <th class="habit-col">
+                            🧴 Утренняя рутина
+                            <div class="col-resizer" data-col="5"></div>
+                        </th>
+                        <th class="habit-col">
+                            💊 Витамины
+                            <div class="col-resizer" data-col="6"></div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="habitsTableBody"></tbody>
@@ -666,9 +699,16 @@
             </table>
         </div>
 
-        <div style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
-            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">Хотите проверить, как работает празднование?</p>
-            <button class="btn btn-primary" onclick="triggerCelebration(0)">🎉 Тест конфетти и звука</button>
+        <!-- Кнопки управления -->
+        <div style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 20px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">Сбросить ширину колонок?</p>
+                <button class="btn btn-warning" onclick="resetWidths()">↔️ Сбросить ширину</button>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">Тест празднования?</p>
+                <button class="btn btn-primary" onclick="triggerCelebration(0)">🎉 Тест конфетти</button>
+            </div>
         </div>
 
         <div style="margin-top: 30px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
@@ -679,6 +719,55 @@
 </div>
 
 <script>
+    // --- РЕСАЙЗ КОЛОНОК ---
+    function makeResizable(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const cols = table.querySelectorAll('colgroup col');
+        
+        // Загружаем сохраненную ширину
+        const savedWidths = JSON.parse(localStorage.getItem('colWidths_' + tableId) || '[]');
+        if (savedWidths.length === cols.length) {
+            savedWidths.forEach((w, i) => { if(w) cols[i].style.width = w; });
+        }
+
+        table.querySelectorAll('.col-resizer').forEach(resizer => {
+            const colIndex = parseInt(resizer.getAttribute('data-col'), 10);
+            
+            resizer.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                resizer.classList.add('resizing');
+                const startX = e.pageX;
+                const startWidth = parseInt(document.defaultView.getComputedStyle(cols[colIndex]).width, 10);
+                
+                const doDrag = (moveEvent) => {
+                    const newWidth = startWidth + moveEvent.pageX - startX;
+                    if (newWidth > 30) { // Минимальная ширина
+                        cols[colIndex].style.width = newWidth + 'px';
+                    }
+                };
+
+                const stopDrag = () => {
+                    resizer.classList.remove('resizing');
+                    document.removeEventListener('mousemove', doDrag);
+                    document.removeEventListener('mouseup', stopDrag);
+                    const currentWidths = Array.from(cols).map(c => c.style.width);
+                    localStorage.setItem('colWidths_' + tableId, JSON.stringify(currentWidths));
+                };
+
+                document.addEventListener('mousemove', doDrag);
+                document.addEventListener('mouseup', stopDrag);
+            });
+        });
+    }
+
+    function resetWidths() {
+        localStorage.removeItem('colWidths_skinTable');
+        localStorage.removeItem('colWidths_habitsTable');
+        alert("Ширина колонок сброшена! Страница сейчас перезагрузится.");
+        location.reload();
+    }
+
     // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
     function switchTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -801,11 +890,14 @@
             return { day: day, expected: expected };
         });
         const tbody = document.getElementById('skinTableBody'); tbody.innerHTML = '';
-        document.getElementById('th-micellar').textContent = `1. Мицеллярка (${formatDays(currentSkinSettings.micellar)})`;
-        document.getElementById('th-cleanser').textContent = `2. Пенка (${formatDays(currentSkinSettings.cleanser)})`;
-        document.getElementById('th-efizel').textContent = `3. Эффезел (${formatDays(currentSkinSettings.efizel)})`;
-        document.getElementById('th-moisturizer').textContent = `4. Крем (${formatDays(currentSkinSettings.moisturizer)})`;
-        document.getElementById('th-bodyGel').textContent = `🧴 Гель (${formatDays(currentSkinSettings.bodyGel)})`;
+        
+        // Обновляем только текст в span, чтобы не сломать ползунки ресайза
+        document.querySelector('#th-micellar .th-label').textContent = `1. Мицеллярка (${formatDays(currentSkinSettings.micellar)})`;
+        document.querySelector('#th-cleanser .th-label').textContent = `2. Пенка (${formatDays(currentSkinSettings.cleanser)})`;
+        document.querySelector('#th-efizel .th-label').textContent = `3. Эффезел (${formatDays(currentSkinSettings.efizel)})`;
+        document.querySelector('#th-moisturizer .th-label').textContent = `4. Крем (${formatDays(currentSkinSettings.moisturizer)})`;
+        document.querySelector('#th-bodyGel .th-label').textContent = `🧴 Гель (${formatDays(currentSkinSettings.bodyGel)})`;
+        
         const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
 
         skinWeekSchedule.forEach((dayData, dayIndex) => {
@@ -1110,37 +1202,4 @@
                 let week = history[i]; let div = document.createElement('div'); div.className = 'history-card';
                 let totalChecks = 0; for (let key in week.checks) if (week.checks[key]) totalChecks++;
                 let notesHtml = '';
-                for (let j = 0; j < 7; j++) { if (week.notes[`note-${j}`]) notesHtml += `<div style="margin-bottom:6px;">• <b>${daysOfWeek[j]}:</b> ${week.notes[`note-${j}`]}</div>`; }
-                div.innerHTML = `
-                    <div class="history-header"><h4>Неделя от ${week.date}</h4><button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️ Удалить</button></div>
-                    <div class="history-stats">Выполнено процедур (уход): <b>${totalChecks}</b></div>
-                    <div class="history-notes">${notesHtml || 'Заметок не было.'}</div>
-                `;
-                list.appendChild(div);
-            }
-        }
-        modal.style.display = "block";
-    }
-
-    function deleteWeek(index) {
-        if(confirm("Удалить эту неделю из архива?")) {
-            let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); history.splice(index, 1); localStorage.setItem('weeklyHistory', JSON.stringify(history));
-            openHistory(); updateSkinStats(); 
-        }
-    }
-    function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
-    function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); localStorage.removeItem('habitWeeklyHistory'); openHistory(); updateSkinStats(); updateHabitsStats(); } }
-    window.onclick = function(event) { if (event.target == document.getElementById('historyModal')) closeHistory(); if (event.target == document.getElementById('settingsModal')) closeSettings(); }
-
-    // --- ИНИЦИАЛИЗАЦИЯ ---
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedTitle = localStorage.getItem('customHeaderTitle'); if (savedTitle) document.getElementById('mainTitle').innerText = savedTitle;
-        if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-        const savedCity = localStorage.getItem('userCity') || 'Казань'; document.getElementById('city-input').value = savedCity; fetchWeatherByCity(savedCity);
-        updateWeekDates(); 
-        renderSkinTable(); updateSkinStats();
-        renderHabitsTable(); updateHabitsStats();
-    });
-</script>
-</body>
-</html>
+                for (let j = 0; j < 7; j++) { if (week.notes[`note-${j}`]) notesHtml += `<div style="margin-bottom:6px;">• <b>${daysOfWeek[j]}:</b> ${week.notes[`note-${j}`]}</div>`;
