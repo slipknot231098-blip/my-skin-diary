@@ -30,7 +30,7 @@
             --hover-bg: #F7FAF8;
             
             /* Цвет текущего дня (Светлая тема) */
-            --today-bg: #E6F2EB; 
+            --today-bg: #EBF4EF; 
             --today-text: #4A7C59; 
             
             --tooltip-bg: rgba(30, 41, 59, 0.95);
@@ -41,12 +41,12 @@
             --text: #E2E8F0;
             --text-muted: #A0AEC0;
             --card-bg: #2D3748;
-            --border-color: #4A5568;
+            --border-color: #3A475A; /* Чуть светлее для контраста */
             --hover-bg: #374151;
             --primary-light: #344C43;
             
             /* Цвет текущего дня (Темная тема) */
-            --today-bg: #233B33; 
+            --today-bg: #263A33; 
             --today-text: #81B29A; 
             
             --modal-bg: rgba(0, 0, 0, 0.7);
@@ -174,7 +174,7 @@
             width: 100%; 
             margin-top: 5px;
             overflow-x: auto;
-            overflow-y: hidden; /* Обрезаем углы */
+            overflow-y: hidden;
             border-radius: 20px; 
             border: 1px solid var(--border-color); 
             box-shadow: var(--shadow); 
@@ -183,16 +183,18 @@
         
         table { 
             width: 100%; 
-            border-collapse: collapse; /* ИСПРАВЛЕНИЕ: Убирает дыры в границах */
+            border-collapse: collapse; /* Убирает двойные рамки */
             min-width: 900px; 
+            table-layout: fixed; /* Жесткое распределение ширины */
         }
         
         th, td { 
-            padding: 16px 8px; 
+            padding: 12px 8px; 
             text-align: center; 
             border-bottom: 1px solid var(--border-color); 
             border-right: 1px solid var(--border-color);
             box-sizing: border-box;
+            vertical-align: middle;
         }
         
         th:last-child, td:last-child { border-right: none; } 
@@ -212,35 +214,24 @@
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
         
-        /* ИСПРАВЛЕНИЕ: Новый цвет текущего дня */
-        tr.today-row { 
-            background-color: var(--today-bg) !important; 
-        }
-        tr.today-row:hover { 
-            background-color: var(--today-bg) !important; 
-        }
+        /* Стили для текущего дня */
+        tr.today-row { background-color: var(--today-bg) !important; }
+        tr.today-row:hover { background-color: var(--today-bg) !important; }
         tr.today-row .day-cell { 
             font-weight: 800; 
             color: var(--today-text); 
-            border-left: 4px solid var(--primary); /* Красивая полоска слева */
+            border-left: 4px solid var(--primary); 
         }
 
-        /* Фиксация ширины колонок */
-        .day-col, .day-cell { 
-            width: 100px; /* Чуть шире, чтобы влезло "Сб (Сегодня)" */
-            text-align: left; 
-            padding-left: 15px !important; 
-            white-space: nowrap;
-        }
-        th.day-col { padding-left: 15px !important; }
+        /* ЖЕСТКАЯ ШИРИНА КОЛОНОК */
+        .day-col { width: 8%; }
+        .day-cell { width: 8%; text-align: center; padding-left: 5px !important; white-space: nowrap; }
         
-        .streak-col, .streak-cell { 
-            width: 80px; 
-            text-align: center !important; 
-        }
-        .streak-cell { font-size: 20px; }
+        .streak-col { width: 8%; }
+        .streak-cell { width: 8%; font-size: 20px; text-align: center; }
         
-        .notes-col, .notes-cell { width: 220px; }
+        .notes-col { width: 24%; } /* Заметки занимают четверть */
+        .notes-cell { width: 24%; padding: 8px !important; }
 
         /* ЧЕКБОКСЫ */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
@@ -261,12 +252,26 @@
 
         /* ПОЛЕ ЗАМЕТОК */
         textarea.notes-input {
-            width: 100%; height: 48px; min-height: 48px; max-height: 150px; padding: 10px; 
-            border: 1px solid var(--border-color); border-radius: 10px;
-            background-color: var(--bg); color: var(--text); font-family: inherit;
-            font-size: 13px; transition: 0.2s; resize: vertical; box-sizing: border-box;
+            width: 100%; 
+            height: 44px; 
+            padding: 8px 10px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px;
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: inherit;
+            font-size: 13px; 
+            transition: 0.2s; 
+            resize: vertical; 
+            box-sizing: border-box;
+            overflow-y: hidden; /* Скрываем скролл по умолчанию */
         }
-        textarea.notes-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+        textarea.notes-input:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px var(--primary-light); 
+            overflow-y: auto; /* Показываем скролл при фокусе */
+        }
 
         /* СТИЛЬНЫЕ ПОДСКАЗКИ */
         .th-title { 
