@@ -10,38 +10,45 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --primary-light: #EEF2FF;
-            --morning: #FEF3C7;
-            --evening: #E0F2FE;
-            --body-gel: #F3E8FF;
-            --green: #10B981;
-            --green-bg: #D1FAE5;
-            --red: #EF4444;
-            --red-bg: #FEE2E2;
-            --bg: #F8FAFC;
-            --text: #1E293B;
-            --text-muted: #64748B;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --modal-bg: rgba(15, 23, 42, 0.6);
-            --border-color: rgba(226, 232, 240, 0.8);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-            --hover-bg: rgba(241, 245, 249, 0.6);
-            --today-bg: #FFFBEB;
+            /* Новая спокойная палитра (Sage/Шалфей) */
+            --primary: #7C9A88; /* Мягкий зеленый */
+            --primary-hover: #6A8775;
+            --primary-light: #E8F0EB;
+            
+            --morning: #FCE8D5; /* Персиковый */
+            --evening: #DDE9F0; /* Пыльно-голубой */
+            --body-gel: #F2E3E9; /* Пыльно-розовый */
+            
+            --green: #6B9B7A;
+            --green-bg: #D1E8DA;
+            --red: #D97373; /* Приглушенный красный */
+            --red-bg: #F7E0E0;
+            
+            --bg: #F4F6F5; /* Теплый серо-зеленый фон */
+            --text: #2D3748; /* Темно-серый вместо черного */
+            --text-muted: #718096;
+            --card-bg: #FFFFFF;
+            --modal-bg: rgba(45, 55, 72, 0.5);
+            --border-color: #E2E8F0;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+            --hover-bg: #F7FAF8;
+            --today-bg: #FDFBF7; /* Очень нежный бежевый для сегодня */
         }
 
         body.dark-mode {
-            --bg: #0F172A;
-            --text: #F8FAFC;
-            --text-muted: #94A3B8;
-            --card-bg: rgba(30, 41, 59, 0.85);
-            --modal-bg: rgba(0, 0, 0, 0.8);
-            --border-color: rgba(51, 65, 85, 0.8);
-            --hover-bg: rgba(51, 65, 85, 0.4);
-            --primary-light: rgba(79, 70, 229, 0.2);
-            --today-bg: rgba(254, 243, 199, 0.1);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            /* Темная, но не черная тема */
+            --bg: #1A202C; 
+            --text: #E2E8F0;
+            --text-muted: #A0AEC0;
+            --card-bg: #2D3748;
+            --border-color: #4A5568;
+            --hover-bg: #374151;
+            --primary-light: #344C43;
+            --today-bg: #2E3830;
+            --modal-bg: rgba(0, 0, 0, 0.7);
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
+            --primary: #81B29A; /* Светлее для темной темы */
+            --primary-hover: #9FC2AD;
         }
 
         body {
@@ -51,8 +58,6 @@
             margin: 0;
             padding: 30px 20px;
             transition: background-color 0.3s, color 0.3s;
-            background-image: radial-gradient(circle at top right, var(--primary-light), transparent 400px);
-            background-attachment: fixed;
         }
 
         .container { max-width: 1250px; margin: 0 auto; }
@@ -60,25 +65,23 @@
         /* ВКЛАДКИ */
         .tabs {
             display: flex; gap: 8px; margin-bottom: 25px; background: var(--card-bg);
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             padding: 6px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow);
         }
         .tab-btn {
             flex: 1; padding: 12px; border: none; background: transparent; border-radius: 12px;
             font-size: 15px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(124, 154, 136, 0.3); }
         .tab-btn:hover:not(.active) { background: var(--hover-bg); color: var(--text); }
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ТОПБАР */
         .topbar {
             display: flex; justify-content: space-between; align-items: center;
-            background-color: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 12px 20px; border-radius: 16px; box-shadow: var(--shadow); 
-            border: 1px solid var(--border-color); margin-bottom: 30px; gap: 10px;
+            background-color: var(--card-bg); padding: 12px 20px; border-radius: 16px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 30px; gap: 10px;
         }
         .nav-group { display: flex; gap: 8px; align-items: center; }
         .nav-group.left { flex: 1; justify-content: flex-start; }
@@ -96,7 +99,7 @@
         .btn-danger { color: var(--red); background: var(--red-bg); }
         .btn-danger:hover { background: #FCA5A5; color: #7F1D1D; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); color: white; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .btn-primary:hover { background: var(--primary-hover); color: white; box-shadow: 0 4px 12px rgba(124, 154, 136, 0.3); }
 
         /* ЗАГОЛОВОК */
         .header-title {
@@ -105,8 +108,7 @@
         }
         .header-title h1 {
             font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--primary), #8B5CF6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            color: var(--text);
             outline: none; border-bottom: 2px dashed transparent; cursor: text; transition: border-color 0.2s;
         }
         .header-title h1:hover { border-bottom-color: var(--primary); }
@@ -116,28 +118,26 @@
         /* КАРТОЧКИ СТАТИСТИКИ */
         .dashboard { display: flex; gap: 16px; margin-bottom: 25px; flex-wrap: wrap; }
         .stat-card {
-            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 24px 20px; border-radius: 20px; box-shadow: var(--shadow); 
-            border: 1px solid var(--border-color); flex: 1; min-width: 200px; 
-            text-align: center; transition: transform 0.3s;
+            background: var(--card-bg); padding: 24px 20px; border-radius: 20px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            flex: 1; min-width: 200px; text-align: center; transition: transform 0.3s;
         }
         .stat-card:hover { transform: translateY(-4px); }
         .stat-value { font-size: 36px; font-weight: 800; color: var(--primary); margin-top: 8px; letter-spacing: -1px;}
-        .stat-value.fire { color: #F59E0B; }
-        .stat-value.gold { color: #FBBF24; }
+        .stat-value.fire { color: #E29E60; } /* Мягкий оранжевый */
+        .stat-value.gold { color: #D4AF37; }
 
         /* ПРОГРЕСС-БАР */
         .progress-container {
-            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 20px 25px; border-radius: 20px; box-shadow: var(--shadow); 
-            border: 1px solid var(--border-color); margin-bottom: 25px;
+            background: var(--card-bg); padding: 20px 25px; border-radius: 20px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 25px;
         }
         .progress-bar-bg {
             width: 100%; height: 12px; background-color: var(--border-color);
             border-radius: 10px; overflow: hidden; margin-top: 12px;
         }
         .progress-bar-fill {
-            height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), #8B5CF6);
+            height: 100%; width: 0%; background: var(--primary);
             border-radius: 10px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; align-items: center; justify-content: flex-end;
             padding-right: 10px; color: white; font-weight: 700; font-size: 10px;
@@ -145,10 +145,9 @@
 
         /* ПАНЕЛЬ ТЕГОВ */
         .tags-panel {
-            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 14px 20px; border-radius: 16px; box-shadow: var(--shadow); 
-            border: 1px solid var(--border-color); margin-bottom: 25px; display: flex; 
-            align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px;
+            background: var(--card-bg); padding: 14px 20px; border-radius: 16px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            margin-bottom: 25px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px;
         }
         .tags-panel span { font-weight: 600; color: var(--text-muted); font-size: 13px; }
         .tag-btn {
@@ -169,19 +168,18 @@
         .table-wrapper { 
             width: 100%; margin-top: 10px; overflow-x: auto; 
             border-radius: 20px; border: 1px solid var(--border-color); 
-            box-shadow: var(--shadow); background: var(--card-bg); 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--shadow); background: var(--card-bg);
         }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 900px; }
         th, td { padding: 16px 12px; text-align: center; border-bottom: 1px solid var(--border-color); }
         th { 
-            background-color: transparent; color: var(--text-muted); 
+            background-color: var(--hover-bg); color: var(--text-muted); 
             font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
             border-bottom: 2px solid var(--border-color);
         }
-        th.morning { color: #D97706; }
-        th.evening { color: #0284C7; }
-        th.body-gel { color: #7E22CE; }
+        th.morning { color: #C28B5E; }
+        th.evening { color: #6A8FA6; }
+        th.body-gel { color: #A67C8B; }
         th.fire { color: var(--red); }
         th.habit-col { color: var(--primary); }
 
@@ -190,7 +188,7 @@
         tbody tr:hover { background-color: var(--hover-bg); }
         tr.today-row { background-color: var(--today-bg); }
         tr.today-row:hover { background-color: var(--today-bg); }
-        tr.today-row .day-cell { font-weight: 800; color: #D97706; }
+        tr.today-row .day-cell { font-weight: 800; color: var(--primary); }
 
         .day-cell { font-weight: 700; text-align: left; padding-left: 20px; color: var(--text); }
         .streak-cell { font-size: 20px; }
@@ -222,15 +220,15 @@
         textarea.notes-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
         /* ИКОНКА ПОДСКАЗКИ */
-        .th-title { cursor: help; border-bottom: 1px dashed var(--border-color); display: inline-block; padding-bottom: 2px; }
+        .th-title { cursor: help; border-bottom: 1px dashed var(--text-muted); display: inline-block; padding-bottom: 2px; }
         .th-title:hover { border-bottom-color: var(--primary); color: var(--primary); }
 
         /* ГРАФИКИ */
         .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px; }
         .chart-box { 
-            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 20px; border-radius: 20px; box-shadow: var(--shadow); 
-            border: 1px solid var(--border-color); position: relative; height: 350px; 
+            background: var(--card-bg); padding: 20px; border-radius: 20px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            position: relative; height: 350px; 
         }
         .chart-box.full { grid-column: 1 / -1; height: 320px; }
         .chart-box canvas { width: 100% !important; height: 100% !important; }
@@ -238,8 +236,7 @@
         /* МОДАЛЬНЫЕ ОКНА */
         .modal { 
             display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            transition: opacity 0.3s;
+            overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(4px);
         }
         .modal-content { 
             background-color: var(--card-bg); margin: 5% auto; padding: 30px;
@@ -298,16 +295,16 @@
         }
 
         #uv-alert { 
-            display: none; background: linear-gradient(135deg, #EF4444, #F97316); color: white; 
+            display: none; background: var(--red); color: white; 
             padding: 16px; border-radius: 16px; text-align: center; font-weight: 600; 
-            font-size: 15px; margin-bottom: 25px; box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.5);
+            font-size: 15px; margin-bottom: 25px; box-shadow: 0 10px 25px -5px rgba(217, 115, 115, 0.5);
             animation: pulse 2s infinite; 
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.01); } 100% { transform: scale(1); } }
         .uv-danger { animation: uv-glow 1.5s infinite alternate; }
         @keyframes uv-glow { 
             from { box-shadow: inset 0 0 0 rgba(255,0,0,0); } 
-            to { box-shadow: inset 0 0 20px rgba(255,0,0,0.5); background-color: var(--red-bg); color: var(--red); } 
+            to { box-shadow: inset 0 0 20px rgba(217, 115, 115, 0.3); background-color: var(--red-bg); color: var(--red); } 
         }
 
         /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
@@ -319,13 +316,12 @@
             .tab-btn { font-size: 13px; padding: 10px 5px; }
             .header-title h1 { font-size: 26px; }
 
-            .table-wrapper { border: none; box-shadow: none; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+            .table-wrapper { border: none; box-shadow: none; background: transparent; }
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
             tr { 
                 border: 1px solid var(--border-color); margin-bottom: 16px; border-radius: 20px; 
                 background: var(--card-bg); box-shadow: var(--shadow); padding: 8px 16px; 
-                backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             }
             td { 
                 border: none; border-bottom: 1px solid var(--border-color); padding: 14px 0;
@@ -473,7 +469,7 @@
                 <span>Общий прогресс недели</span>
                 <span id="habitsProgressBarText">0%</span>
             </div>
-            <div class="progress-bar-bg"><div class="progress-bar-fill" id="habitsProgressBarFill" style="background: linear-gradient(90deg, #8B5CF6, #A78BFA);"></div></div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="habitsProgressBarFill"></div></div>
         </div>
 
         <div class="week-dates-container">
@@ -609,7 +605,7 @@
         const rows = document.querySelectorAll('#' + activeTab + ' tr');
         let originY = 0.5;
         if (rows[dayIndex]) { const rect = rows[dayIndex].getBoundingClientRect(); originY = (rect.top + rect.height / 2) / window.innerHeight; }
-        confetti({ particleCount: 150, spread: 90, origin: { y: originY }, colors: ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'] });
+        confetti({ particleCount: 120, spread: 80, origin: { y: originY }, colors: ['#7C9A88', '#A3B18A', '#F2CC8F', '#E07A5F', '#3D405B'] });
     }
 
     function toggleDarkMode() {
@@ -764,16 +760,21 @@
     }
 
     function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
-        const isDark = document.body.classList.contains('dark-mode'); const textColor = isDark ? '#F8FAFC' : '#1E293B'; const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        const isDark = document.body.classList.contains('dark-mode'); 
+        const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
+        const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        const accentColor = isDark ? '#81B29A' : '#7C9A88';
+        
         let goals = []; skinColumns.forEach(col => { goals.push(currentSkinSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
+        
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
-            type: 'bar', data: { labels: skinColumns.map((col, i) => `${skinColumnNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#4F46E5', '#7C3AED', '#10B981', '#EF4444', '#F59E0B', '#8B5CF6'], borderRadius: 6, barThickness: 20 }] },
+            type: 'bar', data: { labels: skinColumns.map((col, i) => `${skinColumnNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
         });
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
-            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: '#4F46E5', borderRadius: 6 }] },
+            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
         });
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); let lineLabels = [], lineData = [];
@@ -781,7 +782,7 @@
         lineLabels.push('Текущая'); lineData.push(currentProgress);
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
-            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: '#4F46E5', backgroundColor: 'rgba(79, 70, 229, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: '#4F46E5', pointBorderColor: isDark ? '#1E293B' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
+            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 12, family: 'Inter'} }, grid: { display: false } } } }
         });
     }
@@ -851,18 +852,22 @@
     }
 
     function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
-        const isDark = document.body.classList.contains('dark-mode'); const textColor = isDark ? '#F8FAFC' : '#1E293B'; const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        const isDark = document.body.classList.contains('dark-mode'); 
+        const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
+        const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        const accentColor = isDark ? '#81B29A' : '#7C9A88';
+        
         let goals = []; habitColumns.forEach(col => { goals.push(currentHabitSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
 
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
-            type: 'bar', data: { labels: habitColumns.map((col, i) => `${habitNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#3B82F6', '#8B5CF6', '#EF4444', '#F59E0B', '#10B981', '#FBBF24'], borderRadius: 6, barThickness: 20 }] },
+            type: 'bar', data: { labels: habitColumns.map((col, i) => `${habitNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
         });
 
         if (habitDailyChartInstance) habitDailyChartInstance.destroy();
         habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
-            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: '#8B5CF6', borderRadius: 6 }] },
+            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
         });
 
@@ -873,7 +878,7 @@
 
         if (habitLineChartInstance) habitLineChartInstance.destroy();
         habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
-            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: '#8B5CF6', backgroundColor: 'rgba(139, 92, 246, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: '#8B5CF6', pointBorderColor: isDark ? '#1E293B' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
+            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 12, family: 'Inter'} }, grid: { display: false } } } }
         });
     }
@@ -951,13 +956,11 @@
 
     function resetAll() {
         if(confirm("Сохранить текущую неделю в Архив и начать новую? (Сбросятся и уход, и привычки)")) {
-            // 1. Сохраняем уход за кожей
             let skinState = { date: new Date().toLocaleDateString('ru-RU'), checks: {}, notes: {} };
             skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { skinState.checks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
             skinWeekSchedule.forEach((_, day) => { skinState.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); history.push(skinState); localStorage.setItem('weeklyHistory', JSON.stringify(history));
 
-            // 2. Сохраняем привычки (только общий процент)
             let habitTotalC = 0, habitTotalExp = 0;
             habitColumns.forEach((colName, colIndex) => {
                 daysOfWeek.forEach((_, dayIndex) => {
@@ -970,11 +973,9 @@
             habitHistory.push({ date: new Date().toLocaleDateString('ru-RU'), percent: habitPct });
             localStorage.setItem('habitWeeklyHistory', JSON.stringify(habitHistory));
 
-            // 3. Очищаем уход
             skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
             daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`note-${dayIndex}`); document.getElementById(`note-${dayIndex}`).value = ""; });
 
-            // 4. Очищаем привычки
             habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
 
             updateSkinStats(); updateHabitsStats(); alert("Новая неделя начата! Все галочки сброшены.");
