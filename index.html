@@ -239,6 +239,24 @@
         }
         .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
+        /* НОВАЯ ПЛАШКА С ДАТАМИ НЕДЕЛИ */
+        .week-dates {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--primary);
+            background: var(--card-bg);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        .week-dates-container {
+            text-align: center;
+        }
+
         tr.today-row { background-color: var(--today-bg); }
         tr.today-row .day-cell { font-weight: 900; color: #f39c12; }
 
@@ -375,6 +393,11 @@
         <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Кожа спокойна')">Кожа спокойна</button>
     </div>
 
+    <!-- НОВАЯ ПЛАШКА С ДАТАМИ -->
+    <div class="week-dates-container">
+        <div class="week-dates" id="weekDatesDisplay">📅 Загрузка дат...</div>
+    </div>
+
     <div class="table-wrapper">
         <table>
             <thead>
@@ -450,6 +473,24 @@
 </div>
 
 <script>
+    // --- РАСЧЕТ ДАТ ТЕКУЩЕЙ НЕДЕЛИ ---
+    function updateWeekDates() {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 - Вс, 1 - Пн...
+        
+        // Вычисляем, сколько дней отнять/прибавить до понедельника
+        const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); 
+        
+        const monday = new Date(today.setDate(diffToMonday));
+        const sunday = new Date(today.setDate(diffToMonday + 6));
+        
+        const formatDate = (date) => {
+            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        };
+        
+        document.getElementById('weekDatesDisplay').textContent = `📅 Неделя: ${formatDate(monday)} — ${formatDate(sunday)}`;
+    }
+
     const cityCache = {
         'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' },
         'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' },
@@ -468,7 +509,6 @@
         'волгоград': { lat: 48.708048, lon: 44.513303, name: 'Волгоград' }
     };
 
-    // Запрашиваем максимальный UV на сегодня, а не текущий (ночью текущий всегда 0)
     async function getWeatherData(lat, lon, cityName) {
         const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&daily=uv_index_max&timezone=auto`;
 
@@ -551,7 +591,7 @@
             const weatherData = await getWeatherData(lat, lon, actualName);
             
             const temp = weatherData.current.temperature_2m;
-            const uv = weatherData.daily.uv_index_max[0]; // Берем МАКСИМАЛЬНЫЙ UV за день
+            const uv = weatherData.daily.uv_index_max[0];
 
             loading.style.display = 'none';
             tempEl.style.display = 'inline-block';
@@ -607,6 +647,8 @@
         const savedCity = localStorage.getItem('userCity') || 'Казань';
         document.getElementById('city-input').value = savedCity;
         fetchWeatherByCity(savedCity);
+        
+        updateWeekDates(); // Обновляем даты при загрузке
     });
 
     function playDing() {
