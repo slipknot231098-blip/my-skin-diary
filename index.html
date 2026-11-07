@@ -54,99 +54,87 @@
         }
         .container { max-width: 1250px; margin: 0 auto; }
         
-        .weather-widget {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 14px;
+        /* ВКЛАДКИ */
+        .tabs {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(79, 129, 189, 0.3);
+        }
+        .tab-btn:hover:not(.active) {
+            background: var(--btn-hover);
+            color: var(--text);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ОСТАЛЬНЫЕ СТИЛИ */
+        .weather-widget {
+            text-align: center; margin-bottom: 20px; font-size: 14px;
+            display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;
         }
         .city-input {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 6px 15px;
-            font-weight: 600;
-            color: var(--text);
-            outline: none;
-            font-family: inherit;
-            font-size: 14px;
-            text-align: center;
-            width: 140px;
-            transition: 0.2s;
-            box-shadow: var(--shadow);
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
+            padding: 6px 15px; font-weight: 600; color: var(--text); outline: none;
+            font-family: inherit; font-size: 14px; text-align: center; width: 140px;
+            transition: 0.2s; box-shadow: var(--shadow);
         }
         .city-input:focus { border-color: var(--primary); }
         .city-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-            color: var(--text);
-            box-shadow: var(--shadow);
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 50%;
+            width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: 0.2s; color: var(--text); box-shadow: var(--shadow);
         }
         .city-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
         
         .weather-widget span {
-            background: var(--card-bg);
-            padding: 6px 15px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            font-weight: 600;
-            box-shadow: var(--shadow);
+            background: var(--card-bg); padding: 6px 15px; border-radius: 20px;
+            border: 1px solid var(--border-color); font-weight: 600; box-shadow: var(--shadow);
         }
         .weather-widget .uv-high {
-            color: #e74c3c;
-            border-color: rgba(231, 76, 60, 0.3);
-            background-color: rgba(231, 76, 60, 0.05);
+            color: #e74c3c; border-color: rgba(231, 76, 60, 0.3); background-color: rgba(231, 76, 60, 0.05);
         }
 
         #uv-alert {
-            display: none;
-            background: linear-gradient(90deg, #ff416c, #ff4b2b);
-            color: white;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+            display: none; background: linear-gradient(90deg, #ff416c, #ff4b2b); color: white;
+            padding: 12px; border-radius: 10px; text-align: center; font-weight: bold;
+            font-size: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
             animation: pulse 2s infinite;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.01); }
-            100% { transform: scale(1); }
-        }
-        .uv-danger {
-            animation: uv-glow 1.5s infinite alternate;
-        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.01); } 100% { transform: scale(1); } }
+        .uv-danger { animation: uv-glow 1.5s infinite alternate; }
         @keyframes uv-glow {
             from { box-shadow: inset 0 0 0 rgba(255,0,0,0); }
             to { box-shadow: inset 0 0 20px rgba(255,0,0,0.8); background-color: #ff6b6b; color: white;}
         }
 
         .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--card-bg);
-            padding: 12px 20px;
-            border-radius: 14px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-            margin-bottom: 25px;
-            gap: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--card-bg); padding: 12px 20px; border-radius: 14px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
+            margin-bottom: 25px; gap: 10px;
         }
         .nav-group { display: flex; gap: 8px; align-items: center; }
         .nav-group.left { flex: 1; justify-content: flex-start; }
@@ -154,19 +142,10 @@
         .nav-group.right { flex: 1; justify-content: flex-end; }
 
         .btn {
-            padding: 8px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            transition: all 0.2s ease;
-            background-color: transparent;
-            color: var(--text);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
+            padding: 8px 14px; border: 1px solid var(--border-color); border-radius: 8px;
+            cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.2s ease;
+            background-color: transparent; color: var(--text); display: inline-flex;
+            align-items: center; gap: 6px; white-space: nowrap;
         }
         .btn:hover { background-color: var(--btn-hover); transform: translateY(-1px); }
         .btn:active { transform: translateY(0); }
@@ -174,25 +153,15 @@
         .btn-danger:hover { background-color: rgba(231, 76, 60, 0.1); border-color: #e74c3c; }
 
         .header-title {
-            text-align: center;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+            text-align: center; margin-bottom: 15px; display: flex;
+            align-items: center; justify-content: center; gap: 12px;
         }
         .header-title h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0;
-            letter-spacing: 0.5px;
+            font-size: 28px; font-weight: 700; margin: 0; letter-spacing: 0.5px;
             background: linear-gradient(90deg, #4F81BD, #2980b9);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            outline: none;
-            border-bottom: 2px dashed transparent;
-            cursor: text;
-            transition: border-color 0.2s;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            outline: none; border-bottom: 2px dashed transparent;
+            cursor: text; transition: border-color 0.2s;
         }
         .header-title h1:hover { border-bottom-color: rgba(79, 129, 189, 0.3); }
         .header-title h1:focus { border-bottom-color: #4F81BD; }
@@ -202,8 +171,7 @@
         .stat-card {
             background: var(--card-bg); padding: 18px 15px; border-radius: 14px;
             box-shadow: var(--shadow); border: 1px solid var(--border-color); 
-            flex: 1; min-width: 200px; text-align: center;
-            transition: transform 0.2s;
+            flex: 1; min-width: 200px; text-align: center; transition: transform 0.2s;
         }
         .stat-card:hover { transform: translateY(-2px); }
         .stat-value { font-size: 32px; font-weight: 800; color: var(--primary); margin-top: 5px; }
@@ -212,16 +180,14 @@
 
         .progress-container {
             background: var(--card-bg); padding: 18px 25px; border-radius: 14px;
-            box-shadow: var(--shadow); border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 20px;
         }
         .progress-bar-bg {
             width: 100%; height: 20px; background-color: var(--btn-hover);
             border-radius: 10px; overflow: hidden; margin-top: 10px;
         }
         .progress-bar-fill {
-            height: 100%; width: 0%;
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            height: 100%; width: 0%; background: linear-gradient(90deg, #27ae60, #2ecc71);
             border-radius: 10px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; align-items: center; justify-content: flex-end;
             padding-right: 10px; color: white; font-weight: bold; font-size: 12px;
@@ -303,78 +269,56 @@
         .history-stats { font-size: 14px; color: #7f8c8d; margin-bottom: 10px; }
         .history-notes { font-size: 14px; font-style: italic; line-height: 1.4; white-space: pre-wrap; }
 
-        /* --- МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ) --- */
+        /* НАСТРОЙКИ ПРИВЫЧЕК */
+        .habit-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--border-color); }
+        .habit-row:last-child { border-bottom: none; }
+        .habit-name { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 10px; }
+        .habit-checkboxes { display: flex; gap: 15px; }
+        .habit-checkboxes label { display: flex; flex-direction: column; align-items: center; font-size: 12px; gap: 5px; cursor: pointer; }
+
+        /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
         @media (max-width: 900px) {
             .topbar { flex-wrap: wrap; justify-content: center; }
             .nav-group { flex: auto; justify-content: center; width: 100%; }
+            .tabs { flex-direction: row; }
+            .tab-btn { font-size: 13px; padding: 10px 5px; }
 
             .table-wrapper { border: none; box-shadow: none; background: transparent; }
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
-            
-            tr { 
-                border: 1px solid var(--border-color); 
-                margin-bottom: 15px; 
-                border-radius: 14px; 
-                background: var(--card-bg); 
-                box-shadow: var(--shadow); 
-                padding: 5px 10px;
-            }
-
-            td { 
-                border: none; 
-                border-bottom: 1px solid var(--border-color); 
-                padding: 12px 15px; 
-                display: flex; 
-                justify-content: space-between; 
-                align-items: center; 
-                text-align: right;
-            }
+            tr { border: 1px solid var(--border-color); margin-bottom: 15px; border-radius: 14px; background: var(--card-bg); box-shadow: var(--shadow); padding: 5px 10px; }
+            td { border: none; border-bottom: 1px solid var(--border-color); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; text-align: right; }
             td:last-child { border-bottom: none; }
-            
-            /* Показываем названия процедур слева */
-            td::before { 
-                content: attr(data-label); 
-                font-weight: 600; 
-                text-align: left; 
-                flex: 1; 
-                padding-right: 15px;
-                font-size: 13px;
-                color: var(--text);
-            }
-
-            /* Особый стиль для заголовка карточки (День) */
-            td.day-cell { 
-                font-size: 18px; 
-                color: var(--primary); 
-                border-bottom: 2px solid var(--primary); 
-                margin-bottom: 5px; 
-                display: block; 
-                text-align: left; 
-                padding: 10px 5px; 
-            }
+            td::before { content: attr(data-label); font-weight: 600; text-align: left; flex: 1; padding-right: 15px; font-size: 13px; color: var(--text); }
+            td.day-cell { font-size: 18px; color: var(--primary); border-bottom: 2px solid var(--primary); margin-bottom: 5px; display: block; text-align: left; padding: 10px 5px; }
             td.day-cell::before { content: none; }
-
-            /* Поле заметок во всю ширину */
             td.notes-cell { flex-direction: column; align-items: stretch; text-align: left; }
             td.notes-cell::before { margin-bottom: 8px; }
             textarea.notes-input { width: 100%; height: 60px; }
+            
+            .habit-row { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .habit-checkboxes { width: 100%; justify-content: space-between; }
+            .habit-checkboxes label { flex: 1; }
 
             .charts-container { grid-template-columns: 1fr; }
             .chart-box { height: 300px; }
-            .header-title h1 { font-size: 24px; }
-            .week-dates { font-size: 13px; padding: 6px 15px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- ВКЛАДКИ -->
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-skin" onclick="switchTab('skin')">🧴 Уход за кожей</button>
+        <button class="tab-btn" id="tab-habits" onclick="switchTab('habits')">🧠 Мои привычки</button>
+    </div>
+
     <div id="uv-alert"></div>
 
     <div class="topbar">
         <div class="nav-group left">
-            <button class="btn btn-danger" onclick="resetWeek()">🔄 Новая неделя</button>
+            <button class="btn btn-danger" onclick="resetAll()">🔄 Новая неделя</button>
             <button class="btn" onclick="openHistory()">📜 Архив</button>
         </div>
 
@@ -396,82 +340,119 @@
         <h1 id="mainTitle" contenteditable="true" onblur="saveTitle()" title="Нажмите, чтобы изменить название">Мой Дневник Ухода</h1>
     </div>
 
-    <div class="weather-widget">
-        <input type="text" id="city-input" class="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" placeholder="Ваш город">
-        <button class="city-btn" onclick="setCity()" title="Обновить погоду">🔄</button>
-        
-        <span id="weather-temp" style="display:none;">🌡️ --°C</span>
-        <span id="weather-uv" style="display:none;">☀️ Макс. UV: --</span>
-        <span id="weather-loading" style="display:inline-block;">⏳ Загрузка...</span>
-    </div>
-
-    <div class="dashboard">
-        <div class="stat-card">
-            <div style="color: #7f8c8d; font-size: 13px; font-weight: 600;">Выполнение за неделю</div>
-            <div class="stat-value" id="progressValue">0%</div>
+    <!-- ВКЛАДКА: УХОД ЗА КОЖЕЙ -->
+    <div id="content-skin" class="tab-content active">
+        <div class="weather-widget">
+            <input type="text" id="city-input" class="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" placeholder="Ваш город">
+            <button class="city-btn" onclick="setCity()" title="Обновить погоду">🔄</button>
+            <span id="weather-temp" style="display:none;">🌡️ --°C</span>
+            <span id="weather-uv" style="display:none;">☀️ Макс. UV: --</span>
+            <span id="weather-loading" style="display:inline-block;">⏳ Загрузка...</span>
         </div>
-        <div class="stat-card">
-            <div style="color: #7f8c8d; font-size: 13px; font-weight: 600;">Идеальных дней (текущих)</div>
-            <div class="stat-value fire" id="streakValue">0 🔥</div>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div style="color: #7f8c8d; font-size: 13px; font-weight: 600;">Выполнение за неделю</div>
+                <div class="stat-value" id="progressValue">0%</div>
+            </div>
+            <div class="stat-card">
+                <div style="color: #7f8c8d; font-size: 13px; font-weight: 600;">Идеальных дней (текущих)</div>
+                <div class="stat-value fire" id="streakValue">0 🔥</div>
+            </div>
+            <div class="stat-card">
+                <div style="color: #7f8c8d; font-size: 13px; font-weight: 600;">Всего идеальных дней</div>
+                <div class="stat-value gold" id="globalStreakValue">0 🏆</div>
+            </div>
         </div>
-        <div class="stat-card">
-            <div style="color: #7f8c8d; font-size: 13px; font-weight: 600;">Всего идеальных дней</div>
-            <div class="stat-value gold" id="globalStreakValue">0 🏆</div>
+
+        <div class="progress-container">
+            <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 14px;">
+                <span>Общий прогресс недели</span>
+                <span id="progressBarText">0%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+        </div>
+
+        <div class="tags-panel">
+            <span>👉 Сначала кликните в поле "Заметки", затем жмите на тег:</span>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Сухость')">Сухость</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Покраснение')">Покраснение</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Новое высыпание')">Новое высыпание</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Жирность')">Жирность</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Кожа спокойна')">Кожа спокойна</button>
+        </div>
+
+        <div class="week-dates-container">
+            <div class="week-dates" id="weekDatesDisplay">📅 Загрузка дат...</div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">День</th>
+                        <th class="morning" id="th-spf-main">УТРО</th>
+                        <th class="evening" colspan="4">ВЕЧЕР (ЛИЦО)</th>
+                        <th class="body-gel">ТЕЛО</th>
+                        <th class="fire" rowspan="2">Стрик</th>
+                        <th rowspan="2" style="width: 200px;">Заметки</th>
+                    </tr>
+                    <tr>
+                        <th class="morning" id="th-spf"><div class="th-title" title="Наносить утром на чистую кожу.">1. СПФ</div></th>
+                        <th class="evening"><div class="th-title" id="th-micellar" title="Наносить на СУХУЮ кожу, затем смыть водой!">1. Мицеллярка</div></th>
+                        <th class="evening"><div class="th-title" id="th-cleanser" title="Вспенить, нанести, смыть.">2. Пенка</div></th>
+                        <th class="evening"><div class="th-title" id="th-efizel" title="Наносить ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
+                        <th class="evening"><div class="th-title" id="th-moisturizer" title="Через 20-30 минут ПОСЛЕ Эффезела.">4. Крем (лицо)</div></th>
+                        <th class="body-gel"><div class="th-title" id="th-bodyGel" title="Гель с кислотами для тела. Нанести на 3-4 минуты и смыть.">🧴 Гель (тело)</div></th>
+                    </tr>
+                </thead>
+                <tbody id="skinTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+            <div class="chart-box"><canvas id="dailyChart"></canvas></div>
+            <div class="chart-box full"><canvas id="lineChart"></canvas></div>
         </div>
     </div>
 
-    <div class="progress-container">
-        <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 14px;">
-            <span>Общий прогресс недели</span>
-            <span id="progressBarText">0%</span>
+    <!-- ВКЛАДКА: ПРИВЫЧКИ -->
+    <div id="content-habits" class="tab-content">
+        <div class="dashboard">
+            <div class="stat-card">
+                <div style="color: #7f8c8d; font-size: 13px; font-weight: 600;">Выполнение привычек</div>
+                <div class="stat-value" id="habitsProgressValue">0%</div>
+            </div>
         </div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="progressBarFill"></div>
+
+        <div class="progress-container">
+            <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 14px;">
+                <span>Общий прогресс недели</span>
+                <span id="habitsProgressBarText">0%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="habitsProgressBarFill" style="background: linear-gradient(90deg, #8e44ad, #9b59b6);"></div></div>
+        </div>
+
+        <div class="week-dates-container">
+            <div class="week-dates" id="habitsWeekDatesDisplay">📅 Загрузка дат...</div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>День</th>
+                        <th>🇬🇧 Английский (1-2ч)</th>
+                        <th>📚 Чтение (1ч)</th>
+                        <th>🏋️ Тренировка</th>
+                    </tr>
+                </thead>
+                <tbody id="habitsTableBody"></tbody>
+            </table>
         </div>
     </div>
 
-    <div class="tags-panel">
-        <span>👉 Сначала кликните в поле "Заметки", затем жмите на тег:</span>
-        <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Сухость')">Сухость</button>
-        <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Покраснение')">Покраснение</button>
-        <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Новое высыпание')">Новое высыпание</button>
-        <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Жирность')">Жирность</button>
-        <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Кожа спокойна')">Кожа спокойна</button>
-    </div>
-
-    <div class="week-dates-container">
-        <div class="week-dates" id="weekDatesDisplay">📅 Загрузка дат...</div>
-    </div>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2">День</th>
-                    <th class="morning" id="th-spf-main">УТРО</th>
-                    <th class="evening" colspan="4">ВЕЧЕР (ЛИЦО)</th>
-                    <th class="body-gel">ТЕЛО</th>
-                    <th class="fire" rowspan="2">Стрик</th>
-                    <th rowspan="2" style="width: 200px;">Заметки</th>
-                </tr>
-                <tr>
-                    <th class="morning" id="th-spf"><div class="th-title" title="Наносить утром на чистую кожу.">1. СПФ</div></th>
-                    <th class="evening"><div class="th-title" id="th-micellar" title="Наносить на СУХУЮ кожу, затем смыть водой!">1. Мицеллярка</div></th>
-                    <th class="evening"><div class="th-title" id="th-cleanser" title="Вспенить, нанести, смыть.">2. Пенка</div></th>
-                    <th class="evening"><div class="th-title" id="th-efizel" title="Наносить ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
-                    <th class="evening"><div class="th-title" id="th-moisturizer" title="Через 20-30 минут ПОСЛЕ Эффезела.">4. Крем (лицо)</div></th>
-                    <th class="body-gel"><div class="th-title" id="th-bodyGel" title="Гель с кислотами для тела. Нанести на 3-4 минуты и смыть.">🧴 Гель (тело)</div></th>
-                </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
-
-    <div class="charts-container">
-        <div class="chart-box"><canvas id="barChart"></canvas></div>
-        <div class="chart-box"><canvas id="dailyChart"></canvas></div>
-        <div class="chart-box full"><canvas id="lineChart"></canvas></div>
-    </div>
 </div>
 
 <!-- Модальное окно Архива -->
@@ -490,9 +471,9 @@
 <div id="settingsModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeSettings()">&times;</span>
-        <h2>⚙️ Настройка графика</h2>
-        <p style="color: #7f8c8d; font-size: 14px;">Отметьте галочками, в какие дни какие процедуры вы должны выполнять.</p>
+        <h2>⚙️ Настройка расписания</h2>
         
+        <h3 style="margin-top: 20px; font-size: 16px;">Уход за кожей</h3>
         <div style="overflow-x: auto;">
             <table class="settings-table">
                 <thead>
@@ -502,6 +483,19 @@
                     </tr>
                 </thead>
                 <tbody id="settingsBody"></tbody>
+            </table>
+        </div>
+
+        <h3 style="margin-top: 30px; font-size: 16px;">Привычки</h3>
+        <div style="overflow-x: auto;">
+            <table class="settings-table">
+                <thead>
+                    <tr>
+                        <th>Привычка</th>
+                        <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th>
+                    </tr>
+                </thead>
+                <tbody id="habitsSettingsBody"></tbody>
             </table>
         </div>
 
@@ -518,6 +512,16 @@
 </div>
 
 <script>
+    // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById('content-' + tabName).classList.add('active');
+        document.getElementById('tab-' + tabName).classList.add('active');
+    }
+
+    // --- ОБЩИЕ ФУНКЦИИ ---
     function updateWeekDates() {
         const today = new Date();
         const dayOfWeek = today.getDay(); 
@@ -526,129 +530,110 @@
         const monday = new Date(today.setDate(diffToMonday));
         const sunday = new Date(today.setDate(diffToMonday + 6));
         
-        const formatDate = (date) => {
-            return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-        };
+        const formatDate = (date) => date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        const text = `📅 Неделя: ${formatDate(monday)} — ${formatDate(sunday)}`;
         
-        document.getElementById('weekDatesDisplay').textContent = `📅 Неделя: ${formatDate(monday)} — ${formatDate(sunday)}`;
+        document.getElementById('weekDatesDisplay').textContent = text;
+        document.getElementById('habitsWeekDatesDisplay').textContent = text;
     }
 
+    function saveTitle() {
+        const titleText = document.getElementById('mainTitle').innerText.trim();
+        if (titleText) localStorage.setItem('customHeaderTitle', titleText);
+        else {
+            document.getElementById('mainTitle').innerText = 'Мой Дневник Ухода';
+            localStorage.removeItem('customHeaderTitle');
+        }
+    }
+
+    function playDing() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.5);
+        } catch(e) {}
+    }
+
+    function triggerCelebration(dayIndex = 0) {
+        playDing();
+        const rows = document.querySelectorAll('#' + (document.getElementById('content-skin').classList.contains('active') ? 'skinTableBody' : 'habitsTableBody') + ' tr');
+        let originY = 0.5;
+        if (rows[dayIndex]) {
+            const rect = rows[dayIndex].getBoundingClientRect();
+            originY = (rect.top + rect.height / 2) / window.innerHeight;
+        }
+        confetti({ particleCount: 100, spread: 80, origin: { y: originY }, colors: ['#27ae60', '#f1c40f', '#4F81BD', '#e74c3c'] });
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        if (document.getElementById('content-skin').classList.contains('active')) updateSkinStats();
+        else updateHabitsStats();
+    }
+
+    // --- ПОГОДА ---
     const cityCache = {
         'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' },
         'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' },
         'санкт-петербург': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' },
-        'спб': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' },
-        'новосибирск': { lat: 55.008352, lon: 82.935733, name: 'Новосибирск' },
-        'екатеринбург': { lat: 56.838011, lon: 60.597465, name: 'Екатеринбург' },
-        'нижний новгород': { lat: 56.326887, lon: 44.005986, name: 'Нижний Новгород' },
-        'самара': { lat: 53.195878, lon: 50.100202, name: 'Самара' },
-        'омск': { lat: 54.988480, lon: 73.324236, name: 'Омск' },
-        'ростов-на-дону': { lat: 47.235713, lon: 39.701505, name: 'Ростов-на-Дону' },
-        'уфа': { lat: 54.738762, lon: 55.972055, name: 'Уфа' },
-        'красноярск': { lat: 56.015283, lon: 92.893248, name: 'Красноярск' },
-        'пермь': { lat: 58.010455, lon: 56.229443, name: 'Пермь' },
-        'воронеж': { lat: 51.660781, lon: 39.200296, name: 'Воронеж' },
-        'волгоград': { lat: 48.708048, lon: 44.513303, name: 'Волгоград' }
+        'спб': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' }
     };
 
     async function getWeatherData(lat, lon, cityName) {
         const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&daily=uv_index_max&timezone=auto`;
-
-        try {
-            const res = await fetch(openMeteoUrl);
-            if (res.ok) return await res.json();
-        } catch (e) { console.log('Способ 1 не удался'); }
-
-        try {
-            const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(openMeteoUrl)}`);
-            if (res.ok) return await res.json();
-        } catch (e) { console.log('Способ 2 не удался'); }
-
-        try {
-            const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`);
-            if (res.ok) {
-                const data = await res.json();
-                return {
-                    current: {
-                        temperature_2m: parseFloat(data.current_condition[0].temp_C)
-                    },
-                    daily: {
-                        uv_index_max: [parseFloat(data.weather[0].uvIndex)]
-                    }
-                };
-            }
-        } catch (e) { console.log('Способ 3 не удался'); }
-
-        throw new Error("Все способы получения погоды не удались");
+        try { const res = await fetch(openMeteoUrl); if (res.ok) return await res.json(); } catch (e) {}
+        try { const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(openMeteoUrl)}`); if (res.ok) return await res.json(); } catch (e) {}
+        try { const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`); if (res.ok) {
+            const data = await res.json();
+            return { current: { temperature_2m: parseFloat(data.current_condition[0].temp_C) }, daily: { uv_index_max: [parseFloat(data.weather[0].uvIndex)] } };
+        }} catch (e) {}
+        throw new Error("Все способы не удались");
     }
 
     async function fetchWeatherByCity(city) {
         const loading = document.getElementById('weather-loading');
         const tempEl = document.getElementById('weather-temp');
         const uvEl = document.getElementById('weather-uv');
-        
         if (!city) return;
         localStorage.setItem('userCity', city);
-        
-        tempEl.style.display = 'none';
-        uvEl.style.display = 'none';
-        loading.style.display = 'inline-block';
-        loading.textContent = '⏳ Загрузка...';
-
+        tempEl.style.display = 'none'; uvEl.style.display = 'none'; loading.style.display = 'inline-block'; loading.textContent = '⏳ Загрузка...';
         const cityLower = city.toLowerCase().trim();
         
         try {
             let lat, lon, actualName;
-
             if (cityCache[cityLower]) {
-                lat = cityCache[cityLower].lat;
-                lon = cityCache[cityLower].lon;
-                actualName = cityCache[cityLower].name;
+                lat = cityCache[cityLower].lat; lon = cityCache[cityLower].lon; actualName = cityCache[cityLower].name;
                 document.getElementById('city-input').value = actualName;
             } else {
                 const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
                 let geoData;
-                
-                try {
-                    const geoRes = await fetch(geoUrl);
-                    geoData = await geoRes.json();
-                } catch(e) {
-                    const geoRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(geoUrl)}`);
-                    geoData = await geoRes.json();
-                }
-
-                if (!geoData.results || geoData.results.length === 0) {
-                    loading.textContent = '❌ Город не найден';
-                    return;
-                }
-
-                lat = geoData.results[0].latitude;
-                lon = geoData.results[0].longitude;
-                actualName = geoData.results[0].name;
-                
-                document.getElementById('city-input').value = actualName; 
-                localStorage.setItem('userCity', actualName);
+                try { const geoRes = await fetch(geoUrl); geoData = await geoRes.json(); } 
+                catch(e) { const geoRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(geoUrl)}`); geoData = await geoRes.json(); }
+                if (!geoData.results || geoData.results.length === 0) { loading.textContent = '❌ Город не найден'; return; }
+                lat = geoData.results[0].latitude; lon = geoData.results[0].longitude; actualName = geoData.results[0].name;
+                document.getElementById('city-input').value = actualName; localStorage.setItem('userCity', actualName);
             }
-
             const weatherData = await getWeatherData(lat, lon, actualName);
-            
             const temp = weatherData.current.temperature_2m;
             const uv = weatherData.daily.uv_index_max[0];
-
-            loading.style.display = 'none';
-            tempEl.style.display = 'inline-block';
-            uvEl.style.display = 'inline-block';
-
+            loading.style.display = 'none'; tempEl.style.display = 'inline-block'; uvEl.style.display = 'inline-block';
             tempEl.textContent = `🌡️ ${temp}°C`;
             
             if (uv >= 3) {
                 uvEl.innerHTML = `☀️ Макс. UV: <b style="color:#e74c3c;">${uv}</b> (Высокий!)`;
                 uvEl.classList.add('uv-high');
-                
                 const alertBox = document.getElementById('uv-alert');
                 alertBox.style.display = 'block';
                 alertBox.innerHTML = `⚠️ Внимание! В ${actualName} сегодня днем ожидается высокий UV-индекс (${uv}). Эффезел делает кожу уязвимой! Не забудьте нанести СПФ.`;
-                
                 document.getElementById('th-spf-main').classList.add('uv-danger');
                 document.getElementById('th-spf').classList.add('uv-danger');
             } else {
@@ -658,197 +643,91 @@
                 document.getElementById('th-spf-main').classList.remove('uv-danger');
                 document.getElementById('th-spf').classList.remove('uv-danger');
             }
-        } catch (e) {
-            console.error(e);
-            loading.textContent = '☁️ Ошибка сети';
-        }
+        } catch (e) { loading.textContent = '☁️ Ошибка сети'; }
     }
 
-    function setCity() {
-        const city = document.getElementById('city-input').value.trim();
-        fetchWeatherByCity(city);
-    }
+    function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
 
-    function saveTitle() {
-        const titleText = document.getElementById('mainTitle').innerText.trim();
-        if (titleText) {
-            localStorage.setItem('customHeaderTitle', titleText);
-        } else {
-            document.getElementById('mainTitle').innerText = 'Мой Дневник Ухода';
-            localStorage.removeItem('customHeaderTitle');
-        }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const savedTitle = localStorage.getItem('customHeaderTitle');
-        if (savedTitle) {
-            document.getElementById('mainTitle').innerText = savedTitle;
-        }
-        
-        const savedCity = localStorage.getItem('userCity') || 'Казань';
-        document.getElementById('city-input').value = savedCity;
-        fetchWeatherByCity(savedCity);
-        
-        updateWeekDates(); 
-    });
-
-    function playDing() {
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.5);
-        } catch(e) { console.log("Аудио не поддерживается"); }
-    }
-
-    function triggerCelebration(dayIndex = 0) {
-        playDing();
-        const rows = document.querySelectorAll('#tableBody tr');
-        let originY = 0.5;
-        if (rows[dayIndex]) {
-            const rect = rows[dayIndex].getBoundingClientRect();
-            originY = (rect.top + rect.height / 2) / window.innerHeight;
-        }
-        confetti({
-            particleCount: 100,
-            spread: 80,
-            origin: { y: originY },
-            colors: ['#27ae60', '#f1c40f', '#4F81BD', '#e74c3c']
-        });
-    }
-
+    // --- ЛОГИКА УХОДА ЗА КОЖЕЙ ---
     const daysOfWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-    const columns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
-    const columnNames = {
-        spf: "1. СПФ", micellar: "1. Мицеллярка", cleanser: "2. Пенка", 
-        efizel: "3. Эффезел", moisturizer: "4. Крем (лицо)", bodyGel: "🧴 Гель (тело)"
+    const skinColumns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
+    const skinColumnNames = { spf: "СПФ", micellar: "1. Мицеллярка", cleanser: "2. Пенка", efizel: "3. Эффезел", moisturizer: "4. Крем (лицо)", bodyGel: "🧴 Гель (тело)" };
+    
+    const defaultSkinSettings = {
+        spf: [1, 1, 1, 1, 1, 0, 0], micellar: [1, 1, 1, 1, 1, 0, 0], cleanser: [1, 0, 1, 0, 1, 0, 0],
+        efizel: [1, 0, 1, 0, 1, 0, 1], moisturizer: [1, 0, 1, 0, 1, 0, 1], bodyGel: [1, 0, 1, 0, 1, 0, 0]
     };
-
-    const defaultSettings = {
-        spf:         [1, 1, 1, 1, 1, 0, 0],
-        micellar:    [1, 1, 1, 1, 1, 0, 0],
-        cleanser:    [1, 0, 1, 0, 1, 0, 0],
-        efizel:      [1, 0, 1, 0, 1, 0, 1],
-        moisturizer: [1, 0, 1, 0, 1, 0, 1],
-        bodyGel:     [1, 0, 1, 0, 1, 0, 0]
-    };
-
-    let currentSettings = JSON.parse(localStorage.getItem('userSchedule')) || defaultSettings;
-    let weekSchedule = [];
-    let barChartInstance = null;
-    let dailyChartInstance = null;
-    let lineChartInstance = null;
-    let notificationInterval = null;
-    let lastFocusedNoteInput = null;
-    let previousPerfectDays = new Set(); 
+    
+    let currentSkinSettings = JSON.parse(localStorage.getItem('userSchedule')) || defaultSkinSettings;
+    let skinWeekSchedule = [];
+    let barChartInstance = null, dailyChartInstance = null, lineChartInstance = null;
+    let lastFocusedNoteInput = null, previousPerfectDays = new Set();
 
     function formatDays(arr) {
         const active = daysOfWeek.filter((_, i) => arr[i] === 1);
-        if (active.length === 0) return "Отдых";
-        if (active.length === 7) return "Каждый день";
+        if (active.length === 0) return "Отдых"; if (active.length === 7) return "Каждый день";
         if (arr[0]===1 && arr[1]===1 && arr[2]===1 && arr[3]===1 && arr[4]===1 && arr[5]===0 && arr[6]===0) return "Пн–Пт";
         return active.join(', ');
     }
 
-    function generateWeekSchedule() {
-        return daysOfWeek.map((day, dayIndex) => {
+    function renderSkinTable() {
+        skinWeekSchedule = daysOfWeek.map((day, dayIndex) => {
             let expected = [];
-            columns.forEach(col => { expected.push(currentSettings[col][dayIndex]); });
+            skinColumns.forEach(col => expected.push(currentSkinSettings[col][dayIndex]));
             return { day: day, expected: expected };
         });
-    }
 
-    function renderTable() {
-        weekSchedule = generateWeekSchedule();
-        const tbody = document.getElementById('tableBody');
+        const tbody = document.getElementById('skinTableBody');
         tbody.innerHTML = '';
 
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-        }
+        document.getElementById('th-micellar').textContent = `1. Мицеллярка (${formatDays(currentSkinSettings.micellar)})`;
+        document.getElementById('th-cleanser').textContent = `2. Пенка (${formatDays(currentSkinSettings.cleanser)})`;
+        document.getElementById('th-efizel').textContent = `3. Эффезел (${formatDays(currentSkinSettings.efizel)})`;
+        document.getElementById('th-moisturizer').textContent = `4. Крем (${formatDays(currentSkinSettings.moisturizer)})`;
+        document.getElementById('th-bodyGel').textContent = `🧴 Гель (${formatDays(currentSkinSettings.bodyGel)})`;
 
-        document.getElementById('th-micellar').textContent = `1. Мицеллярка (${formatDays(currentSettings.micellar)})`;
-        document.getElementById('th-cleanser').textContent = `2. Пенка (${formatDays(currentSettings.cleanser)})`;
-        document.getElementById('th-efizel').textContent = `3. Эффезел (${formatDays(currentSettings.efizel)})`;
-        document.getElementById('th-moisturizer').textContent = `4. Крем (${formatDays(currentSettings.moisturizer)})`;
-        document.getElementById('th-bodyGel').textContent = `🧴 Гель (${formatDays(currentSettings.bodyGel)})`;
+        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
 
-        const jsDay = new Date().getDay();
-        const todayIndex = jsDay === 0 ? 6 : jsDay - 1; 
-
-        weekSchedule.forEach((dayData, dayIndex) => {
+        skinWeekSchedule.forEach((dayData, dayIndex) => {
             const tr = document.createElement('tr');
             if (dayIndex === todayIndex) tr.classList.add('today-row');
 
-            // День
             const tdDay = document.createElement('td');
             tdDay.className = 'day-cell';
             tdDay.textContent = dayData.day + (dayIndex === todayIndex ? ' (Сегодня)' : '');
             tr.appendChild(tdDay);
 
-            // Чекбоксы (с data-label для мобильной версии)
-            columns.forEach((colName) => {
+            skinColumns.forEach((colName) => {
                 const td = document.createElement('td');
-                td.setAttribute('data-label', columnNames[colName]); // Добавили label
-                
-                const label = document.createElement('label');
-                label.className = 'checkbox-container';
-                
+                td.setAttribute('data-label', skinColumnNames[colName]);
+                const label = document.createElement('label'); label.className = 'checkbox-container';
                 const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.id = `check-${dayIndex}-${colName}`;
-                
+                input.type = 'checkbox'; input.id = `check-${dayIndex}-${colName}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
-                input.addEventListener('change', () => { updateStats(dayIndex); });
-
-                const span = document.createElement('span');
-                span.className = 'checkmark';
-
-                label.appendChild(input);
-                label.appendChild(span);
-                td.appendChild(label);
-                tr.appendChild(td);
+                input.addEventListener('change', () => { updateSkinStats(dayIndex); });
+                const span = document.createElement('span'); span.className = 'checkmark';
+                label.appendChild(input); label.appendChild(span); td.appendChild(label); tr.appendChild(td);
             });
 
-            // Стрик
             const tdStreak = document.createElement('td');
-            tdStreak.className = 'streak-cell';
-            tdStreak.id = `streak-${dayIndex}`;
-            tdStreak.setAttribute('data-label', 'Стрик'); // Добавили label
+            tdStreak.className = 'streak-cell'; tdStreak.id = `streak-${dayIndex}`; tdStreak.setAttribute('data-label', 'Стрик');
             tr.appendChild(tdStreak);
 
-            // Заметки
             const tdNotes = document.createElement('td');
-            tdNotes.className = 'notes-cell'; // Добавили класс для мобильной версии
-            tdNotes.setAttribute('data-label', 'Заметки'); // Добавили label
-            
+            tdNotes.className = 'notes-cell'; tdNotes.setAttribute('data-label', 'Заметки');
             const noteInput = document.createElement('textarea');
-            noteInput.className = 'notes-input';
-            noteInput.placeholder = 'Заметки...';
-            noteInput.id = `note-${dayIndex}`;
+            noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`;
             noteInput.value = localStorage.getItem(noteInput.id) || '';
-            
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
             noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); });
-            
-            tdNotes.appendChild(noteInput);
-            tr.appendChild(tdNotes);
+            tdNotes.appendChild(noteInput); tr.appendChild(tdNotes);
             tbody.appendChild(tr);
         });
         
         previousPerfectDays.clear();
-        weekSchedule.forEach((dayData, dayIndex) => {
+        skinWeekSchedule.forEach((dayData, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
-            columns.forEach((col, i) => {
+            skinColumns.forEach((col, i) => {
                 if (document.getElementById(`check-${dayIndex}-${col}`).checked) dayChecked++;
                 if (dayData.expected[i] === 1) dayExpected++;
             });
@@ -861,53 +740,31 @@
             const currentVal = lastFocusedNoteInput.value.trim();
             lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
             localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value);
-            lastFocusedNoteInput.focus();
-            lastFocusedNoteInput.scrollTop = lastFocusedNoteInput.scrollHeight;
-        } else {
-            alert("Пожалуйста, сначала кликните мышкой в поле 'Заметки' напротив нужного дня, а затем нажимайте на тег!");
-        }
+            lastFocusedNoteInput.focus(); lastFocusedNoteInput.scrollTop = lastFocusedNoteInput.scrollHeight;
+        } else { alert("Сначала кликните в поле 'Заметки' напротив нужного дня!"); }
     }
 
-    function updateStats(changedDayIndex = -1) {
-        let totalChecked = 0;
-        let perfectDaysCount = 0;
-        
-        let barData = [0, 0, 0, 0, 0, 0];
-        let dailyData = [0, 0, 0, 0, 0, 0, 0]; 
+    function updateSkinStats(changedDayIndex = -1) {
+        let totalChecked = 0, perfectDaysCount = 0;
+        let barData = [0, 0, 0, 0, 0, 0], dailyData = [0, 0, 0, 0, 0, 0, 0]; 
+        let totalExpectedWeek = skinWeekSchedule.reduce((sum, day) => sum + day.expected.reduce((a,b)=>a+b, 0), 0);
 
-        let totalExpectedWeek = weekSchedule.reduce((sum, day) => sum + day.expected.reduce((a,b)=>a+b, 0), 0);
-
-        weekSchedule.forEach((dayData, dayIndex) => {
-            let dayChecked = 0;
-            let dayExpected = 0;
-
-            columns.forEach((colName, colIndex) => {
+        skinWeekSchedule.forEach((dayData, dayIndex) => {
+            let dayChecked = 0, dayExpected = 0;
+            skinColumns.forEach((colName, colIndex) => {
                 const input = document.getElementById(`check-${dayIndex}-${colName}`);
                 localStorage.setItem(input.id, input.checked);
-                
-                if (input.checked) {
-                    totalChecked++;
-                    dayChecked++;
-                    barData[colIndex]++; 
-                    dailyData[dayIndex]++; 
-                }
+                if (input.checked) { totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; }
                 if (dayData.expected[colIndex] === 1) dayExpected++;
             });
 
             const streakCell = document.getElementById(`streak-${dayIndex}`);
             const isPerfectNow = (dayChecked >= dayExpected && dayExpected > 0);
-            
             if (isPerfectNow) {
-                streakCell.textContent = '🔥';
-                perfectDaysCount++;
-                if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) {
-                    triggerCelebration(dayIndex);
-                }
+                streakCell.textContent = '🔥'; perfectDaysCount++;
+                if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
                 previousPerfectDays.add(dayIndex);
-            } else {
-                streakCell.textContent = '—';
-                previousPerfectDays.delete(dayIndex);
-            }
+            } else { streakCell.textContent = '—'; previousPerfectDays.delete(dayIndex); }
         });
 
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
@@ -920,184 +777,210 @@
 
         let globalPerfectDays = perfectDaysCount;
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
-        
         history.forEach(week => {
             for(let i=0; i<7; i++) {
-                let dayExpected = weekSchedule[i].expected.reduce((a,b)=>a+b, 0);
+                let dayExpected = skinWeekSchedule[i].expected.reduce((a,b)=>a+b, 0);
                 if(dayExpected === 0) continue;
                 let dayChecked = 0;
-                columns.forEach(col => { if(week.checks[`check-${i}-${col}`]) dayChecked++; });
+                skinColumns.forEach(col => { if(week.checks[`check-${i}-${col}`]) dayChecked++; });
                 if(dayChecked >= dayExpected) globalPerfectDays++;
             }
         });
         
         document.getElementById('globalStreakValue').textContent = `${globalPerfectDays} 🏆`;
-        updateCharts(barData, dailyData, progressPercent, totalExpectedWeek);
+        updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek);
     }
 
-    function updateCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+    function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
         const isDark = document.body.classList.contains('dark-mode');
         const textColor = isDark ? '#f4f7f6' : '#333';
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
         
         let goals = [];
-        columns.forEach(col => { goals.push(currentSettings[col].reduce((a,b)=>a+b, 0)); });
+        skinColumns.forEach(col => { goals.push(currentSkinSettings[col].reduce((a,b)=>a+b, 0)); });
         const maxGoal = Math.max(...goals, 1);
 
         if (barChartInstance) barChartInstance.destroy();
-        const labels = columns.map((col, i) => `${columnNames[col]} (${goals[i]})`);
-
         barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Выполнено',
-                    data: barData,
-                    backgroundColor: ['#4F81BD', '#7030A0', '#70AD47', '#C00000', '#E2A74A', '#8e44ad'],
-                    borderRadius: 4,
-                    barThickness: 20
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 13, weight: 'bold'} }, 
-                    legend: { display: false }
-                },
-                scales: { 
-                    x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, 
-                    y: { ticks: { color: textColor, font: {weight: 'bold', size: 11} }, grid: { display: false } } 
-                }
-            }
+            data: { labels: skinColumns.map((col, i) => `${skinColumnNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#4F81BD', '#7030A0', '#70AD47', '#C00000', '#E2A74A', '#8e44ad'], borderRadius: 4, barThickness: 20 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 13, weight: 'bold'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: 'bold', size: 11} }, grid: { display: false } } } }
         });
 
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
             type: 'bar',
-            data: {
-                labels: daysOfWeek,
-                datasets: [{
-                    label: 'Сделано',
-                    data: dailyData,
-                    backgroundColor: '#27ae60',
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 13, weight: 'bold'} }, 
-                    legend: { display: false } 
-                },
-                scales: { 
-                    y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, 
-                    x: { ticks: { color: textColor, font: {weight: 'bold', size: 11} }, grid: { display: false } } 
-                }
-            }
+            data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: '#27ae60', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 13, weight: 'bold'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: 'bold', size: 11} }, grid: { display: false } } } }
         });
 
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
-        let lineLabels = [];
-        let lineData = [];
-
+        let lineLabels = [], lineData = [];
         history.slice(-7).forEach((week) => {
-            let totalC = 0;
-            for (let key in week.checks) if(week.checks[key]) totalC++;
+            let totalC = 0; for (let key in week.checks) if(week.checks[key]) totalC++;
             let pct = totalExpectedWeek > 0 ? Math.round((totalC / totalExpectedWeek) * 100) : 0;
-            lineLabels.push(week.date);
-            lineData.push(pct);
+            lineLabels.push(week.date); lineData.push(pct);
         });
-
-        lineLabels.push('Текущая');
-        lineData.push(currentProgress);
+        lineLabels.push('Текущая'); lineData.push(currentProgress);
 
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
             type: 'line',
-            data: {
-                labels: lineLabels,
-                datasets: [{
-                    label: 'Процент (%)',
-                    data: lineData,
-                    borderColor: '#f1c40f',
-                    backgroundColor: 'rgba(241, 196, 15, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#f1c40f',
-                    pointBorderColor: isDark ? '#1e1e1e' : '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 13, weight: 'bold'} }, 
-                    legend: { display: false } 
-                },
-                scales: { 
-                    y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, 
-                    x: { ticks: { color: textColor, font: {size: 11} }, grid: { display: false } } 
-                }
-            }
+            data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: '#f1c40f', backgroundColor: 'rgba(241, 196, 15, 0.1)', borderWidth: 3, fill: true, tension: 0.4, pointBackgroundColor: '#f1c40f', pointBorderColor: isDark ? '#1e1e1e' : '#fff', pointBorderWidth: 2, pointRadius: 5 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 13, weight: 'bold'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 11} }, grid: { display: false } } } }
         });
     }
 
-    function openSettings() {
-        const modal = document.getElementById('settingsModal');
-        const tbody = document.getElementById('settingsBody');
+    // --- ЛОГИКА ПРИВЫЧЕК ---
+    const habitColumns = ["english", "reading", "workout"];
+    const habitNames = { english: "🇬🇧 Английский (1-2ч)", reading: "📚 Чтение (1ч)", workout: "🏋️ Тренировка" };
+    
+    // По умолчанию: Английский и чтение - каждый день. Тренировка - Пн, Ср, Пт.
+    const defaultHabitSettings = {
+        english: [1, 1, 1, 1, 1, 1, 1],
+        reading: [1, 1, 1, 1, 1, 1, 1],
+        workout: [1, 0, 1, 0, 1, 0, 0]
+    };
+
+    let currentHabitSettings = JSON.parse(localStorage.getItem('userHabitSchedule')) || defaultHabitSettings;
+
+    function renderHabitsTable() {
+        const tbody = document.getElementById('habitsTableBody');
         tbody.innerHTML = '';
 
-        columns.forEach(col => {
+        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
+
+        daysOfWeek.forEach((day, dayIndex) => {
             const tr = document.createElement('tr');
-            let html = `<td>${columnNames[col]}</td>`;
-            for (let i = 0; i < 7; i++) {
-                const checked = currentSettings[col][i] === 1 ? 'checked' : '';
-                html += `<td><input type="checkbox" id="set-${col}-${i}" ${checked} style="width:18px; height:18px; cursor:pointer;"></td>`;
-            }
-            tr.innerHTML = html;
+            if (dayIndex === todayIndex) tr.classList.add('today-row');
+
+            const tdDay = document.createElement('td');
+            tdDay.className = 'day-cell';
+            tdDay.textContent = day + (dayIndex === todayIndex ? ' (Сегодня)' : '');
+            tr.appendChild(tdDay);
+
+            habitColumns.forEach((colName) => {
+                const td = document.createElement('td');
+                td.setAttribute('data-label', habitNames[colName]); // Для мобильной версии
+                
+                const label = document.createElement('label'); label.className = 'checkbox-container';
+                const input = document.createElement('input');
+                input.type = 'checkbox'; input.id = `habit-${dayIndex}-${colName}`;
+                if (localStorage.getItem(input.id) === 'true') input.checked = true;
+                input.addEventListener('change', () => { updateHabitsStats(dayIndex); });
+                
+                const span = document.createElement('span'); span.className = 'checkmark';
+                label.appendChild(input); label.appendChild(span); td.appendChild(label); tr.appendChild(td);
+            });
             tbody.appendChild(tr);
         });
+    }
+
+    function updateHabitsStats(changedDayIndex = -1) {
+        let totalChecked = 0;
+        let totalExpectedWeek = 0;
+        let perfectDaysCount = 0;
+
+        daysOfWeek.forEach((day, dayIndex) => {
+            let dayChecked = 0, dayExpected = 0;
+            habitColumns.forEach((colName) => {
+                const input = document.getElementById(`habit-${dayIndex}-${colName}`);
+                if (!input) return;
+                localStorage.setItem(input.id, input.checked);
+                if (input.checked) { totalChecked++; dayChecked++; }
+                if (currentHabitSettings[colName][dayIndex] === 1) { totalExpectedWeek++; dayExpected++; }
+            });
+            
+            // Если выполнены все запланированные привычки на день
+            if (dayChecked >= dayExpected && dayExpected > 0) {
+                perfectDaysCount++;
+                if (changedDayIndex === dayIndex) {
+                    // Проверяем, не было ли это уже идеальным днем (чтобы конфетти не спамило)
+                    const wasPerfect = localStorage.getItem(`habit_perfect_${dayIndex}`) === 'true';
+                    if (!wasPerfect) {
+                        triggerCelebration(dayIndex);
+                        localStorage.setItem(`habit_perfect_${dayIndex}`, 'true');
+                    }
+                }
+            } else {
+                localStorage.setItem(`habit_perfect_${dayIndex}`, 'false');
+            }
+        });
+
+        let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
+        if(progressPercent > 100) progressPercent = 100; 
+
+        document.getElementById('habitsProgressValue').textContent = `${progressPercent}%`;
+        document.getElementById('habitsProgressBarText').textContent = `${progressPercent}%`;
+        document.getElementById('habitsProgressBarFill').style.width = `${progressPercent}%`;
+    }
+
+    // --- НАСТРОЙКИ ---
+    function openSettings() {
+        const modal = document.getElementById('settingsModal');
+        
+        // Настройки кожи
+        const tbodySkin = document.getElementById('settingsBody');
+        tbodySkin.innerHTML = '';
+        skinColumns.forEach(col => {
+            const tr = document.createElement('tr');
+            let html = `<td>${skinColumnNames[col]}</td>`;
+            for (let i = 0; i < 7; i++) {
+                const checked = currentSkinSettings[col][i] === 1 ? 'checked' : '';
+                html += `<td><input type="checkbox" id="set-${col}-${i}" ${checked} style="width:18px; height:18px; cursor:pointer;"></td>`;
+            }
+            tr.innerHTML = html; tbodySkin.appendChild(tr);
+        });
+
+        // Настройки привычек
+        const tbodyHabits = document.getElementById('habitsSettingsBody');
+        tbodyHabits.innerHTML = '';
+        habitColumns.forEach(col => {
+            const tr = document.createElement('tr');
+            let html = `<td>${habitNames[col]}</td>`;
+            for (let i = 0; i < 7; i++) {
+                const checked = currentHabitSettings[col][i] === 1 ? 'checked' : '';
+                html += `<td><input type="checkbox" id="set-habit-${col}-${i}" ${checked} style="width:18px; height:18px; cursor:pointer;"></td>`;
+            }
+            tr.innerHTML = html; tbodyHabits.appendChild(tr);
+        });
+
         modal.style.display = "block";
     }
 
     function saveSettings() {
-        columns.forEach(col => {
-            for (let i = 0; i < 7; i++) {
-                currentSettings[col][i] = document.getElementById(`set-${col}-${i}`).checked ? 1 : 0;
-            }
+        // Сохраняем кожу
+        skinColumns.forEach(col => {
+            for (let i = 0; i < 7; i++) currentSkinSettings[col][i] = document.getElementById(`set-${col}-${i}`).checked ? 1 : 0;
         });
-        localStorage.setItem('userSchedule', JSON.stringify(currentSettings));
+        localStorage.setItem('userSchedule', JSON.stringify(currentSkinSettings));
+
+        // Сохраняем привычки
+        habitColumns.forEach(col => {
+            for (let i = 0; i < 7; i++) currentHabitSettings[col][i] = document.getElementById(`set-habit-${col}-${i}`).checked ? 1 : 0;
+        });
+        localStorage.setItem('userHabitSchedule', JSON.stringify(currentHabitSettings));
+
         closeSettings();
-        renderTable(); 
-        updateStats(); 
+        renderSkinTable(); updateSkinStats();
+        renderHabitsTable(); updateHabitsStats();
     }
 
     function closeSettings() { document.getElementById('settingsModal').style.display = "none"; }
 
+    // --- ОСТАЛЬНОЕ (БЭКАП, АРХИВ, ТЕМА) ---
     function toggleNotifications() {
         const btn = document.getElementById('notifyBtn');
         if (notificationInterval) {
-            clearInterval(notificationInterval);
-            notificationInterval = null;
-            btn.innerHTML = '🔔 Напоминание';
-            btn.style.color = 'var(--text)';
-            localStorage.removeItem('notificationsEnabled');
-            alert("Напоминания выключены.");
+            clearInterval(notificationInterval); notificationInterval = null;
+            btn.innerHTML = '🔔 Напоминание'; btn.style.color = 'var(--text)';
+            localStorage.removeItem('notificationsEnabled'); alert("Напоминания выключены.");
         } else {
             Notification.requestPermission().then(permission => {
                 if (permission === 'granted') {
-                    btn.innerHTML = '🔕 Выкл. напоминание';
-                    btn.style.color = '#e74c3c';
-                    localStorage.setItem('notificationsEnabled', 'true');
-                    setupNotificationInterval();
-                    alert("Напоминание включено! Браузер пришлет уведомление в 21:00.");
+                    btn.innerHTML = '🔕 Выкл. напоминание'; btn.style.color = '#e74c3c';
+                    localStorage.setItem('notificationsEnabled', 'true'); setupNotificationInterval();
+                    alert("Напоминание включено!");
                 }
             });
         }
@@ -1108,12 +991,8 @@
             const now = new Date();
             const lastNotify = localStorage.getItem('lastNotifyDate');
             const today = now.toDateString();
-            
             if (now.getHours() === 21 && now.getMinutes() === 0 && lastNotify !== today) {
-                new Notification("Пора делать вечерний уход! 🌙", {
-                    body: "Не забудьте умыться и нанести Эффезел (если по графику).",
-                    icon: "https://cdn-icons-png.flaticon.com/512/2953/2953371.png"
-                });
+                new Notification("Пора делать вечерний уход! 🌙", { body: "Не забудьте отметить привычки и уход за кожей.", icon: "https://cdn-icons-png.flaticon.com/512/2953/2953371.png" });
                 localStorage.setItem('lastNotifyDate', today);
             }
         }, 60000);
@@ -1123,9 +1002,7 @@
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 const btn = document.getElementById('notifyBtn');
-                btn.innerHTML = '🔕 Выкл. напоминание';
-                btn.style.color = '#e74c3c';
-                setupNotificationInterval();
+                btn.innerHTML = '🔕 Выкл. напоминание'; btn.style.color = '#e74c3c'; setupNotificationInterval();
             }
         });
     }
@@ -1133,95 +1010,77 @@
     function downloadBackup() {
         let dataToSave = {};
         for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            dataToSave[key] = localStorage.getItem(key);
+            const key = localStorage.key(i); dataToSave[key] = localStorage.getItem(key);
         }
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave, null, 2));
         const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "backup_skin_tracker.json");
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+        downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "backup_all_data.json");
+        document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
     }
 
     function restoreBackup(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+        const file = event.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
                 for (let key in data) localStorage.setItem(key, data[key]);
-                alert("Бэкап восстановлен! Страница перезагрузится.");
-                location.reload(); 
-            } catch (err) {
-                alert("Ошибка файла.");
-            }
+                alert("Бэкап восстановлен! Страница перезагрузится."); location.reload(); 
+            } catch (err) { alert("Ошибка файла."); }
         };
         reader.readAsText(file);
     }
 
-    function resetWeek() {
-        if(confirm("Сохранить текущую неделю в Архив и начать новую?")) {
-            let currentState = { date: new Date().toLocaleDateString('ru-RU'), checks: {}, notes: {} };
-            columns.forEach(col => {
-                weekSchedule.forEach((_, day) => {
-                    currentState.checks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked;
-                });
-            });
-            weekSchedule.forEach((_, day) => {
-                currentState.notes[`note-${day}`] = document.getElementById(`note-${day}`).value;
-            });
-
+    function resetAll() {
+        if(confirm("Сохранить текущую неделю в Архив и начать новую? (Сбросятся и уход, и привычки)")) {
+            // 1. Сохраняем уход в архив
+            let skinState = { date: new Date().toLocaleDateString('ru-RU'), checks: {}, notes: {} };
+            skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { skinState.checks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
+            skinWeekSchedule.forEach((_, day) => { skinState.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
-            history.push(currentState);
-            localStorage.setItem('weeklyHistory', JSON.stringify(history));
+            history.push(skinState); localStorage.setItem('weeklyHistory', JSON.stringify(history));
 
-            columns.forEach((colName) => {
-                weekSchedule.forEach((_, dayIndex) => {
-                    const inputId = `check-${dayIndex}-${colName}`;
-                    localStorage.removeItem(inputId);
-                    const input = document.getElementById(inputId);
-                    if(input) input.checked = false;
+            // 2. Очищаем уход
+            skinColumns.forEach((colName) => {
+                daysOfWeek.forEach((_, dayIndex) => {
+                    localStorage.removeItem(`check-${dayIndex}-${colName}`);
+                    const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false;
                 });
             });
-            weekSchedule.forEach((_, dayIndex) => {
-                localStorage.removeItem(`note-${dayIndex}`);
-                document.getElementById(`note-${dayIndex}`).value = "";
+            daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`note-${dayIndex}`); document.getElementById(`note-${dayIndex}`).value = ""; });
+
+            // 3. Очищаем привычки
+            habitColumns.forEach((colName) => {
+                daysOfWeek.forEach((_, dayIndex) => {
+                    localStorage.removeItem(`habit-${dayIndex}-${colName}`);
+                    localStorage.removeItem(`habit_perfect_${dayIndex}`);
+                    const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false;
+                });
             });
-            updateStats();
+
+            // 4. Обновляем интерфейс
+            updateSkinStats();
+            updateHabitsStats();
+            alert("Новая неделя начата! Все галочки сброшены.");
         }
     }
 
     function openHistory() {
         const modal = document.getElementById('historyModal');
-        const list = document.getElementById('historyList');
-        list.innerHTML = '';
+        const list = document.getElementById('historyList'); list.innerHTML = '';
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
 
-        if (history.length === 0) {
-            list.innerHTML = '<p style="color:#7f8c8d;">Архив пока пуст.</p>';
-        } else {
+        if (history.length === 0) { list.innerHTML = '<p style="color:#7f8c8d;">Архив пока пуст (он сохраняет только уход за кожей).</p>'; } 
+        else {
             for (let i = history.length - 1; i >= 0; i--) {
                 let week = history[i];
-                let div = document.createElement('div');
-                div.className = 'history-card';
-                
-                let totalChecks = 0;
-                for (let key in week.checks) if (week.checks[key]) totalChecks++;
-                
+                let div = document.createElement('div'); div.className = 'history-card';
+                let totalChecks = 0; for (let key in week.checks) if (week.checks[key]) totalChecks++;
                 let notesHtml = '';
-                for (let j = 0; j < 7; j++) {
-                    if (week.notes[`note-${j}`]) notesHtml += `<div style="margin-bottom:5px;">• <b>${weekSchedule[j].day}:</b> ${week.notes[`note-${j}`]}</div>`;
-                }
-
+                for (let j = 0; j < 7; j++) { if (week.notes[`note-${j}`]) notesHtml += `<div style="margin-bottom:5px;">• <b>${daysOfWeek[j]}:</b> ${week.notes[`note-${j}`]}</div>`; }
                 div.innerHTML = `
-                    <div class="history-header">
-                        <h4>Неделя от ${week.date}</h4>
-                        <button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️ Удалить</button>
-                    </div>
-                    <div class="history-stats">Выполнено процедур: <b>${totalChecks}</b></div>
+                    <div class="history-header"><h4>Неделя от ${week.date}</h4><button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️ Удалить</button></div>
+                    <div class="history-stats">Выполнено процедур (уход): <b>${totalChecks}</b></div>
                     <div class="history-notes">${notesHtml || 'Заметок не было.'}</div>
                 `;
                 list.appendChild(div);
@@ -1231,33 +1090,32 @@
     }
 
     function deleteWeek(index) {
-        if(confirm("Удалить эту неделю?")) {
+        if(confirm("Удалить эту неделю из архива?")) {
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
-            history.splice(index, 1); 
-            localStorage.setItem('weeklyHistory', JSON.stringify(history));
-            openHistory(); updateStats(); 
+            history.splice(index, 1); localStorage.setItem('weeklyHistory', JSON.stringify(history));
+            openHistory(); updateSkinStats(); 
         }
     }
 
     function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
-    function clearHistory() {
-        if(confirm("Удалить ВЕСЬ архив?")) {
-            localStorage.removeItem('weeklyHistory');
-            openHistory(); updateStats();
-        }
-    }
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('historyModal')) closeHistory();
-        if (event.target == document.getElementById('settingsModal')) closeSettings();
-    }
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        updateStats();
-    }
+    function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); openHistory(); updateSkinStats(); } }
+    window.onclick = function(event) { if (event.target == document.getElementById('historyModal')) closeHistory(); if (event.target == document.getElementById('settingsModal')) closeSettings(); }
 
-    renderTable();
-    updateStats();
+    // --- ИНИЦИАЛИЗАЦИЯ ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTitle = localStorage.getItem('customHeaderTitle');
+        if (savedTitle) document.getElementById('mainTitle').innerText = savedTitle;
+        
+        if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+        
+        const savedCity = localStorage.getItem('userCity') || 'Казань';
+        document.getElementById('city-input').value = savedCity;
+        fetchWeatherByCity(savedCity);
+        
+        updateWeekDates(); 
+        renderSkinTable(); updateSkinStats();
+        renderHabitsTable(); updateHabitsStats();
+    });
 </script>
 </body>
 </html>
