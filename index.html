@@ -347,6 +347,13 @@
                 <tbody id="habitsTableBody"></tbody>
             </table>
         </div>
+
+        <!-- ГРАФИКИ ДЛЯ ПРИВЫЧЕК -->
+        <div class="charts-container">
+            <div class="chart-box"><canvas id="habitBarChart"></canvas></div>
+            <div class="chart-box"><canvas id="habitDailyChart"></canvas></div>
+            <div class="chart-box full"><canvas id="habitLineChart"></canvas></div>
+        </div>
     </div>
 
 </div>
@@ -640,6 +647,8 @@
     };
     let currentHabitSettings = JSON.parse(localStorage.getItem('userHabitSchedule')) || defaultHabitSettings;
 
+    let habitBarChartInstance = null, habitDailyChartInstance = null, habitLineChartInstance = null;
+
     function renderHabitsTable() {
         const tbody = document.getElementById('habitsTableBody'); tbody.innerHTML = '';
         const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
@@ -647,7 +656,7 @@
             const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
             const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
             habitColumns.forEach((colName) => {
-                const td = document.createElement('td'); td.setAttribute('data-label', habitNames[colName]); // Для мобильной версии
+                const td = document.createElement('td'); td.setAttribute('data-label', habitNames[colName]);
                 const label = document.createElement('label'); label.className = 'checkbox-container';
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `habit-${dayIndex}-${colName}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
@@ -661,12 +670,18 @@
 
     function updateHabitsStats(changedDayIndex = -1) {
         let totalChecked = 0; let totalExpectedWeek = 0; let perfectDaysCount = 0;
+        let habitBarData = new Array(habitColumns.length).fill(0);
+        let habitDailyData = new Array(7).fill(0);
+
         daysOfWeek.forEach((day, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
-            habitColumns.forEach((colName) => {
+            habitColumns.forEach((colName, colIndex) => {
                 const input = document.getElementById(`habit-${dayIndex}-${colName}`); if (!input) return;
                 localStorage.setItem(input.id, input.checked);
-                if (input.checked) { totalChecked++; dayChecked++; }
+                if (input.checked) { 
+                    totalChecked++; dayChecked++; 
+                    habitBarData[colIndex]++; habitDailyData[dayIndex]++;
+                }
                 if (currentHabitSettings[colName][dayIndex] === 1) { totalExpectedWeek++; dayExpected++; }
             });
             if (dayChecked >= dayExpected && dayExpected > 0) {
@@ -682,6 +697,36 @@
         document.getElementById('habitsProgressValue').textContent = `${progressPercent}%`;
         document.getElementById('habitsProgressBarText').textContent = `${progressPercent}%`;
         document.getElementById('habitsProgressBarFill').style.width = `${progressPercent}%`;
+
+        updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek);
+    }
+
+    function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+        const isDark = document.body.classList.contains('dark-mode'); const textColor = isDark ? '#f4f7f6' : '#333'; const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        let goals = []; habitColumns.forEach(col => { goals.push(currentHabitSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
+
+        if (habitBarChartInstance) habitBarChartInstance.destroy();
+        habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
+            type: 'bar', data: { labels: habitColumns.map((col, i) => `${habitNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#3498db', '#9b59b6', '#e74c3c', '#e67e22', '#1abc9c', '#f1c40f'], borderRadius: 4, barThickness: 20 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 13, weight: 'bold'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: 'bold', size: 11} }, grid: { display: false } } } }
+        });
+
+        if (habitDailyChartInstance) habitDailyChartInstance.destroy();
+        habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
+            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: '#8e44ad', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 13, weight: 'bold'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: 'bold', size: 11} }, grid: { display: false } } } }
+        });
+
+        let history = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]'); 
+        let lineLabels = [], lineData = [];
+        history.slice(-7).forEach((week) => { lineLabels.push(week.date); lineData.push(week.percent); });
+        lineLabels.push('Текущая'); lineData.push(currentProgress);
+
+        if (habitLineChartInstance) habitLineChartInstance.destroy();
+        habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
+            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: '#8e44ad', backgroundColor: 'rgba(142, 68, 173, 0.1)', borderWidth: 3, fill: true, tension: 0.4, pointBackgroundColor: '#8e44ad', pointBorderColor: isDark ? '#1e1e1e' : '#fff', pointBorderWidth: 2, pointRadius: 5 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 13, weight: 'bold'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 11} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 11} }, grid: { display: false } } } }
+        });
     }
 
     // --- НАСТРОЙКИ ---
@@ -757,14 +802,30 @@
 
     function resetAll() {
         if(confirm("Сохранить текущую неделю в Архив и начать новую? (Сбросятся и уход, и привычки)")) {
+            // 1. Сохраняем уход за кожей
             let skinState = { date: new Date().toLocaleDateString('ru-RU'), checks: {}, notes: {} };
             skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { skinState.checks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
             skinWeekSchedule.forEach((_, day) => { skinState.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); history.push(skinState); localStorage.setItem('weeklyHistory', JSON.stringify(history));
 
+            // 2. Сохраняем привычки (только общий процент)
+            let habitTotalC = 0, habitTotalExp = 0;
+            habitColumns.forEach((colName, colIndex) => {
+                daysOfWeek.forEach((_, dayIndex) => {
+                    if(document.getElementById(`habit-${dayIndex}-${colName}`).checked) habitTotalC++;
+                    if(currentHabitSettings[colName][dayIndex] === 1) habitTotalExp++;
+                });
+            });
+            let habitPct = habitTotalExp > 0 ? Math.round((habitTotalC / habitTotalExp) * 100) : 0;
+            let habitHistory = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]');
+            habitHistory.push({ date: new Date().toLocaleDateString('ru-RU'), percent: habitPct });
+            localStorage.setItem('habitWeeklyHistory', JSON.stringify(habitHistory));
+
+            // 3. Очищаем уход
             skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
             daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`note-${dayIndex}`); document.getElementById(`note-${dayIndex}`).value = ""; });
 
+            // 4. Очищаем привычки
             habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
 
             updateSkinStats(); updateHabitsStats(); alert("Новая неделя начата! Все галочки сброшены.");
@@ -799,7 +860,7 @@
         }
     }
     function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
-    function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); openHistory(); updateSkinStats(); } }
+    function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); localStorage.removeItem('habitWeeklyHistory'); openHistory(); updateSkinStats(); updateHabitsStats(); } }
     window.onclick = function(event) { if (event.target == document.getElementById('historyModal')) closeHistory(); if (event.target == document.getElementById('settingsModal')) closeSettings(); }
 
     // --- ИНИЦИАЛИЗАЦИЯ ---
