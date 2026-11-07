@@ -54,7 +54,7 @@
         }
         .container { max-width: 1250px; margin: 0 auto; }
         
-        /* ВИДЖЕТ ПОГОДЫ С ВЫБОРОМ ГОРОДА */
+        /* ВИДЖЕТ ПОГОДЫ */
         .weather-widget {
             text-align: center;
             margin-bottom: 20px;
@@ -76,7 +76,7 @@
             font-family: inherit;
             font-size: 14px;
             text-align: center;
-            width: 120px;
+            width: 140px;
             transition: 0.2s;
             box-shadow: var(--shadow);
         }
@@ -452,7 +452,40 @@
 </div>
 
 <script>
-    // --- ПОГОДА ПО ГОРОДУ ---
+    // Словарь координат для мгновенной загрузки без запросов в сеть
+    const cityCache = {
+        'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' },
+        'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' },
+        'санкт-петербург': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' },
+        'спб': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' },
+        'новосибирск': { lat: 55.008352, lon: 82.935733, name: 'Новосибирск' },
+        'екатеринбург': { lat: 56.838011, lon: 60.597465, name: 'Екатеринбург' },
+        'нижний новгород': { lat: 56.326887, lon: 44.005986, name: 'Нижний Новгород' },
+        'самара': { lat: 53.195878, lon: 50.100202, name: 'Самара' },
+        'омск': { lat: 54.988480, lon: 73.324236, name: 'Омск' },
+        'ростов-на-дону': { lat: 47.235713, lon: 39.701505, name: 'Ростов-на-Дону' },
+        'уфа': { lat: 54.738762, lon: 55.972055, name: 'Уфа' },
+        'красноярск': { lat: 56.015283, lon: 92.893248, name: 'Красноярск' },
+        'пермь': { lat: 58.010455, lon: 56.229443, name: 'Пермь' },
+        'воронеж': { lat: 51.660781, lon: 39.200296, name: 'Воронеж' },
+        'волгоград': { lat: 48.708048, lon: 44.513303, name: 'Волгоград' }
+    };
+
+    // Обертка для fetch с автоматическим использованием прокси при ошибке сети
+    async function fetchWithFallback(url) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Network response was not ok');
+            return await res.json();
+        } catch (error) {
+            console.warn('Прямой запрос не удался, пробуем через прокси...', error);
+            const proxy = 'https://api.allorigins.win/raw?url=';
+            const proxyRes = await fetch(proxy + encodeURIComponent(url));
+            if (!proxyRes.ok) throw new Error('Proxy response was not ok');
+            return await proxyRes.json();
+        }
+    }
+
     async function fetchWeatherByCity(city) {
         const loading = document.getElementById('weather-loading');
         const tempEl = document.getElementById('weather-temp');
@@ -464,28 +497,40 @@
         tempEl.style.display = 'none';
         uvEl.style.display = 'none';
         loading.style.display = 'inline-block';
-        loading.textContent = '⏳ Поиск...';
+        loading.textContent = '⏳ Загрузка...';
 
+        const cityLower = city.toLowerCase().trim();
+        
         try {
-            // 1. Получаем координаты города (Geocoding API)
-            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`);
-            const geoData = await geoRes.json();
+            let lat, lon, actualName;
 
-            if (!geoData.results || geoData.results.length === 0) {
-                loading.textContent = '❌ Город не найден';
-                return;
+            // 1. Проверяем локальный кэш
+            if (cityCache[cityLower]) {
+                lat = cityCache[cityLower].lat;
+                lon = cityCache[cityLower].lon;
+                actualName = cityCache[cityLower].name;
+                document.getElementById('city-input').value = actualName;
+            } else {
+                // 2. Если нет в кэше, ищем в интернете (с фоллбэком на прокси)
+                const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
+                const geoData = await fetchWithFallback(geoUrl);
+
+                if (!geoData.results || geoData.results.length === 0) {
+                    loading.textContent = '❌ Город не найден';
+                    return;
+                }
+
+                lat = geoData.results[0].latitude;
+                lon = geoData.results[0].longitude;
+                actualName = geoData.results[0].name;
+                
+                document.getElementById('city-input').value = actualName; 
+                localStorage.setItem('userCity', actualName);
             }
 
-            const lat = geoData.results[0].latitude;
-            const lon = geoData.results[0].longitude;
-            const actualName = geoData.results[0].name;
-            
-            document.getElementById('city-input').value = actualName; 
-            localStorage.setItem('userCity', actualName);
-
-            // 2. Получаем погоду по координатам
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,uv_index&timezone=auto`);
-            const weatherData = await weatherRes.json();
+            // 3. Получаем погоду
+            const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,uv_index&timezone=auto`;
+            const weatherData = await fetchWithFallback(weatherUrl);
             
             const temp = weatherData.current.temperature_2m;
             const uv = weatherData.current.uv_index;
