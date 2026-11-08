@@ -1,61 +1,1465 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Дневник Ухода</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #7C9A88;
+            --primary-hover: #6A8775;
+            --primary-light: #E8F0EB;
+            --morning: #FCE8D5;
+            --evening: #DDE9F0;
+            --body-gel: #F2E3E9;
+            --green: #6B9B7A;
+            --green-bg: #D1E8DA;
+            --red: #D97373;
+            --red-bg: #F7E0E0;
+            --bg: #F4F6F5;
+            --text: #2D3748;
+            --text-muted: #718096;
+            --card-bg: #FFFFFF;
+            --modal-bg: rgba(45, 55, 72, 0.5);
+            --border-color: #E2E8F0;
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+            --hover-bg: #F7FAF8;
+            
+            --today-bg: #EBF4EF; 
+            --today-text: #4A7C59; 
+            
+            --tooltip-bg: rgba(30, 41, 59, 0.95);
+        }
+
+        body.dark-mode {
+            --bg: #1A202C; 
+            --text: #E2E8F0;
+            --text-muted: #A0AEC0;
+            --card-bg: #2D3748;
+            --border-color: #3A475A;
+            --hover-bg: #374151;
+            --primary-light: #344C43;
+            
+            --today-bg: #263A33; 
+            --today-text: #81B29A; 
+            
+            --modal-bg: rgba(0, 0, 0, 0.7);
+            --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
+            --primary: #81B29A; 
+            --primary-hover: #9FC2AD;
+            --tooltip-bg: rgba(15, 23, 42, 0.95);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 30px 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container { max-width: 1250px; margin: 0 auto; }
+        
+        /* ВКЛАДКИ */
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 25px; background: var(--card-bg);
+            padding: 6px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow);
+        }
+        .tab-btn {
+            flex: 1; padding: 12px; border: none; background: transparent; border-radius: 12px;
+            font-size: 15px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(124, 154, 136, 0.3); }
+        .tab-btn:hover:not(.active) { background: var(--hover-bg); color: var(--text); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ТОПБАР */
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: var(--card-bg); padding: 12px 20px; border-radius: 16px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 30px; gap: 10px;
+        }
+        .nav-group { display: flex; gap: 8px; align-items: center; }
+        .nav-group.left { flex: 1; justify-content: flex-start; }
+        .nav-group.right { flex: 1; justify-content: flex-end; }
+
+        .btn {
+            padding: 8px 16px; border: 1px solid transparent; border-radius: 10px;
+            cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s;
+            background-color: transparent; color: var(--text-muted); display: inline-flex;
+            align-items: center; gap: 6px; white-space: nowrap; font-family: inherit;
+        }
+        .btn:hover { background-color: var(--hover-bg); color: var(--text); transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn-danger { color: var(--red); background: var(--red-bg); }
+        .btn-danger:hover { background: #FCA5A5; color: #7F1D1D; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); color: white; box-shadow: 0 4px 12px rgba(124, 154, 136, 0.3); }
+
+        /* ВЫПАДАЮЩЕЕ МЕНЮ */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 100%;
+            background-color: var(--card-bg); min-width: 240px; margin-top: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; 
+            border: 1px solid var(--border-color); z-index: 1000; padding: 8px;
+        }
+        .dropdown-content.show { display: block; animation: fadeIn 0.2s; }
+        .dropdown-item { 
+            padding: 10px 12px; display: flex; flex-direction: column; 
+            border-radius: 8px; cursor: pointer; transition: 0.2s; 
+            border: none; background: transparent; width: 100%; text-align: left; font-family: inherit;
+        }
+        .dropdown-item:hover { background-color: var(--hover-bg); }
+        .dropdown-title { font-weight: 700; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 6px;}
+        .dropdown-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* ПЛАВАЮЩАЯ КНОПКА ТЕМЫ */
+        .floating-theme-btn {
+            position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px;
+            border-radius: 50%; background-color: var(--primary); color: white;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px; border: none; cursor: pointer; z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;
+        }
+        .floating-theme-btn:hover { transform: scale(1.1); background-color: var(--primary-hover); }
+
+        /* ЗАГОЛОВОК */
+        .header-title {
+            text-align: center; margin-bottom: 20px; display: flex;
+            align-items: center; justify-content: center; gap: 12px;
+        }
+        .header-title h1 {
+            font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.5px;
+            color: var(--text);
+            outline: none; border-bottom: 2px dashed transparent; cursor: text; transition: border-color 0.2s;
+        }
+        .header-title h1:hover { border-bottom-color: var(--primary); }
+        .header-title h1:focus { border-bottom-color: var(--primary); }
+        .header-title span { font-size: 36px; }
+
+        /* КАРТОЧКИ СТАТИСТИКИ */
+        .dashboard { display: flex; gap: 16px; margin-bottom: 25px; flex-wrap: wrap; }
+        .stat-card {
+            background: var(--card-bg); padding: 24px 20px; border-radius: 20px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            flex: 1; min-width: 200px; text-align: center; transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-4px); }
+        .stat-value { font-size: 36px; font-weight: 800; color: var(--primary); margin-top: 8px; letter-spacing: -1px;}
+        .stat-value.fire { color: #E29E60; }
+        .stat-value.gold { color: #D4AF37; }
+
+        /* ПРОГРЕСС-БАР */
+        .progress-container {
+            background: var(--card-bg); padding: 20px 25px; border-radius: 20px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 25px;
+        }
+        .progress-bar-bg {
+            width: 100%; height: 12px; background-color: var(--border-color);
+            border-radius: 10px; overflow: hidden; margin-top: 12px;
+        }
+        .progress-bar-fill {
+            height: 100%; width: 0%; background: var(--primary);
+            border-radius: 10px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 10px; color: white; font-weight: 700; font-size: 10px;
+        }
+
+        /* ПАНЕЛЬ ТЕГОВ */
+        .tags-panel {
+            background: var(--card-bg); padding: 14px 20px; border-radius: 16px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            margin-bottom: 25px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px;
+        }
+        .tags-panel span { font-weight: 600; color: var(--text-muted); font-size: 13px; }
+        .tag-btn {
+            background: var(--bg); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 12px;
+            cursor: pointer; font-size: 13px; color: var(--text); transition: all 0.2s; font-weight: 500; font-family: inherit;
+        }
+        .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
+
+        /* ДАТЫ НЕДЕЛИ */
+        .week-dates-container { text-align: center; margin-top: 10px; margin-bottom: 25px; }
+        .week-dates {
+            display: inline-block; font-size: 14px; font-weight: 700; color: var(--primary);
+            background: var(--primary-light); padding: 10px 24px; border-radius: 30px;
+            border: 1px solid transparent; box-shadow: var(--shadow);
+        }
+
+        /* ТАБЛИЦА */
+        .table-wrapper { 
+            width: 100%; 
+            margin-top: 5px;
+            overflow-x: auto;
+            border-radius: 20px; 
+            border: 1px solid var(--border-color); 
+            box-shadow: var(--shadow); 
+            background: var(--card-bg);
+            transform: translateZ(0); 
+            isolation: isolate; 
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0; 
+            min-width: 950px; 
+            table-layout: fixed; 
+        }
+        
+        th, td { 
+            padding: 12px 8px; 
+            text-align: center; 
+            border-right: 1px solid var(--border-color); 
+            border-bottom: 1px solid var(--border-color);
+            box-sizing: border-box;
+            vertical-align: middle;
+        }
+        
+        th:last-child, td:last-child { border-right: none; } 
+        tr:last-child td { border-bottom: none; } 
+        
+        th { 
+            background-color: var(--hover-bg); color: var(--text-muted); 
+            font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        th.morning { color: #C28B5E; }
+        th.evening { color: #6A8FA6; }
+        th.body-gel { color: #A67C8B; }
+        th.fire { color: var(--red); }
+        th.habit-col { color: var(--primary); }
+
+        tbody tr { transition: background-color 0.2s; }
+        tbody tr:hover { background-color: var(--hover-bg); }
+        
+        /* Стили для текущего дня */
+        tr.today-row { background-color: var(--today-bg); }
+        tr.today-row:hover { background-color: var(--today-bg); }
+        tr.today-row .day-cell { 
+            font-weight: 800; 
+            color: var(--today-text); 
+            box-shadow: inset 4px 0 0 0 var(--primary); 
+        }
+
+        /* ЧЕКБОКСЫ */
+        .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
+        .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkmark { 
+            position: absolute; top: 0; left: 0; height: 24px; width: 24px; 
+            background-color: var(--bg); border: 2px solid var(--border-color); 
+            border-radius: 8px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .checkbox-container:hover input ~ .checkmark { border-color: var(--primary); }
+        .checkbox-container input:checked ~ .checkmark { background-color: var(--primary); border-color: var(--primary); }
+        .checkmark:after { 
+            content: ""; position: absolute; display: none; left: 8px; top: 3px; 
+            width: 5px; height: 11px; border: solid white; border-width: 0 2px 2px 0; 
+            transform: rotate(45deg); 
+        }
+        .checkbox-container input:checked ~ .checkmark:after { display: block; }
+
+        /* ПОЛЕ ЗАМЕТОК (Авто-растяжение) */
+        textarea.notes-input {
+            display: block;
+            width: 100%; 
+            min-height: 44px; 
+            padding: 10px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px;
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: inherit;
+            font-size: 13px; 
+            line-height: 1.4;
+            transition: 0.2s; 
+            resize: none;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+            z-index: 10; 
+        }
+        textarea.notes-input:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px var(--primary-light); 
+        }
+
+        /* СТИЛЬНЫЕ ПОДСКАЗКИ */
+        .th-title { 
+            position: relative;
+            cursor: help; 
+            border-bottom: 1px dashed var(--text-muted); 
+            display: inline-block; 
+            padding-bottom: 2px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .th-title:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .th-title::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 150%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: var(--tooltip-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            pointer-events: none;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .th-title::before {
+            content: "";
+            position: absolute;
+            top: 120%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent var(--tooltip-bg) transparent;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .th-title:hover::after, 
+        .th-title:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ГРАФИКИ */
+        .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px; }
+        .chart-box { 
+            background: var(--card-bg); padding: 20px; border-radius: 20px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            position: relative; height: 350px; 
+        }
+        .chart-box.full { grid-column: 1 / -1; height: 320px; }
+        .chart-box canvas { width: 100% !important; height: 100% !important; }
+
+        /* МОДАЛЬНЫЕ ОКНА */
+        .modal { 
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(4px);
+        }
+        .modal-content { 
+            background-color: var(--card-bg); margin: 5% auto; padding: 30px;
+            border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+        }
+        .close-btn { color: var(--text-muted); float: right; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s; line-height: 1; }
+        .close-btn:hover { color: var(--red); }
+        
+        .settings-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
+        .settings-table th, .settings-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); border-right: none; }
+        .settings-table th { background: transparent; color: var(--text-muted); font-size: 13px; }
+        .settings-table td:first-child { text-align: left; font-weight: 600; }
+
+        .history-card { 
+            border: 1px solid var(--border-color); padding: 20px; border-radius: 16px; margin-bottom: 16px;
+            background-color: var(--bg); position: relative; transition: transform 0.2s;
+        }
+        .history-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .history-card h4 { margin: 0; color: var(--primary); font-size: 16px; }
+        .btn-delete-small { 
+            background-color: transparent; color: var(--red); border: 1px solid transparent;
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; 
+            transition: 0.2s; font-weight: 600;
+        }
+        .btn-delete-small:hover { background-color: var(--red-bg); }
+        
+        .history-stats { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+        .history-notes { font-size: 14px; color: var(--text); line-height: 1.5; white-space: pre-wrap; }
+
+        /* СТИЛИ ДЛЯ ПОГОДЫ */
+        .weather-widget {
+            text-align: center; margin-bottom: 25px; font-size: 14px; 
+            display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;
+        }
+        .city-input { 
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 10px 16px; font-weight: 600; color: var(--text); outline: none;
+            font-family: inherit; font-size: 14px; text-align: center; width: 150px;
+            transition: 0.2s; box-shadow: var(--shadow); 
+        }
+        .city-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+        .city-btn { 
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+            width: 42px; height: 42px; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; transition: 0.2s; color: var(--text); box-shadow: var(--shadow);
+        }
+        .city-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); }
+        .weather-widget span { 
+            background: var(--card-bg); padding: 10px 16px; border-radius: 12px;
+            border: 1px solid var(--border-color); font-weight: 600; box-shadow: var(--shadow);
+        }
+        .weather-widget .uv-high { 
+            color: var(--red); border-color: var(--red); background-color: var(--red-bg); 
+        }
+
+        #uv-alert { 
+            display: none; background: var(--red); color: white; 
+            padding: 16px; border-radius: 16px; text-align: center; font-weight: 600; 
+            font-size: 15px; margin-bottom: 25px; box-shadow: 0 10px 25px -5px rgba(217, 115, 115, 0.5);
+            animation: pulse 2s infinite; 
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.01); } 100% { transform: scale(1); } }
+        .uv-danger { animation: uv-glow 1.5s infinite alternate; }
+        @keyframes uv-glow { 
+            from { box-shadow: inset 0 0 0 rgba(255,0,0,0); } 
+            to { box-shadow: inset 0 0 20px rgba(217, 115, 115, 0.3); background-color: var(--red-bg); color: var(--red); } 
+        }
+
+        /* СТИЛИ ДЛЯ ПОЛОЧКИ ТОВАРОВ (МОДАЛКА) */
+        .product-form {
+            background: var(--bg); padding: 20px; border-radius: 16px; 
+            border: 1px solid var(--border-color); margin-bottom: 25px;
+            display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+        .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .form-input {
+            padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 10px;
+            background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 14px;
+            transition: 0.2s;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+        .product-table { width: 100%; border-collapse: collapse; background: var(--bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        .product-table th, .product-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .product-table th { background: var(--hover-bg); font-weight: 600; color: var(--text-muted); font-size: 13px; }
+        .product-table tr:last-child td { border-bottom: none; }
+        .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        .product-table a:hover { text-decoration: underline; }
+        .product-price { font-weight: 800; color: var(--text); }
+        .btn-delete-product {
+            background: var(--red-bg); color: var(--red); border: none; padding: 6px 12px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit;
+        }
+        .btn-delete-product:hover { background: #FCA5A5; color: #7F1D1D; }
+
+        /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
+        @media (max-width: 900px) {
+            body { padding: 15px 10px; }
+            .topbar { flex-wrap: wrap; justify-content: center; padding: 10px; }
+            .nav-group { flex: auto; justify-content: center; width: 100%; }
+            .nav-group.left { margin-bottom: 10px; }
+            .tabs { flex-direction: row; padding: 4px; }
+            .tab-btn { font-size: 13px; padding: 10px 5px; }
+            .header-title h1 { font-size: 26px; }
+
+            .table-wrapper { border: none; box-shadow: none; background: transparent; }
+            table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { 
+                border: 1px solid var(--border-color); margin-bottom: 16px; border-radius: 20px; 
+                background: var(--card-bg); box-shadow: var(--shadow); padding: 8px 16px; 
+            }
+            td { 
+                border: none; border-bottom: 1px solid var(--border-color); padding: 14px 0;
+                display: flex; justify-content: space-between; align-items: center; text-align: right; 
+                border-right: none;
+            }
+            td:last-child { border-bottom: none; }
+            td::before { content: attr(data-label); font-weight: 600; text-align: left; flex: 1; padding-right: 15px; font-size: 14px; color: var(--text-muted); }
+            td.day-cell { font-size: 20px; color: var(--primary); border-bottom: 2px solid var(--border-color); margin-bottom: 8px; display: block; text-align: left; padding: 10px 0; width: auto; }
+            td.day-cell::before { content: none; }
+            td.notes-cell { flex-direction: column; align-items: stretch; text-align: left; }
+            td.notes-cell::before { margin-bottom: 8px; }
+            textarea.notes-input { width: 100%; min-height: 50px; }
+
+            tr.today-row .day-cell { box-shadow: none; }
+
+            .charts-container { grid-template-columns: 1fr; }
+            .chart-box { height: 300px; }
+            .dashboard { flex-direction: column; }
+            .stat-card { padding: 20px; }
+            .stat-value { font-size: 32px; }
+            
+            /* Адаптив для полочки товаров в модалке */
+            .product-form { flex-direction: column; align-items: stretch; }
+            .product-table tr { margin-bottom: 15px; border: 1px solid var(--border-color); }
+            .product-table td { display: flex; justify-content: space-between; border: none; border-bottom: 1px solid var(--border-color); }
+            .product-table td:last-child { border-bottom: none; }
+            .product-table td::before { content: attr(data-label); font-weight: bold; color: var(--text-muted); margin-right: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ВКЛАДКИ -->
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-skin" onclick="switchTab('skin')"
+                title="Трекер ежедневного ухода за кожей (утро/вечер) и тела">
+            🧴 Уход за кожей
+        </button>
+        <button class="tab-btn" id="tab-habits" onclick="switchTab('habits')"
+                title="Трекер ежедневных привычек (английский, чтение, тренировки и т.д.)">
+            🧠 Мои привычки
+        </button>
+    </div>
+
+    <div id="uv-alert"></div>
+
+    <!-- ТОПБАР -->
+    <div class="topbar">
+        <div class="nav-group left">
+            <button class="btn btn-danger" onclick="resetAll()"
+                    title="Сохранить текущую неделю в Архив и сбросить все галочки для новой недели">
+                🔄 Новая неделя
+            </button>
+            <button class="btn btn-primary" id="productsBtn" onclick="openProductsModal()"
+                    title="Полка с вашими косметическими средствами: название, цена и ссылка на магазин">
+                🛍️ Мои средства
+            </button>
+        </div>
+
+        <div class="nav-group right">
+            <!-- ОБЪЕДИНЁННОЕ МЕНЮ: Данные + Настройки -->
+            <div class="dropdown">
+                <button class="btn" onclick="toggleDropdown(event)"
+                        title="Меню: настройки расписания, архив, резервное копирование и восстановление данных">
+                    ⚙️ Меню ▾
+                </button>
+                <div class="dropdown-content" id="dataDropdown">
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openSettings)"
+                            title="Настроить расписание процедур по уходу за кожей и привычек по дням недели">
+                        <span class="dropdown-title">⚙️ Настройки</span>
+                        <span class="dropdown-desc">Расписание процедур и привычек</span>
+                    </button>
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openHistory)"
+                            title="Посмотреть прошлые недели и заметки по уходу за кожей">
+                        <span class="dropdown-title">📜 Архив</span>
+                        <span class="dropdown-desc">Посмотреть прошлые недели и заметки</span>
+                    </button>
+                    <button class="dropdown-item"
+                            onclick="document.getElementById('restoreInput').click()"
+                            title="Загрузить файл резервной копии (.json) и восстановить все данные">
+                        <span class="dropdown-title">📂 Восстановить</span>
+                        <span class="dropdown-desc">Загрузить файл бэкапа (.json)</span>
+                    </button>
+                    <button class="dropdown-item" onclick="downloadBackup()"
+                            title="Скачать резервную копию всех данных в формате .json">
+                        <span class="dropdown-title">💾 Бэкап</span>
+                        <span class="dropdown-desc">Скачать резервную копию данных</span>
+                    </button>
+                </div>
+            </div>
+            <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreBackup(event)">
+        </div>
+    </div>
+
+    <div class="header-title">
+        <span>📊</span>
+        <h1 id="mainTitle" contenteditable="true" onblur="saveTitle()" title="Нажмите, чтобы изменить название">Мой Дневник Ухода</h1>
+    </div>
+
+    <!-- ВКЛАДКА 1: УХОД ЗА КОЖЕЙ -->
+    <div id="content-skin" class="tab-content active">
+        <div class="weather-widget">
+            <input type="text" id="city-input" class="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" placeholder="Ваш город">
+            <button class="city-btn" onclick="setCity()" title="Обновить погоду">🔄</button>
+            <span id="weather-temp" style="display:none;">🌡️ --°C</span>
+            <span id="weather-uv" style="display:none;">☀️ Макс. UV: --</span>
+            <span id="weather-loading" style="display:inline-block;">⏳ Загрузка...</span>
+        </div>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Выполнение за неделю</div>
+                <div class="stat-value" id="progressValue">0%</div>
+            </div>
+            <div class="stat-card">
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Идеальных дней</div>
+                <div class="stat-value fire" id="streakValue">0 🔥</div>
+            </div>
+            <div class="stat-card">
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Всего идеальных</div>
+                <div class="stat-value gold" id="globalStreakValue">0 🏆</div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 14px;">
+                <span>Общий прогресс недели</span>
+                <span id="progressBarText">0%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBarFill"></div></div>
+        </div>
+
+        <div class="tags-panel">
+            <span>👉 Быстрые теги:</span>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Сухость')">Сухость</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Покраснение')">Покраснение</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Новое высыпание')">Новое высыпание</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Жирность')">Жирность</button>
+            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Кожа спокойна')">Кожа спокойна</button>
+        </div>
+
+        <div class="week-dates-container">
+            <div class="week-dates" id="weekDatesDisplay">📅 Загрузка дат...</div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <colgroup>
+                    <col style="width: 7%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 7%;">
+                    <col style="width: 20%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="day-col">День</th>
+                        <th class="morning" id="th-spf-main">УТРО</th>
+                        <th class="evening" colspan="4">ВЕЧЕР (ЛИЦО)</th>
+                        <th class="body-gel">ТЕЛО</th>
+                        <th class="fire streak-col" rowspan="2">Стрик</th>
+                        <th class="notes-col" rowspan="2">Заметки</th>
+                    </tr>
+                    <tr>
+                        <th class="morning" id="th-spf"><div class="th-title" data-tooltip="Наносить утром на чистую кожу.">1. СПФ</div></th>
+                        <th class="evening"><div class="th-title" id="th-micellar" data-tooltip="Наносить на СУХУЮ кожу, затем смыть водой!">1. Мицеллярка</div></th>
+                        <th class="evening"><div class="th-title" id="th-cleanser" data-tooltip="Вспенить, нанести, смыть.">2. Пенка</div></th>
+                        <th class="evening"><div class="th-title" id="th-efizel" data-tooltip="Наносить ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
+                        <th class="evening"><div class="th-title" id="th-moisturizer" data-tooltip="Через 20-30 минут ПОСЛЕ Эффезела.">4. Крем (лицо)</div></th>
+                        <th class="body-gel"><div class="th-title" id="th-bodyGel" data-tooltip="Гель с кислотами для тела. Нанести на 3-4 минуты и смыть.">🧴 Гель (тело)</div></th>
+                    </tr>
+                </thead>
+                <tbody id="skinTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+            <div class="chart-box"><canvas id="dailyChart"></canvas></div>
+            <div class="chart-box full"><canvas id="lineChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 2: ПРИВЫЧКИ -->
+    <div id="content-habits" class="tab-content">
+        <div class="dashboard">
+            <div class="stat-card">
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Выполнение привычек</div>
+                <div class="stat-value" id="habitsProgressValue">0%</div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 14px;">
+                <span>Общий прогресс недели</span>
+                <span id="habitsProgressBarText">0%</span>
+            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="habitsProgressBarFill"></div></div>
+        </div>
+
+        <div class="week-dates-container">
+            <div class="week-dates" id="habitsWeekDatesDisplay">📅 Загрузка дат...</div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <colgroup>
+                    <col style="width: 12%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th class="day-col">День</th>
+                        <th class="habit-col">🇬🇧 Английский</th>
+                        <th class="habit-col">📚 Чтение</th>
+                        <th class="habit-col">🏋️ Тренировка</th>
+                        <th class="habit-col">🚫 Без сладкого</th>
+                        <th class="habit-col">🧴 Утренняя рутина</th>
+                    </tr>
+                </thead>
+                <tbody id="habitsTableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-box"><canvas id="habitBarChart"></canvas></div>
+            <div class="chart-box"><canvas id="habitDailyChart"></canvas></div>
+            <div class="chart-box full"><canvas id="habitLineChart"></canvas></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Модальное окно: МОИ СРЕДСТВА -->
+<div id="productsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeProductsModal()">&times;</span>
+        <h2 style="margin-top:0;">🛍️ Мои средства</h2>
+        
+        <div class="product-form">
+            <div class="form-group">
+                <label>Название средства</label>
+                <input type="text" id="prodName" class="form-input" placeholder="Например: Uriage Hyseac Hydra">
+            </div>
+            <div class="form-group" style="max-width: 120px;">
+                <label>Цена (₽)</label>
+                <input type="text" id="prodPrice" class="form-input" placeholder="1500">
+            </div>
+            <div class="form-group">
+                <label>Ссылка (URL)</label>
+                <input type="text" id="prodLink" class="form-input" placeholder="https://ozon.ru/...">
+            </div>
+            <button class="btn btn-primary" style="height: 42px;" onclick="addProduct()">➕ Добавить</button>
+        </div>
+
+        <div class="table-wrapper" style="background: transparent; border: none; box-shadow: none;">
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Средство</th>
+                        <th style="width: 100px;">Цена</th>
+                        <th style="width: 100px;">Ссылка</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно Архива -->
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeHistory()">&times;</span>
+        <h2 style="margin-top:0;">📜 Архив прошлых недель</h2>
+        <div id="historyList"></div>
+        <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <button class="btn btn-danger" onclick="clearHistory()">Удалить ВЕСЬ архив</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно Настроек -->
+<div id="settingsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeSettings()">&times;</span>
+        <h2 style="margin-top:0;">⚙️ Настройка расписания</h2>
+        
+        <h3 style="margin-top: 20px; font-size: 18px; color: var(--primary);">Уход за кожей</h3>
+        <div style="overflow-x: auto;">
+            <table class="settings-table">
+                <thead>
+                    <tr>
+                        <th>Процедура</th>
+                        <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th>
+                    </tr>
+                </thead>
+                <tbody id="settingsBody"></tbody>
+            </table>
+        </div>
+
+        <h3 style="margin-top: 30px; font-size: 18px; color: var(--primary);">Привычки</h3>
+        <div style="overflow-x: auto;">
+            <table class="settings-table">
+                <thead>
+                    <tr>
+                        <th>Привычка</th>
+                        <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th>
+                    </tr>
+                </thead>
+                <tbody id="habitsSettingsBody"></tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">Хотите проверить, как работает празднование?</p>
+            <button class="btn btn-primary" onclick="triggerCelebration(0)">🎉 Тест конфетти и звука</button>
+        </div>
+
+        <div style="margin-top: 30px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+            <button class="btn" onclick="closeSettings()">Отмена</button>
+            <button class="btn btn-primary" onclick="saveSettings()">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- ПЛАВАЮЩАЯ КНОПКА ТЕМЫ -->
+<button class="floating-theme-btn" id="themeToggleBtn" onclick="toggleDarkMode()" title="Сменить тему">🌙</button>
+
+<script>
+    // --- АВТО-РАСТЯЖЕНИЕ ПОЛЯ ЗАМЕТОК ---
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    // --- ВЫПАДАЮЩЕЕ МЕНЮ ---
+    function toggleDropdown(event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById('dataDropdown');
+        dropdown.classList.toggle('show');
+    }
+
+    function closeDropdownAndOpen(fn) {
+        document.getElementById('dataDropdown').classList.remove('show');
+        fn();
+    }
+
+    window.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('dataDropdown');
+        const btn = event.target.closest('.dropdown');
+        if (!btn && dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+    // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('content-' + tabName).classList.add('active');
+        document.getElementById('tab-' + tabName).classList.add('active');
+
+        const productsBtn = document.getElementById('productsBtn');
+        if (productsBtn) {
+            productsBtn.style.display = (tabName === 'habits') ? 'none' : 'inline-flex';
+        }
+    }
+
+    // --- ОБЩИЕ ФУНКЦИИ ---
+    function updateWeekDates() {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); 
+        const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); 
+        const monday = new Date(today.setDate(diffToMonday));
+        const sunday = new Date(today.setDate(diffToMonday + 6));
+        const formatDate = (date) => date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        const text = `📅 Неделя: ${formatDate(monday)} — ${formatDate(sunday)}`;
+        document.getElementById('weekDatesDisplay').textContent = text;
+        document.getElementById('habitsWeekDatesDisplay').textContent = text;
+    }
+
+    function saveTitle() {
+        const titleText = document.getElementById('mainTitle').innerText.trim();
+        if (titleText) localStorage.setItem('customHeaderTitle', titleText);
+        else { document.getElementById('mainTitle').innerText = 'Мой Дневник Ухода'; localStorage.removeItem('customHeaderTitle'); }
+    }
+
+    function playDing() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.5);
+        } catch(e) {}
+    }
+
+    function triggerCelebration(dayIndex = 0) {
+        playDing();
+        const activeTab = document.getElementById('content-skin').classList.contains('active') ? 'skinTableBody' : 'habitsTableBody';
+        const rows = document.querySelectorAll('#' + activeTab + ' tr');
+        let originY = 0.5;
+        if (rows[dayIndex]) { const rect = rows[dayIndex].getBoundingClientRect(); originY = (rect.top + rect.height / 2) / window.innerHeight; }
+        confetti({ particleCount: 120, spread: 80, origin: { y: originY }, colors: ['#7C9A88', '#A3B18A', '#F2CC8F', '#E07A5F', '#3D405B'] });
+    }
+
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        document.getElementById('themeToggleBtn').textContent = isDark ? '☀️' : '🌙';
+        
+        if (document.getElementById('content-skin').classList.contains('active')) updateSkinStats();
+        else updateHabitsStats();
+    }
+
+    // --- ПОГОДА ---
+    const cityCache = { 'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' }, 'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' }, 'санкт-петербург': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' }, 'спб': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' } };
+    async function getWeatherData(lat, lon, cityName) {
+        const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&daily=uv_index_max&timezone=auto`;
+        try { const res = await fetch(openMeteoUrl); if (res.ok) return await res.json(); } catch (e) {}
+        try { const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(openMeteoUrl)}`); if (res.ok) return await res.json(); } catch (e) {}
+        try { const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`); if (res.ok) {
+            const data = await res.json();
+            return { current: { temperature_2m: parseFloat(data.current_condition[0].temp_C) }, daily: { uv_index_max: [parseFloat(data.weather[0].uvIndex)] } };
+        }} catch (e) {}
+        throw new Error("Все способы не удались");
+    }
+    async function fetchWeatherByCity(city) {
+        const loading = document.getElementById('weather-loading'); const tempEl = document.getElementById('weather-temp'); const uvEl = document.getElementById('weather-uv');
+        if (!city) return; localStorage.setItem('userCity', city);
+        tempEl.style.display = 'none'; uvEl.style.display = 'none'; loading.style.display = 'inline-block'; loading.textContent = '⏳ Загрузка...';
+        const cityLower = city.toLowerCase().trim();
+        try {
+            let lat, lon, actualName;
+            if (cityCache[cityLower]) { lat = cityCache[cityLower].lat; lon = cityCache[cityLower].lon; actualName = cityCache[cityLower].name; document.getElementById('city-input').value = actualName; } 
+            else {
+                const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
+                let geoData; try { const geoRes = await fetch(geoUrl); geoData = await geoRes.json(); } catch(e) { const geoRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(geoUrl)}`); geoData = await geoRes.json(); }
+                if (!geoData.results || geoData.results.length === 0) { loading.textContent = '❌ Город не найден'; return; }
+                lat = geoData.results[0].latitude; lon = geoData.results[0].longitude; actualName = geoData.results[0].name;
+                document.getElementById('city-input').value = actualName; localStorage.setItem('userCity', actualName);
+            }
+            const weatherData = await getWeatherData(lat, lon, actualName);
+            const temp = weatherData.current.temperature_2m; const uv = weatherData.daily.uv_index_max[0];
+            loading.style.display = 'none'; tempEl.style.display = 'inline-block'; uvEl.style.display = 'inline-block'; tempEl.textContent = `🌡️ ${temp}°C`;
+            if (uv >= 3) {
+                uvEl.innerHTML = `☀️ Макс. UV: <b style="color:var(--red);">${uv}</b> (Высокий!)`; uvEl.classList.add('uv-high');
+                const alertBox = document.getElementById('uv-alert'); alertBox.style.display = 'block';
+                alertBox.innerHTML = `⚠️ Внимание! В ${actualName} сегодня днем ожидается высокий UV-индекс (${uv}). Не забудьте нанести СПФ.`;
+                document.getElementById('th-spf-main').classList.add('uv-danger'); document.getElementById('th-spf').classList.add('uv-danger');
+            } else {
+                uvEl.textContent = `☀️ Макс. UV: ${uv}`; uvEl.classList.remove('uv-high'); document.getElementById('uv-alert').style.display = 'none';
+                document.getElementById('th-spf-main').classList.remove('uv-danger'); document.getElementById('th-spf').classList.remove('uv-danger');
+            }
+        } catch (e) { loading.textContent = '☁️ Ошибка сети'; }
+    }
+    function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
+
+    // --- ЛОГИКА УХОДА ЗА КОЖЕЙ ---
+    const daysOfWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+    const skinColumns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
+    const skinColumnNames = { spf: "СПФ", micellar: "1. Мицеллярка", cleanser: "2. Пенка", efizel: "3. Эффезел", moisturizer: "4. Крем (лицо)", bodyGel: "🧴 Гель (тело)" };
+    
+    const defaultSkinSettings = { spf: [1, 1, 1, 1, 1, 0, 0], micellar: [1, 1, 1, 1, 1, 0, 0], cleanser: [1, 0, 1, 0, 1, 0, 0], efizel: [1, 0, 1, 0, 1, 0, 1], moisturizer: [1, 0, 1, 0, 1, 0, 1], bodyGel: [1, 0, 1, 0, 1, 0, 0] };
+    let currentSkinSettings = JSON.parse(localStorage.getItem('userSchedule')) || defaultSkinSettings;
+    let skinWeekSchedule = [];
+    let barChartInstance = null, dailyChartInstance = null, lineChartInstance = null;
+    let lastFocusedNoteInput = null, previousPerfectDays = new Set();
+
+    function formatDays(arr) {
+        const active = daysOfWeek.filter((_, i) => arr[i] === 1);
+        if (active.length === 0) return "Отдых"; if (active.length === 7) return "Каждый день";
+        if (arr[0]===1 && arr[1]===1 && arr[2]===1 && arr[3]===1 && arr[4]===1 && arr[5]===0 && arr[6]===0) return "Пн–Пт";
+        return active.join(', ');
+    }
+
+    function renderSkinTable() {
+        skinWeekSchedule = daysOfWeek.map((day, dayIndex) => {
+            let expected = []; skinColumns.forEach(col => expected.push(currentSkinSettings[col][dayIndex]));
+            return { day: day, expected: expected };
+        });
+        const tbody = document.getElementById('skinTableBody'); tbody.innerHTML = '';
+        document.getElementById('th-micellar').textContent = `1. Мицеллярка (${formatDays(currentSkinSettings.micellar)})`;
+        document.getElementById('th-cleanser').textContent = `2. Пенка (${formatDays(currentSkinSettings.cleanser)})`;
+        document.getElementById('th-efizel').textContent = `3. Эффезел (${formatDays(currentSkinSettings.efizel)})`;
+        document.getElementById('th-moisturizer').textContent = `4. Крем (${formatDays(currentSkinSettings.moisturizer)})`;
+        document.getElementById('th-bodyGel').textContent = `🧴 Гель (${formatDays(currentSkinSettings.bodyGel)})`;
+        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
+
+        skinWeekSchedule.forEach((dayData, dayIndex) => {
+            const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
+            const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = dayData.day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
+            skinColumns.forEach((colName) => {
+                const td = document.createElement('td'); td.setAttribute('data-label', skinColumnNames[colName]);
+                const label = document.createElement('label'); label.className = 'checkbox-container';
+                const input = document.createElement('input'); input.type = 'checkbox'; input.id = `check-${dayIndex}-${colName}`;
+                if (localStorage.getItem(input.id) === 'true') input.checked = true;
+                input.addEventListener('change', () => { updateSkinStats(dayIndex); });
+                const span = document.createElement('span'); span.className = 'checkmark';
+                label.appendChild(input); label.appendChild(span); td.appendChild(label); tr.appendChild(td);
+            });
+            const tdStreak = document.createElement('td'); tdStreak.className = 'streak-cell'; tdStreak.id = `streak-${dayIndex}`; tdStreak.setAttribute('data-label', 'Стрик'); tr.appendChild(tdStreak);
+            const tdNotes = document.createElement('td'); tdNotes.className = 'notes-cell'; tdNotes.setAttribute('data-label', 'Заметки');
+            const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
+            
+            noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
+            noteInput.addEventListener('input', (e) => { 
+                localStorage.setItem(e.target.id, e.target.value); 
+                autoResize(e.target);
+            });
+            
+            tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
+            setTimeout(() => autoResize(noteInput), 0);
+        });
+        previousPerfectDays.clear();
+        skinWeekSchedule.forEach((dayData, dayIndex) => {
+            let dayChecked = 0, dayExpected = 0;
+            skinColumns.forEach((col, i) => { if (document.getElementById(`check-${dayIndex}-${col}`).checked) dayChecked++; if (dayData.expected[i] === 1) dayExpected++; });
+            if (dayChecked >= dayExpected && dayExpected > 0) previousPerfectDays.add(dayIndex);
+        });
+    }
+
+    function addTag(text) {
+        if (lastFocusedNoteInput) {
+            const currentVal = lastFocusedNoteInput.value.trim(); 
+            lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
+            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
+            lastFocusedNoteInput.focus(); 
+            autoResize(lastFocusedNoteInput);
+        } else { alert("Сначала кликните в поле 'Заметки' напротив нужного дня!"); }
+    }
+
+    function updateSkinStats(changedDayIndex = -1) {
+        let totalChecked = 0, perfectDaysCount = 0;
+        let barData = [0, 0, 0, 0, 0, 0], dailyData = [0, 0, 0, 0, 0, 0, 0]; 
+        let totalExpectedWeek = skinWeekSchedule.reduce((sum, day) => sum + day.expected.reduce((a,b)=>a+b, 0), 0);
+        skinWeekSchedule.forEach((dayData, dayIndex) => {
+            let dayChecked = 0, dayExpected = 0;
+            skinColumns.forEach((colName, colIndex) => {
+                const input = document.getElementById(`check-${dayIndex}-${colName}`); localStorage.setItem(input.id, input.checked);
+                if (input.checked) { totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; }
+                if (dayData.expected[colIndex] === 1) dayExpected++;
+            });
+            const streakCell = document.getElementById(`streak-${dayIndex}`);
+            const isPerfectNow = (dayChecked >= dayExpected && dayExpected > 0);
+            if (isPerfectNow) {
+                streakCell.textContent = '🔥'; perfectDaysCount++;
+                if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
+                previousPerfectDays.add(dayIndex);
+            } else { streakCell.textContent = '—'; previousPerfectDays.delete(dayIndex); }
+        });
+        let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
+        if(progressPercent > 100) progressPercent = 100; 
+        document.getElementById('progressValue').textContent = `${progressPercent}%`; document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
+        document.getElementById('progressBarText').textContent = `${progressPercent}%`; document.getElementById('progressBarFill').style.width = `${progressPercent}%`;
+        let globalPerfectDays = perfectDaysCount;
+        let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
+        history.forEach(week => {
+            for(let i=0; i<7; i++) {
+                let dayExpected = skinWeekSchedule[i].expected.reduce((a,b)=>a+b, 0); if(dayExpected === 0) continue;
+                let dayChecked = 0; skinColumns.forEach(col => { if(week.checks[`check-${i}-${col}`]) dayChecked++; });
+                if(dayChecked >= dayExpected) globalPerfectDays++;
+            }
+        });
+        document.getElementById('globalStreakValue').textContent = `${globalPerfectDays} 🏆`;
+        updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek);
+    }
+
+    function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+        const isDark = document.body.classList.contains('dark-mode'); 
+        const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
+        const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        const accentColor = isDark ? '#81B29A' : '#7C9A88';
+        
+        let goals = []; skinColumns.forEach(col => { goals.push(currentSkinSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
+        
+        if (barChartInstance) barChartInstance.destroy();
+        barChartInstance = new Chart(document.getElementById('barChart'), {
+            type: 'bar', data: { labels: skinColumns.map((col, i) => `${skinColumnNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+        if (dailyChartInstance) dailyChartInstance.destroy();
+        dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
+            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+        let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); let lineLabels = [], lineData = [];
+        history.slice(-7).forEach((week) => { let totalC = 0; for (let key in week.checks) if(week.checks[key]) totalC++; let pct = totalExpectedWeek > 0 ? Math.round((totalC / totalExpectedWeek) * 100) : 0; lineLabels.push(week.date); lineData.push(pct); });
+        lineLabels.push('Текущая'); lineData.push(currentProgress);
+        if (lineChartInstance) lineChartInstance.destroy();
+        lineChartInstance = new Chart(document.getElementById('lineChart'), {
+            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+    }
+
+    // --- ЛОГИКА ПРИВЫЧЕК ---
+    const habitColumns = ["english", "reading", "workout", "no_sugar", "morning_routine"];
+    const habitNames = { english: "🇬🇧 Английский", reading: "📚 Чтение", workout: "🏋️ Тренировка", no_sugar: "🚫 Без сладкого", morning_routine: "🧴 Утренняя рутина" };
+    
+    const defaultHabitSettings = {
+        english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0],
+        no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1]
+    };
+    let currentHabitSettings = JSON.parse(localStorage.getItem('userHabitSchedule')) || defaultHabitSettings;
+
+    let habitBarChartInstance = null, habitDailyChartInstance = null, habitLineChartInstance = null;
+
+    function renderHabitsTable() {
+        const tbody = document.getElementById('habitsTableBody'); tbody.innerHTML = '';
+        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
+        daysOfWeek.forEach((day, dayIndex) => {
+            const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
+            const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
+            habitColumns.forEach((colName) => {
+                const td = document.createElement('td'); td.setAttribute('data-label', habitNames[colName]);
+                const label = document.createElement('label'); label.className = 'checkbox-container';
+                const input = document.createElement('input'); input.type = 'checkbox'; input.id = `habit-${dayIndex}-${colName}`;
+                if (localStorage.getItem(input.id) === 'true') input.checked = true;
+                input.addEventListener('change', () => { updateHabitsStats(dayIndex); });
+                const span = document.createElement('span'); span.className = 'checkmark';
+                label.appendChild(input); label.appendChild(span); td.appendChild(label); tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+    }
+
+    function updateHabitsStats(changedDayIndex = -1) {
+        let totalChecked = 0; let totalExpectedWeek = 0; let perfectDaysCount = 0;
+        let habitBarData = new Array(habitColumns.length).fill(0);
+        let habitDailyData = new Array(7).fill(0);
+
+        daysOfWeek.forEach((day, dayIndex) => {
+            let dayChecked = 0, dayExpected = 0;
+            habitColumns.forEach((colName, colIndex) => {
+                const input = document.getElementById(`habit-${dayIndex}-${colName}`); if (!input) return;
+                localStorage.setItem(input.id, input.checked);
+                if (input.checked) { 
+                    totalChecked++; dayChecked++; 
+                    habitBarData[colIndex]++; habitDailyData[dayIndex]++;
+                }
+                if (currentHabitSettings[colName][dayIndex] === 1) { totalExpectedWeek++; dayExpected++; }
+            });
+            if (dayChecked >= dayExpected && dayExpected > 0) {
+                perfectDaysCount++;
+                if (changedDayIndex === dayIndex) {
+                    const wasPerfect = localStorage.getItem(`habit_perfect_${dayIndex}`) === 'true';
+                    if (!wasPerfect) { triggerCelebration(dayIndex); localStorage.setItem(`habit_perfect_${dayIndex}`, 'true'); }
+                }
+            } else { localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); }
+        });
+        let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
+        if(progressPercent > 100) progressPercent = 100; 
+        document.getElementById('habitsProgressValue').textContent = `${progressPercent}%`;
+        document.getElementById('habitsProgressBarText').textContent = `${progressPercent}%`;
+        document.getElementById('habitsProgressBarFill').style.width = `${progressPercent}%`;
+
+        updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek);
+    }
+
+    function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+        const isDark = document.body.classList.contains('dark-mode'); 
+        const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
+        const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        const accentColor = isDark ? '#81B29A' : '#7C9A88';
+        
+        let goals = []; habitColumns.forEach(col => { goals.push(currentHabitSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
+
+        if (habitBarChartInstance) habitBarChartInstance.destroy();
+        habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
+            type: 'bar', data: { labels: habitColumns.map((col, i) => `${habitNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+
+        if (habitDailyChartInstance) habitDailyChartInstance.destroy();
+        habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
+            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+
+        let history = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]'); 
+        let lineLabels = [], lineData = [];
+        history.slice(-7).forEach((week) => { lineLabels.push(week.date); lineData.push(week.percent); });
+        lineLabels.push('Текущая'); lineData.push(currentProgress);
+
+        if (habitLineChartInstance) habitLineChartInstance.destroy();
+        habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
+            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+    }
+
+    // --- ЛОГИКА ПОЛОЧКИ ТОВАРОВ ---
+    let products = JSON.parse(localStorage.getItem('userProducts')) || [];
+
+    function openProductsModal() {
+        document.getElementById('productsModal').style.display = "block";
+        renderProducts();
+    }
+    function closeProductsModal() {
+        document.getElementById('productsModal').style.display = "none";
+    }
+
+    function renderProducts() {
+        const tbody = document.getElementById('productsTableBody');
+        tbody.innerHTML = '';
+        
+        if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Пока нет добавленных средств.</td></tr>';
+            return;
+        }
+
+        products.forEach((product, index) => {
+            const tr = document.createElement('tr');
+            
+            const tdName = document.createElement('td');
+            tdName.textContent = product.name;
+            tdName.style.fontWeight = '600';
+            
+            const tdPrice = document.createElement('td');
+            tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
+            tdPrice.className = 'product-price';
+            
+            const tdLink = document.createElement('td');
+            if (product.link) {
+                const a = document.createElement('a');
+                a.href = product.link;
+                a.target = '_blank';
+                a.textContent = 'Открыть 🔗';
+                tdLink.appendChild(a);
+            } else {
+                tdLink.textContent = '—';
+            }
+            
+            const tdAction = document.createElement('td');
+            const btnDel = document.createElement('button');
+            btnDel.className = 'btn-delete-product';
+            btnDel.textContent = '✕';
+            btnDel.onclick = () => deleteProduct(index);
+            tdAction.appendChild(btnDel);
+
+            tdName.setAttribute('data-label', 'Средство');
+            tdPrice.setAttribute('data-label', 'Цена');
+            tdLink.setAttribute('data-label', 'Ссылка');
+            tdAction.setAttribute('data-label', 'Удалить');
+            
+            tr.appendChild(tdName);
+            tr.appendChild(tdPrice);
+            tr.appendChild(tdLink);
+            tr.appendChild(tdAction);
+            tbody.appendChild(tr);
+        });
+    }
+
+    function addProduct() {
+        const nameInput = document.getElementById('prodName');
+        const priceInput = document.getElementById('prodPrice');
+        const linkInput = document.getElementById('prodLink');
+        
+        const name = nameInput.value.trim();
+        const price = priceInput.value.trim();
+        const link = linkInput.value.trim();
+        
+        if (!name) {
+            alert("Введите название средства!");
+            return;
+        }
+
+        products.push({ name, price, link });
+        localStorage.setItem('userProducts', JSON.stringify(products));
+        
+        nameInput.value = '';
+        priceInput.value = '';
+        linkInput.value = '';
+        
+        renderProducts();
+    }
+
+    function deleteProduct(index) {
+        if (confirm("Удалить это средство из списка?")) {
+            products.splice(index, 1);
+            localStorage.setItem('userProducts', JSON.stringify(products));
+            renderProducts();
+        }
+    }
+
+    // --- НАСТРОЙКИ ---
+    function openSettings() {
+        const modal = document.getElementById('settingsModal');
+        const tbodySkin = document.getElementById('settingsBody'); tbodySkin.innerHTML = '';
+        skinColumns.forEach(col => {
+            const tr = document.createElement('tr'); let html = `<td>${skinColumnNames[col]}</td>`;
+            for (let i = 0; i < 7; i++) { const checked = currentSkinSettings[col][i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-${col}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
+            tr.innerHTML = html; tbodySkin.appendChild(tr);
+        });
+        const tbodyHabits = document.getElementById('habitsSettingsBody'); tbodyHabits.innerHTML = '';
+        habitColumns.forEach(col => {
+            const tr = document.createElement('tr'); let html = `<td>${habitNames[col]}</td>`;
+            for (let i = 0; i < 7; i++) { const checked = currentHabitSettings[col][i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-habit-${col}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
+            tr.innerHTML = html; tbodyHabits.appendChild(tr);
+        });
+        modal.style.display = "block";
+    }
+
+    function saveSettings() {
+        skinColumns.forEach(col => { for (let i = 0; i < 7; i++) currentSkinSettings[col][i] = document.getElementById(`set-${col}-${i}`).checked ? 1 : 0; });
+        localStorage.setItem('userSchedule', JSON.stringify(currentSkinSettings));
+        habitColumns.forEach(col => { for (let i = 0; i < 7; i++) currentHabitSettings[col][i] = document.getElementById(`set-habit-${col}-${i}`).checked ? 1 : 0; });
+        localStorage.setItem('userHabitSchedule', JSON.stringify(currentHabitSettings));
+        closeSettings(); renderSkinTable(); updateSkinStats(); renderHabitsTable(); updateHabitsStats();
+    }
+    function closeSettings() { document.getElementById('settingsModal').style.display = "none"; }
+
+    // --- ОСТАЛЬНОЕ ---
+    function downloadBackup() {
+        let dataToSave = {};
+        for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i); dataToSave[key] = localStorage.getItem(key); }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave, null, 2));
+        const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "backup_all_data.json");
+        document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
+    }
+    function restoreBackup(event) {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try { const data = JSON.parse(e.target.result); for (let key in data) localStorage.setItem(key, data[key]); alert("Бэкап восстановлен! Страница перезагрузится."); location.reload(); } 
+            catch (err) { alert("Ошибка файла."); }
+        };
+        reader.readAsText(file);
+    }
+
+    function resetAll() {
+        if(confirm("Сохранить текущую неделю в Архив и начать новую? (Сбросятся и уход, и привычки)")) {
+            // Сохраняем уход
+            let skinState = { date: new Date().toLocaleDateString('ru-RU'), checks: {}, notes: {} };
+            skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { skinState.checks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
+            skinWeekSchedule.forEach((_, day) => { skinState.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
+            let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
+            history.push(skinState); 
+            localStorage.setItem('weeklyHistory', JSON.stringify(history));
+
+            // Сохраняем привычки (ДЕТАЛЬНО)
+            let habitState = { date: new Date().toLocaleDateString('ru-RU'), percent: 0, checks: {} };
+            let habitTotalC = 0, habitTotalExp = 0;
+            habitColumns.forEach((colName) => {
+                daysOfWeek.forEach((_, dayIndex) => {
+                    const isChecked = document.getElementById(`habit-${dayIndex}-${colName}`).checked;
+                    habitState.checks[`habit-${dayIndex}-${colName}`] = isChecked;
+                    if(isChecked) habitTotalC++;
+                    if(currentHabitSettings[colName][dayIndex] === 1) habitTotalExp++;
+                });
+            });
+            habitState.percent = habitTotalExp > 0 ? Math.round((habitTotalC / habitTotalExp) * 100) : 0;
+            let habitHistory = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]');
+            habitHistory.push(habitState);
+            localStorage.setItem('habitWeeklyHistory', JSON.stringify(habitHistory));
+
+            // Очищаем уход
+            skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
+            daysOfWeek.forEach((_, dayIndex) => { 
+                localStorage.removeItem(`note-${dayIndex}`); 
+                const noteEl = document.getElementById(`note-${dayIndex}`);
+                noteEl.value = ""; 
+                noteEl.style.height = '44px';
+            });
+
+            // Очищаем привычки
+            habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
+
+            updateSkinStats(); updateHabitsStats(); alert("Новая неделя начата! Все галочки сброшены.");
+        }
+    }
+
     function openHistory() {
         const modal = document.getElementById('historyModal'); 
         const list = document.getElementById('historyList'); 
         list.innerHTML = '';
-        let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
+        let skinHistory = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
+        let habitHistory = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]');
         
-        if (history.length === 0) { 
-            list.innerHTML = '<p style="color:var(--text-muted);">Архив пока пуст (он сохраняет только уход за кожей).</p>'; 
+        // Собираем все даты, чтобы отображать синхронно
+        let maxLength = Math.max(skinHistory.length, habitHistory.length);
+
+        if (maxLength === 0) { 
+            list.innerHTML = '<p style="color:var(--text-muted);">Архив пока пуст.</p>'; 
         } else {
-            for (let i = history.length - 1; i >= 0; i--) {
-                let week = history[i]; 
+            for (let i = maxLength - 1; i >= 0; i--) {
+                let skinWeek = skinHistory[i];
+                let habitWeek = habitHistory[i];
+                let dateStr = (skinWeek && skinWeek.date) ? skinWeek.date : (habitWeek && habitWeek.date ? habitWeek.date : 'Неизвестно');
+
                 let div = document.createElement('div'); 
                 div.className = 'history-card';
-                
-                let totalChecks = 0; 
-                for (let key in week.checks) if (week.checks[key]) totalChecks++;
-                
-                // Формируем детальный список по дням
-                let detailsHtml = '';
-                let hasDetails = false;
 
-                for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
-                    let dayChecks = [];
-                    
-                    // Проверяем, какие процедуры были выполнены в этот день
-                    skinColumns.forEach(col => {
-                        if (week.checks && week.checks[`check-${dayIdx}-${col}`]) {
-                            dayChecks.push(skinColumnNames[col]);
+                // --- ДЕТАЛИ УХОДА ---
+                let skinHtml = '';
+                let totalSkinChecks = 0;
+                if (skinWeek) {
+                    let hasSkinDetails = false;
+                    for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
+                        let dayChecks = [];
+                        skinColumns.forEach(col => { if (skinWeek.checks && skinWeek.checks[`check-${dayIdx}-${col}`]) { dayChecks.push(skinColumnNames[col]); totalSkinChecks++; } });
+                        let note = skinWeek.notes && skinWeek.notes[`note-${dayIdx}`] ? skinWeek.notes[`note-${dayIdx}`] : '';
+                        
+                        if (dayChecks.length > 0 || note.trim() !== '') {
+                            hasSkinDetails = true;
+                            skinHtml += `
+                                <div style="margin-bottom: 8px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                    <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${daysOfWeek[dayIdx]}</div>
+                                    ${dayChecks.length > 0 ? `<div style="font-size: 12px; color: var(--green); font-weight: 600;">✅ Уход: ${dayChecks.join(', ')}</div>` : ''}
+                                    ${note.trim() !== '' ? `<div style="font-size: 12px; color: var(--text); white-space: pre-wrap; margin-top: 4px;">📝 ${note}</div>` : ''}
+                                </div>
+                            `;
                         }
-                    });
+                    }
+                    if (!hasSkinDetails) skinHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет данных по уходу.</p>';
+                }
 
-                    let note = week.notes && week.notes[`note-${dayIdx}`] ? week.notes[`note-${dayIdx}`] : '';
-                    
-                    // Если в этот день были галочки или есть заметка — выводим этот день
-                    if (dayChecks.length > 0 || note.trim() !== '') {
-                        hasDetails = true;
-                        detailsHtml += `
-                            <div style="margin-bottom: 12px; background: var(--card-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
-                                <div style="font-weight: 800; color: var(--primary); margin-bottom: 8px; font-size: 15px;">${daysOfWeek[dayIdx]}</div>
-                                ${dayChecks.length > 0 ? `<div style="font-size: 13px; color: var(--green); margin-bottom: 6px; font-weight: 600;">✅ Выполнено: ${dayChecks.join(', ')}</div>` : ''}
-                                ${note.trim() !== '' ? `<div style="font-size: 13px; color: var(--text); white-space: pre-wrap; line-height: 1.4; margin-top: 6px;"><b>📝 Заметка:</b> ${note}</div>` : ''}
-                            </div>
-                        `;
+                // --- ДЕТАЛИ ПРИВЫЧЕК ---
+                let habitHtml = '';
+                if (habitWeek) {
+                    if (habitWeek.checks) { // Новый формат с галочками
+                        let hasHabitDetails = false;
+                        for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
+                            let dayHabits = [];
+                            habitColumns.forEach(col => { if (habitWeek.checks[`habit-${dayIdx}-${col}`]) { dayHabits.push(habitNames[col]); } });
+                            
+                            if (dayHabits.length > 0) {
+                                hasHabitDetails = true;
+                                habitHtml += `
+                                    <div style="margin-bottom: 6px; font-size: 12px;">
+                                        <span style="font-weight: 700; color: var(--primary);">${daysOfWeek[dayIdx]}:</span> ${dayHabits.join(', ')}
+                                    </div>
+                                `;
+                            }
+                        }
+                        if (!hasHabitDetails) habitHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет выполненных привычек.</p>';
+                    } else if (habitWeek.percent !== undefined) { // Старый формат
+                        habitHtml = `<div style="font-size: 14px; font-weight: 600; color: var(--primary);">Выполнено на ${habitWeek.percent}%</div>`;
                     }
                 }
 
-                if (!hasDetails) {
-                    detailsHtml = '<p style="color:var(--text-muted); font-size: 13px;">Нет деталей за эту неделю.</p>';
-                }
-
+                // Собираем карточку
                 div.innerHTML = `
                     <div class="history-header">
-                        <h4>Неделя от ${week.date}</h4>
+                        <h4>Неделя от ${dateStr}</h4>
                         <button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️ Удалить</button>
                     </div>
-                    <div class="history-stats" style="margin-bottom: 15px;">Всего выполнено процедур: <b>${totalChecks}</b></div>
-                    <div style="border-top: 1px dashed var(--border-color); padding-top: 15px;">
-                        ${detailsHtml}
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <!-- Колонка Уход -->
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="font-weight: 800; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🧴 Уход (выполнено: ${totalSkinChecks})</div>
+                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                                ${skinHtml}
+                            </div>
+                        </div>
+                        
+                        <!-- Колонка Привычки -->
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="font-weight: 800; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🧠 Привычки</div>
+                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                                ${habitHtml}
+                            </div>
+                        </div>
                     </div>
                 `;
                 list.appendChild(div);
@@ -63,3 +1467,41 @@
         }
         modal.style.display = "block";
     }
+
+    function deleteWeek(index) {
+        if(confirm("Удалить эту неделю из архива? (Удалятся и уход, и привычки)")) {
+            let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
+            let habitHistory = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]');
+            
+            if (index < history.length) history.splice(index, 1); 
+            if (index < habitHistory.length) habitHistory.splice(index, 1); 
+
+            localStorage.setItem('weeklyHistory', JSON.stringify(history));
+            localStorage.setItem('habitWeeklyHistory', JSON.stringify(habitHistory));
+            openHistory(); updateSkinStats(); updateHabitsStats();
+        }
+    }
+    function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
+    function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); localStorage.removeItem('habitWeeklyHistory'); openHistory(); updateSkinStats(); updateHabitsStats(); } }
+    window.onclick = function(event) { if (event.target == document.getElementById('historyModal')) closeHistory(); if (event.target == document.getElementById('settingsModal')) closeSettings(); if (event.target == document.getElementById('productsModal')) closeProductsModal(); }
+
+    // --- ИНИЦИАЛИЗАЦИЯ ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTitle = localStorage.getItem('customHeaderTitle'); if (savedTitle) document.getElementById('mainTitle').innerText = savedTitle;
+        
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeToggleBtn').textContent = '☀️';
+        } else {
+            document.getElementById('themeToggleBtn').textContent = '🌙';
+        }
+
+        const savedCity = localStorage.getItem('userCity') || 'Казань'; document.getElementById('city-input').value = savedCity; fetchWeatherByCity(savedCity);
+        updateWeekDates(); 
+        renderSkinTable(); updateSkinStats();
+        renderHabitsTable(); updateHabitsStats();
+    });
+</script>
+</body>
+</html>
