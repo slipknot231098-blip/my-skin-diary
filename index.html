@@ -255,7 +255,7 @@
             transition: 0.2s; 
             resize: none;
             box-sizing: border-box;
-            overflow: hidden; /* Скрываем скроллбар */
+            overflow: hidden;
             position: relative;
             z-index: 10; 
         }
@@ -409,6 +409,34 @@
             to { box-shadow: inset 0 0 20px rgba(217, 115, 115, 0.3); background-color: var(--red-bg); color: var(--red); } 
         }
 
+        /* СТИЛИ ДЛЯ ПОЛОЧКИ ТОВАРОВ */
+        .product-form {
+            background: var(--card-bg); padding: 20px; border-radius: 20px; 
+            box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 25px;
+            display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+        .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .form-input {
+            padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 10px;
+            background: var(--bg); color: var(--text); font-family: inherit; font-size: 14px;
+            transition: 0.2s;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+        .product-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        .product-table th, .product-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .product-table th { background: var(--hover-bg); font-weight: 600; color: var(--text-muted); font-size: 13px; }
+        .product-table tr:last-child td { border-bottom: none; }
+        .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
+        .product-table a:hover { text-decoration: underline; }
+        .product-price { font-weight: 800; color: var(--text); }
+        .btn-delete-product {
+            background: var(--red-bg); color: var(--red); border: none; padding: 6px 12px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit;
+        }
+        .btn-delete-product:hover { background: #FCA5A5; color: #7F1D1D; }
+
         /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
         @media (max-width: 900px) {
             body { padding: 15px 10px; }
@@ -445,6 +473,14 @@
             .dashboard { flex-direction: column; }
             .stat-card { padding: 20px; }
             .stat-value { font-size: 32px; }
+            
+            /* Адаптив для полочки товаров */
+            .product-form { flex-direction: column; align-items: stretch; }
+            .product-table { border: none; box-shadow: none; background: transparent; }
+            .product-table tr { margin-bottom: 15px; border: 1px solid var(--border-color); }
+            .product-table td { display: flex; justify-content: space-between; border: none; border-bottom: 1px solid var(--border-color); }
+            .product-table td:last-child { border-bottom: none; }
+            .product-table td::before { content: attr(data-label); font-weight: bold; color: var(--text-muted); margin-right: 10px; }
         }
     </style>
 </head>
@@ -455,6 +491,7 @@
     <div class="tabs">
         <button class="tab-btn active" id="tab-skin" onclick="switchTab('skin')">🧴 Уход за кожей</button>
         <button class="tab-btn" id="tab-habits" onclick="switchTab('habits')">🧠 Мои привычки</button>
+        <button class="tab-btn" id="tab-products" onclick="switchTab('products')">🛍️ Мои средства</button>
     </div>
 
     <div id="uv-alert"></div>
@@ -483,7 +520,7 @@
         <h1 id="mainTitle" contenteditable="true" onblur="saveTitle()" title="Нажмите, чтобы изменить название">Мой Дневник Ухода</h1>
     </div>
 
-    <!-- ВКЛАДКА: УХОД ЗА КОЖЕЙ -->
+    <!-- ВКЛАДКА 1: УХОД ЗА КОЖЕЙ -->
     <div id="content-skin" class="tab-content active">
         <div class="weather-widget">
             <input type="text" id="city-input" class="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" placeholder="Ваш город">
@@ -532,15 +569,15 @@
         <div class="table-wrapper">
             <table>
                 <colgroup>
-                    <col style="width: 7%;">  <!-- День -->
-                    <col style="width: 11%;"> <!-- Утро СПФ -->
-                    <col style="width: 11%;"> <!-- Мицеллярка -->
-                    <col style="width: 11%;"> <!-- Пенка -->
-                    <col style="width: 11%;"> <!-- Эффезел -->
-                    <col style="width: 11%;"> <!-- Крем -->
-                    <col style="width: 11%;"> <!-- Гель -->
-                    <col style="width: 7%;">  <!-- Стрик -->
-                    <col style="width: 20%;"> <!-- Заметки -->
+                    <col style="width: 7%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 11%;">
+                    <col style="width: 7%;">
+                    <col style="width: 20%;">
                 </colgroup>
                 <thead>
                     <tr>
@@ -571,7 +608,7 @@
         </div>
     </div>
 
-    <!-- ВКЛАДКА: ПРИВЫЧКИ -->
+    <!-- ВКЛАДКА 2: ПРИВЫЧКИ -->
     <div id="content-habits" class="tab-content">
         <div class="dashboard">
             <div class="stat-card">
@@ -616,11 +653,43 @@
             </table>
         </div>
 
-        <!-- ГРАФИКИ ДЛЯ ПРИВЫЧЕК -->
         <div class="charts-container">
             <div class="chart-box"><canvas id="habitBarChart"></canvas></div>
             <div class="chart-box"><canvas id="habitDailyChart"></canvas></div>
             <div class="chart-box full"><canvas id="habitLineChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 3: МОИ СРЕДСТВА -->
+    <div id="content-products" class="tab-content">
+        <div class="product-form">
+            <div class="form-group">
+                <label>Название средства</label>
+                <input type="text" id="prodName" class="form-input" placeholder="Например: Uriage Hyseac Hydra">
+            </div>
+            <div class="form-group" style="max-width: 150px;">
+                <label>Цена (₽)</label>
+                <input type="text" id="prodPrice" class="form-input" placeholder="1500">
+            </div>
+            <div class="form-group">
+                <label>Ссылка (URL)</label>
+                <input type="text" id="prodLink" class="form-input" placeholder="https://ozon.ru/...">
+            </div>
+            <button class="btn btn-primary" style="height: 42px;" onclick="addProduct()">➕ Добавить</button>
+        </div>
+
+        <div class="table-wrapper" style="background: transparent; border: none; box-shadow: none;">
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Средство</th>
+                        <th style="width: 100px;">Цена</th>
+                        <th style="width: 100px;">Ссылка</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody"></tbody>
+            </table>
         </div>
     </div>
 
@@ -741,7 +810,7 @@
         document.body.classList.toggle('dark-mode');
         localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         if (document.getElementById('content-skin').classList.contains('active')) updateSkinStats();
-        else updateHabitsStats();
+        else if (document.getElementById('content-habits').classList.contains('active')) updateHabitsStats();
     }
 
     // --- ПОГОДА ---
@@ -834,7 +903,6 @@
             const tdNotes = document.createElement('td'); tdNotes.className = 'notes-cell'; tdNotes.setAttribute('data-label', 'Заметки');
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
             
-            // АВТО-РАСТЯЖЕНИЕ
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
             noteInput.addEventListener('input', (e) => { 
                 localStorage.setItem(e.target.id, e.target.value); 
@@ -842,8 +910,6 @@
             });
             
             tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
-            
-            // Запуск для уже существующего текста
             setTimeout(() => autoResize(noteInput), 0);
         });
         previousPerfectDays.clear();
@@ -860,7 +926,7 @@
             lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
             localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
             lastFocusedNoteInput.focus(); 
-            autoResize(lastFocusedNoteInput); // Растягиваем поле после добавления тега
+            autoResize(lastFocusedNoteInput);
         } else { alert("Сначала кликните в поле 'Заметки' напротив нужного дня!"); }
     }
 
@@ -1024,6 +1090,97 @@
         });
     }
 
+    // --- ЛОГИКА ПОЛОЧКИ ТОВАРОВ ---
+    let products = JSON.parse(localStorage.getItem('userProducts')) || [];
+
+    function renderProducts() {
+        const tbody = document.getElementById('productsTableBody');
+        tbody.innerHTML = '';
+        
+        if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Пока нет добавленных средств.</td></tr>';
+            return;
+        }
+
+        products.forEach((product, index) => {
+            const tr = document.createElement('tr');
+            
+            // Название
+            const tdName = document.createElement('td');
+            tdName.textContent = product.name;
+            tdName.style.fontWeight = '600';
+            
+            // Цена
+            const tdPrice = document.createElement('td');
+            tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
+            tdPrice.className = 'product-price';
+            
+            // Ссылка
+            const tdLink = document.createElement('td');
+            if (product.link) {
+                const a = document.createElement('a');
+                a.href = product.link;
+                a.target = '_blank';
+                a.textContent = 'Открыть 🔗';
+                tdLink.appendChild(a);
+            } else {
+                tdLink.textContent = '—';
+            }
+            
+            // Кнопка удаления
+            const tdAction = document.createElement('td');
+            const btnDel = document.createElement('button');
+            btnDel.className = 'btn-delete-product';
+            btnDel.textContent = '✕';
+            btnDel.onclick = () => deleteProduct(index);
+            tdAction.appendChild(btnDel);
+
+            // Для адаптивности
+            tdName.setAttribute('data-label', 'Средство');
+            tdPrice.setAttribute('data-label', 'Цена');
+            tdLink.setAttribute('data-label', 'Ссылка');
+            tdAction.setAttribute('data-label', 'Удалить');
+            
+            tr.appendChild(tdName);
+            tr.appendChild(tdPrice);
+            tr.appendChild(tdLink);
+            tr.appendChild(tdAction);
+            tbody.appendChild(tr);
+        });
+    }
+
+    function addProduct() {
+        const nameInput = document.getElementById('prodName');
+        const priceInput = document.getElementById('prodPrice');
+        const linkInput = document.getElementById('prodLink');
+        
+        const name = nameInput.value.trim();
+        const price = priceInput.value.trim();
+        const link = linkInput.value.trim();
+        
+        if (!name) {
+            alert("Введите название средства!");
+            return;
+        }
+
+        products.push({ name, price, link });
+        localStorage.setItem('userProducts', JSON.stringify(products));
+        
+        nameInput.value = '';
+        priceInput.value = '';
+        linkInput.value = '';
+        
+        renderProducts();
+    }
+
+    function deleteProduct(index) {
+        if (confirm("Удалить это средство из списка?")) {
+            products.splice(index, 1);
+            localStorage.setItem('userProducts', JSON.stringify(products));
+            renderProducts();
+        }
+    }
+
     // --- НАСТРОЙКИ ---
     function openSettings() {
         const modal = document.getElementById('settingsModal');
@@ -1119,7 +1276,7 @@
                 localStorage.removeItem(`note-${dayIndex}`); 
                 const noteEl = document.getElementById(`note-${dayIndex}`);
                 noteEl.value = ""; 
-                noteEl.style.height = '44px'; // Сбрасываем высоту
+                noteEl.style.height = '44px';
             });
 
             habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
@@ -1167,6 +1324,7 @@
         updateWeekDates(); 
         renderSkinTable(); updateSkinStats();
         renderHabitsTable(); updateHabitsStats();
+        renderProducts();
     });
 </script>
 </body>
