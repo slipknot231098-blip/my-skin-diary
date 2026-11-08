@@ -1446,32 +1446,33 @@
         if (!container) return;
         container.innerHTML = '';
 
-        let tagData = {}; // { tagName: { count: 0, days: [] } }
-
-        // Инициализируем
-        quickTags.forEach(tag => tagData[tag] = { count: 0, days: [] });
+        let tagData = {}; 
+        quickTags.forEach(tag => tagData[tag] = { count: 0, details: [] });
 
         for (let i = 0; i < 7; i++) {
             const noteEl = document.getElementById(`note-${i}`);
             if (noteEl && noteEl.value) {
-                const noteText = noteEl.value;
+                const lines = noteEl.value.split('\n');
                 quickTags.forEach(tag => {
-                    let regex = new RegExp(tag, "gi");
-                    let matches = noteText.match(regex);
-                    if (matches && matches.length > 0) {
-                        tagData[tag].count += matches.length;
-                        // Добавляем день, если его еще нет в списке
-                        if (!tagData[tag].days.includes(daysOfWeek[i])) {
-                            tagData[tag].days.push(daysOfWeek[i]);
+                    let matchedLines = [];
+                    lines.forEach(line => {
+                        if (line.toLowerCase().includes(tag.toLowerCase())) {
+                            matchedLines.push(line.trim());
                         }
+                    });
+
+                    if (matchedLines.length > 0) {
+                        tagData[tag].count += matchedLines.length;
+                        // Убираем дубликаты строк для одного дня
+                        let uniqueLines = [...new Set(matchedLines)].join('; ');
+                        tagData[tag].details.push(`${daysOfWeek[i]}: ${uniqueLines}`);
                     }
                 });
             }
         }
 
-        // Фильтруем нулевые и сортируем
         let sortedTags = Object.keys(tagData)
-            .map(tag => ({ tag: tag, count: tagData[tag].count, days: tagData[tag].days }))
+            .map(tag => ({ tag: tag, count: tagData[tag].count, details: tagData[tag].details }))
             .filter(item => item.count > 0)
             .sort((a, b) => b.count - a.count);
 
@@ -1482,9 +1483,8 @@
                 const pill = document.createElement('div');
                 pill.className = 'tag-stat-pill';
                 
-                // Добавляем подсказку с днями
-                let tooltipText = item.days.length > 0 ? `Дни: ${item.days.join(', ')}` : '';
-                pill.title = tooltipText; 
+                // Формируем красивую подсказку
+                pill.title = item.details.join('\n'); 
                 
                 pill.innerHTML = `${item.tag} <span class="tag-stat-count">${item.count}</span>`;
                 container.appendChild(pill);
