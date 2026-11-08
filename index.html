@@ -1325,7 +1325,7 @@
         queueSync();
     }
 
-    function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
         const isDark = document.body.classList.contains('dark-mode'); 
         const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -1339,16 +1339,22 @@
         const maxGoal = Math.max(...goals, 1);
         const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
         
+        // НОВОЕ: Динамическая высота для графика выполнения
+        const chartContainer = document.getElementById('barChart').parentElement;
+        chartContainer.style.height = Math.max(350, skinColumns.length * 40) + 'px';
+
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar', data: { labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 6, barThickness: 20 }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
+        
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
+        
         let history = safeParse('weeklyHistory', []); 
         if (!Array.isArray(history)) history = [];
         let lineLabels = [], lineData = [];
@@ -1359,6 +1365,7 @@
             lineLabels.push(week.date); lineData.push(pct); 
         });
         lineLabels.push('Текущая'); lineData.push(currentProgress);
+        
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
             type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
@@ -1453,6 +1460,10 @@
         }); 
         const maxGoal = Math.max(...goals, 1);
         const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
+
+        // НОВОЕ: Динамическая высота для графика привычек
+        const habitChartContainer = document.getElementById('habitBarChart').parentElement;
+        habitChartContainer.style.height = Math.max(350, habitColumns.length * 40) + 'px';
 
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
