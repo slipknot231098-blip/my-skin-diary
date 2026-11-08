@@ -226,6 +226,27 @@
             display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: 700; font-size: 10px;
         }
 
+        /* КАРТОЧКА РЕКОМЕНДАЦИИ */
+        .recommendation-card {
+            background: linear-gradient(135deg, rgba(124, 154, 136, 0.1), rgba(124, 154, 136, 0.05));
+            border: 1px solid var(--primary);
+            border-radius: 24px; padding: 20px 24px; margin-bottom: 30px;
+            display: flex; align-items: center; gap: 20px;
+            box-shadow: 0 4px 15px rgba(124, 154, 136, 0.1);
+            animation: pulseRec 2s infinite alternate;
+        }
+        .rec-icon {
+            font-size: 36px; background: var(--card-bg); padding: 12px; border-radius: 50%;
+            box-shadow: var(--shadow); display: flex; justify-content: center; align-items: center;
+        }
+        .rec-text { flex: 1; font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; }
+        .rec-text b { color: var(--primary); font-weight: 800; }
+        
+        @keyframes pulseRec {
+            from { border-color: var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+            to { border-color: var(--primary); box-shadow: 0 8px 25px rgba(124, 154, 136, 0.15); }
+        }
+
         /* ТЕГИ */
         .tags-panel {
             background: var(--card-bg); padding: 16px 24px; border-radius: 20px; 
@@ -405,10 +426,10 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             width: max-content;
-            max-width: 350px; /* Увеличили ширину */
-            max-height: 250px; /* Ограничили высоту */
-            overflow-y: auto; /* Добавили скролл, если текст длинный */
-            pointer-events: auto; /* Разрешаем скроллить */
+            max-width: 350px;
+            max-height: 250px;
+            overflow-y: auto;
+            pointer-events: auto;
             text-align: left;
             white-space: normal;
             border: 1px solid rgba(255,255,255,0.1);
@@ -472,7 +493,7 @@
         .btn-delete-small:hover { background-color: var(--red-bg); }
 
         /* ПОГОДА */
-        .weather-widget { text-align: center; margin-bottom: 30px; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .weather-widget { text-align: center; margin-bottom: 20px; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
         .city-input { 
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px;
             padding: 12px 20px; font-weight: 600; color: var(--text); outline: none;
@@ -622,6 +643,8 @@
             .tag-tooltip { left: 0; transform: translateX(0); bottom: 120%; max-width: 280px; }
             .tag-tooltip::after { left: 20px; transform: translateX(0); }
             .tag-stat-pill:hover .tag-tooltip { transform: translateX(0) translateY(0); }
+            
+            .recommendation-card { flex-direction: column; text-align: center; gap: 12px; }
         }
 
         /* --- СТИЛИ ДЛЯ ПЕЧАТИ (ЭКСПОРТ В PDF) --- */
@@ -629,7 +652,7 @@
             body { background: #fff !important; color: #000 !important; padding: 0 !important; margin: 0 !important; }
             .container { max-width: 100% !important; margin: 0 !important; padding: 20px !important; }
             
-            .tabs, .topbar, .weather-widget, .tags-panel, .analytics-section, .floating-theme-btn, .floating-achievement-btn, .dropdown, .tab-btn, .chart-tabs { display: none !important; }
+            .tabs, .topbar, .weather-widget, .tags-panel, .analytics-section, .floating-theme-btn, .floating-achievement-btn, .dropdown, .tab-btn, .chart-tabs, .recommendation-card { display: none !important; }
             
             .header-title { text-align: center; margin-bottom: 20px; page-break-after: avoid; }
             .header-title span { display: none; }
@@ -753,6 +776,12 @@
             <span id="weather-temp" style="display:none;">🌡️ --°C</span>
             <span id="weather-uv" style="display:none;">☀️ Макс. UV: --</span>
             <span id="weather-loading" style="display:inline-block;">⏳ Загрузка...</span>
+        </div>
+
+        <!-- НОВЫЙ БЛОК: УМНЫЙ СОВЕТ -->
+        <div class="recommendation-card" id="recommendation-card">
+            <div class="rec-icon" id="rec-icon">💡</div>
+            <div class="rec-text" id="rec-text">Анализируем ваши данные и погоду...</div>
         </div>
 
         <div class="dashboard">
@@ -1509,7 +1538,6 @@
             if (noteEl && noteEl.value.trim() !== '') {
                 const fullNote = noteEl.value.trim();
                 
-                // Экранируем HTML и заменяем переносы строк на <br>
                 let safeNote = fullNote.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 safeNote = safeNote.replace(/\n/g, '<br>');
 
@@ -1519,7 +1547,6 @@
 
                     if (matches && matches.length > 0) {
                         tagData[tag].count += matches.length;
-                        // Выводим весь текст заметки, если в ней есть этот тег
                         tagData[tag].details.push(`<div><b>${daysOfWeek[i]}:</b><br>${safeNote}</div>`);
                     }
                 });
@@ -1538,7 +1565,6 @@
                 const pill = document.createElement('div');
                 pill.className = 'tag-stat-pill';
                 
-                // Собираем все детали
                 let detailsHtml = item.details.join('');
 
                 pill.innerHTML = `
@@ -1548,6 +1574,73 @@
                 container.appendChild(pill);
             });
         }
+    }
+
+    // ==========================================
+    // УМНЫЕ РЕКОМЕНДАЦИИ
+    // ==========================================
+    let currentTemp = null;
+    let currentUv = null;
+
+    function updateRecommendation() {
+        const recText = document.getElementById('rec-text');
+        const recIcon = document.getElementById('rec-icon');
+        if (!recText) return;
+
+        const hour = new Date().getHours();
+        const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+        
+        // Проверяем, что отмечено на сегодня
+        const spfChecked = document.getElementById(`check-${todayIdx}-spf`)?.checked;
+        const micellarChecked = document.getElementById(`check-${todayIdx}-micellar`)?.checked;
+        const cleanserChecked = document.getElementById(`check-${todayIdx}-cleanser`)?.checked;
+        const efizelChecked = document.getElementById(`check-${todayIdx}-efizel`)?.checked;
+        const moisturizerChecked = document.getElementById(`check-${todayIdx}-moisturizer`)?.checked;
+
+        let msg = "";
+        let icon = "💡";
+
+        // Логика рекомендаций
+        if (currentUv >= 3 && !spfChecked && hour >= 6 && hour < 12) {
+            icon = "☀️";
+            msg = `Сегодня высокий UV-индекс (<b>${currentUv}</b>). Не забудьте нанести <b>СПФ</b> перед выходом на улицу!`;
+        } else if (hour >= 6 && hour < 12) {
+            icon = "🌅";
+            if (spfChecked) {
+                msg = "Отлично! СПФ нанесен, кожа защищена. Доброе утро! ☕";
+            } else {
+                msg = "Доброе утро! Начните день с очищения и нанесения <b>СПФ</b>.";
+            }
+        } else if (hour >= 17 && hour < 23) {
+            icon = "🌙";
+            if (efizelChecked && moisturizerChecked) {
+                msg = "Вечерняя рутина выполнена! Кожа скажет вам спасибо. Спокойной ночи! ✨";
+            } else if (cleanserChecked && !efizelChecked) {
+                msg = "Вы умылись, самое время нанести <b>Эффезел</b> (на сухую кожу!), а через 20 минут — крем.";
+            } else if (!cleanserChecked) {
+                msg = "Пришло время вечерней рутины. Не забудьте смыть СПФ, грязь и нанести <b>крем</b>.";
+            } else {
+                msg = "Завершите вечерний уход, чтобы кожа восстановилась за ночь.";
+            }
+        } else if (hour >= 23 || hour < 6) {
+            icon = "😴";
+            msg = "Уже поздно. Если еще не нанесли ночной крем — сделайте это и ложитесь спать. Сон — лучший уход.";
+        } else {
+            // Дневное время
+            if (currentTemp !== null && currentTemp < 0) {
+                icon = "❄️";
+                msg = `На улице <b>${currentTemp}°C</b>. Мороз сушит кожу, возможно, стоит добавить более плотный крем или бальзам для губ.`;
+            } else if (currentTemp !== null && currentTemp > 25) {
+                icon = "🥵";
+                msg = `На улице жарко (<b>${currentTemp}°C</b>). Используйте легкие текстуры и пейте больше воды.`;
+            } else {
+                icon = "✨";
+                msg = "Днем главное — не трогать лицо руками и вовремя обновлять СПФ, если вы на улице.";
+            }
+        }
+
+        recText.innerHTML = msg;
+        recIcon.textContent = icon;
     }
 
     // ==========================================
@@ -1791,6 +1884,7 @@
         updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek, procDetailsArray, dayDetailsArray);
         renderSkinSparkline(dailyData);
         renderTagsAnalytics();
+        updateRecommendation(); // Обновляем совет
         queueSync();
     }
 
@@ -2532,6 +2626,7 @@
             renderSkinTable();
             renderHabitsTable();
             renderQuickTags();
+            updateRecommendation(); // Обновляем совет при загрузке
         } catch (e) {
             console.error("Ошибка инициализации:", e);
             skinColumns = defaultSkinColumns;
@@ -2573,6 +2668,11 @@
             }
             const weatherData = await getWeatherData(lat, lon, actualName);
             const temp = weatherData.current.temperature_2m; const uv = weatherData.daily.uv_index_max[0];
+            
+            // Сохраняем данные для рекомендаций
+            currentTemp = temp;
+            currentUv = uv;
+            
             loading.style.display = 'none'; tempEl.style.display = 'inline-block'; uvEl.style.display = 'inline-block'; tempEl.textContent = `🌡️ ${temp}°C`;
             if (uv >= 3) {
                 uvEl.innerHTML = `☀️ Макс. UV: <b style="color:var(--red);">${uv}</b> (Высокий!)`; uvEl.classList.add('uv-high');
@@ -2583,6 +2683,8 @@
                 uvEl.textContent = `☀️ Макс. UV: ${uv}`; uvEl.classList.remove('uv-high'); document.getElementById('uv-alert').style.display = 'none';
                 document.getElementById('th-spf-main')?.classList.remove('uv-danger'); document.getElementById('th-spf')?.classList.remove('uv-danger');
             }
+            
+            updateRecommendation(); // Обновляем совет после загрузки погоды
         } catch (e) { loading.textContent = '☁️ Ошибка сети'; }
     }
     function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
