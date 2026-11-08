@@ -240,6 +240,12 @@
         .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(124,154,136,0.2); }
         .tag-btn:active { transform: scale(0.96); }
 
+        .btn-manage-tags {
+            background: transparent; color: var(--text-muted); border: 1px dashed var(--border-color);
+            padding: 8px 14px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .btn-manage-tags:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
         /* ДАТЫ */
         .week-dates-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
         .week-dates {
@@ -641,13 +647,10 @@
             <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBarFill"></div></div>
         </div>
 
-        <div class="tags-panel">
+        <div class="tags-panel" id="tags-panel-container">
             <span>👉 Быстрые теги:</span>
-            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Сухость')">Сухость</button>
-            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Покраснение')">Покраснение</button>
-            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Новое высыпание')">Новое высыпание</button>
-            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Жирность')">Жирность</button>
-            <button class="tag-btn" onmousedown="event.preventDefault()" onclick="addTag('Кожа спокойна')">Кожа спокойна</button>
+            <!-- Теги будут рендериться здесь через JS -->
+            <button class="btn-manage-tags" onclick="openTagsModal()">⚙️ Настроить</button>
         </div>
 
         <div class="week-dates-container">
@@ -735,6 +738,26 @@
             <div class="auth-switch" onclick="toggleAuthMode()">
                 <span id="authSwitchText">Нет аккаунта? Зарегистрироваться</span>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно: УПРАВЛЕНИЕ ТЕГАМИ -->
+<div id="tagsModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <span class="close-btn" onclick="closeTagsModal()">&times;</span>
+        <h2 style="margin-top:0;">🏷️ Настройка тегов</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Добавьте свои теги (например, «Стресс» или «Мало воды»).</p>
+        
+        <div class="manage-list" id="manageTagsList"></div>
+        <div class="add-form-row">
+            <div class="form-group" style="flex: 2;">
+                <input type="text" id="newTagName" class="form-input" placeholder="Новый тег">
+            </div>
+            <button class="btn btn-primary" onclick="addCustomTag()" style="height: 44px;">➕ Добавить</button>
+        </div>
+        <div style="margin-top: 30px; text-align: right;">
+            <button class="btn btn-primary" onclick="closeTagsModal()" style="padding: 12px 30px;">Готово</button>
         </div>
     </div>
 </div>
@@ -1169,6 +1192,98 @@
         if (document.getElementById('content-skin').classList.contains('active')) updateSkinStats();
         else updateHabitsStats();
         queueSync();
+    }
+
+    // ==========================================
+    // ТЕГИ
+    // ==========================================
+    const defaultTags = ["Сухость", "Покраснение", "Новое высыпание", "Жирность", "Кожа спокойна"];
+    let quickTags = safeParse('quickTags', defaultTags);
+
+    function renderQuickTags() {
+        const container = document.getElementById('tags-panel-container');
+        // Очищаем все кнопки, кроме заголовка и кнопки настройки
+        const manageBtn = container.querySelector('.btn-manage-tags');
+        container.innerHTML = '<span>👉 Быстрые теги:</span>';
+        
+        quickTags.forEach(tag => {
+            const btn = document.createElement('button');
+            btn.className = 'tag-btn';
+            btn.textContent = tag;
+            btn.onmousedown = (e) => e.preventDefault();
+            btn.onclick = () => addTag(tag);
+            container.appendChild(btn);
+        });
+        
+        container.appendChild(manageBtn);
+    }
+
+    function openTagsModal() {
+        document.getElementById('tagsModal').style.display = 'block';
+        renderManageTagsList();
+    }
+    function closeTagsModal() {
+        document.getElementById('tagsModal').style.display = 'none';
+        renderQuickTags();
+        queueSync();
+    }
+
+    function renderManageTagsList() {
+        const list = document.getElementById('manageTagsList');
+        list.innerHTML = '';
+        quickTags.forEach((tag, index) => {
+            let div = document.createElement('div');
+            div.className = 'manage-item';
+            div.innerHTML = `<div><div class="manage-item-name">${tag}</div></div><button class="btn-del-manage" onclick="deleteQuickTag(${index})">🗑️</button>`;
+            list.appendChild(div);
+        });
+    }
+
+    function addCustomTag() {
+        const input = document.getElementById('newTagName');
+        const val = input.value.trim();
+        if (!val) return;
+        if (quickTags.includes(val)) return alert("Такой тег уже есть!");
+        
+        quickTags.push(val);
+        localStorage.setItem('quickTags', JSON.stringify(quickTags));
+        input.value = '';
+        renderManageTagsList();
+        queueSync();
+    }
+
+    function deleteQuickTag(index) {
+        quickTags.splice(index, 1);
+        localStorage.setItem('quickTags', JSON.stringify(quickTags));
+        renderManageTagsList();
+        queueSync();
+    }
+
+    // УЛУЧШЕННОЕ ДОБАВЛЕНИЕ ТЕГА
+    function addTag(text) {
+        let targetInput = lastFocusedNoteInput;
+        
+        // Если поле не выбрано, берем сегодняшний день
+        if (!targetInput) {
+            const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+            targetInput = document.getElementById(`note-${todayIdx}`);
+        }
+
+        if (targetInput) {
+            const currentVal = targetInput.value.trim(); 
+            targetInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
+            localStorage.setItem(targetInput.id, targetInput.value); 
+            
+            // Визуальный отклик
+            targetInput.focus(); 
+            targetInput.style.borderColor = 'var(--primary)';
+            setTimeout(() => { targetInput.style.borderColor = ''; }, 500);
+            
+            autoResize(targetInput);
+            queueSync();
+        } else {
+            alert("Не удалось найти поле для заметок. Откройте сегодняшний день и попробуйте снова.");
+        }
     }
 
     // ==========================================
@@ -2025,6 +2140,7 @@
         if (event.target == document.getElementById('achievementsModal')) closeAchievements();
         if (event.target == document.getElementById('authModal')) closeAuthModal();
         if (event.target == document.getElementById('manageItemsModal')) closeManageItems();
+        if (event.target == document.getElementById('tagsModal')) closeTagsModal();
     }
 
     // --- ИНИЦИАЛИЗАЦИЯ ---
@@ -2043,6 +2159,7 @@
             updateWeekDates(); 
             renderSkinTable();
             renderHabitsTable();
+            renderQuickTags();
         } catch (e) {
             console.error("Ошибка инициализации:", e);
             skinColumns = defaultSkinColumns;
@@ -2051,6 +2168,7 @@
             currentHabitSettings = defaultHabitSettings;
             renderSkinTable();
             renderHabitsTable();
+            renderQuickTags();
         }
     });
 
@@ -2096,15 +2214,6 @@
         } catch (e) { loading.textContent = '☁️ Ошибка сети'; }
     }
     function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
-    function addTag(text) {
-        if (lastFocusedNoteInput) {
-            const currentVal = lastFocusedNoteInput.value.trim(); 
-            lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
-            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
-            lastFocusedNoteInput.focus(); autoResize(lastFocusedNoteInput);
-            queueSync();
-        } else { alert("Сначала кликните в поле 'Заметки'!"); }
-    }
 </script>
 </body>
 </html>
