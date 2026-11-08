@@ -28,10 +28,8 @@
             --border-color: #E2E8F0;
             --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             --hover-bg: #F7FAF8;
-            
             --today-bg: #EBF4EF; 
             --today-text: #4A7C59; 
-            
             --tooltip-bg: rgba(30, 41, 59, 0.95);
         }
 
@@ -43,10 +41,8 @@
             --border-color: #3A475A;
             --hover-bg: #374151;
             --primary-light: #344C43;
-            
             --today-bg: #263A33; 
             --today-text: #81B29A; 
-            
             --modal-bg: rgba(0, 0, 0, 0.7);
             --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
             --primary: #81B29A; 
@@ -196,32 +192,21 @@
 
         /* ТАБЛИЦА */
         .table-wrapper { 
-            width: 100%; 
-            margin-top: 5px;
-            overflow-x: auto;
-            border-radius: 20px; 
-            border: 1px solid var(--border-color); 
-            box-shadow: var(--shadow); 
-            background: var(--card-bg);
-            transform: translateZ(0); 
-            isolation: isolate; 
+            width: 100%; margin-top: 5px; overflow-x: auto;
+            border-radius: 20px; border: 1px solid var(--border-color); 
+            box-shadow: var(--shadow); background: var(--card-bg);
+            transform: translateZ(0); isolation: isolate; 
         }
         
         table { 
-            width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0; 
-            min-width: 950px; 
-            table-layout: fixed; 
+            width: 100%; border-collapse: separate; border-spacing: 0; 
+            min-width: 950px; table-layout: fixed; 
         }
         
         th, td { 
-            padding: 12px 8px; 
-            text-align: center; 
-            border-right: 1px solid var(--border-color); 
-            border-bottom: 1px solid var(--border-color);
-            box-sizing: border-box;
-            vertical-align: middle;
+            padding: 12px 8px; text-align: center; 
+            border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+            box-sizing: border-box; vertical-align: middle;
         }
         
         th:last-child, td:last-child { border-right: none; } 
@@ -240,12 +225,10 @@
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
         
-        /* Стили для текущего дня */
         tr.today-row { background-color: var(--today-bg); }
         tr.today-row:hover { background-color: var(--today-bg); }
         tr.today-row .day-cell { 
-            font-weight: 800; 
-            color: var(--today-text); 
+            font-weight: 800; color: var(--today-text); 
             box-shadow: inset 4px 0 0 0 var(--primary); 
         }
 
@@ -268,88 +251,44 @@
 
         /* ПОЛЕ ЗАМЕТОК */
         textarea.notes-input {
-            display: block;
-            width: 100%; 
-            min-height: 44px; 
-            padding: 10px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px;
-            background-color: var(--bg); 
-            color: var(--text); 
-            font-family: inherit;
-            font-size: 13px; 
-            line-height: 1.4;
-            transition: 0.2s; 
-            resize: none;
-            box-sizing: border-box;
-            overflow: hidden;
-            position: relative;
-            z-index: 10; 
+            display: block; width: 100%; min-height: 44px; padding: 10px; 
+            border: 1px solid var(--border-color); border-radius: 8px;
+            background-color: var(--bg); color: var(--text); font-family: inherit;
+            font-size: 13px; line-height: 1.4; transition: 0.2s; resize: none;
+            box-sizing: border-box; overflow: hidden; position: relative; z-index: 10; 
         }
         textarea.notes-input:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 3px var(--primary-light); 
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); 
         }
 
         /* СТИЛЬНЫЕ ПОДСКАЗКИ */
         .th-title { 
-            position: relative;
-            cursor: help; 
-            border-bottom: 1px dashed var(--text-muted); 
-            display: inline-block; 
-            padding-bottom: 2px;
-            transition: color 0.2s, border-color 0.2s;
+            position: relative; cursor: help; border-bottom: 1px dashed var(--text-muted); 
+            display: inline-block; padding-bottom: 2px; transition: color 0.2s, border-color 0.2s;
         }
         .th-title:hover { color: var(--primary); border-bottom-color: var(--primary); }
 
         .th-title::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: 150%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            background: var(--tooltip-bg);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #fff;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 500;
-            white-space: nowrap;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            pointer-events: none;
-            text-transform: none;
-            letter-spacing: normal;
+            content: attr(data-tooltip); position: absolute; top: 150%; left: 50%;
+            transform: translateX(-50%) translateY(-10px); background: var(--tooltip-bg);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff;
+            padding: 10px 16px; border-radius: 10px; font-size: 12px; font-weight: 500;
+            white-space: nowrap; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.1); opacity: 0; visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+            pointer-events: none; text-transform: none; letter-spacing: normal;
         }
 
         .th-title::before {
-            content: "";
-            position: absolute;
-            top: 120%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-10px);
-            border-width: 6px;
-            border-style: solid;
-            border-color: transparent transparent var(--tooltip-bg) transparent;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            pointer-events: none;
+            content: ""; position: absolute; top: 120%; left: 50%;
+            transform: translateX(-50%) translateY(-10px); border-width: 6px;
+            border-style: solid; border-color: transparent transparent var(--tooltip-bg) transparent;
+            opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000; pointer-events: none;
         }
 
-        .th-title:hover::after, 
-        .th-title:hover::before {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
+        .th-title:hover::after, .th-title:hover::before {
+            opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
         }
 
         /* ГРАФИКИ */
@@ -393,9 +332,6 @@
             transition: 0.2s; font-weight: 600;
         }
         .btn-delete-small:hover { background-color: var(--red-bg); }
-        
-        .history-stats { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
-        .history-notes { font-size: 14px; color: var(--text); line-height: 1.5; white-space: pre-wrap; }
 
         /* СТИЛИ ДЛЯ ПОГОДЫ */
         .weather-widget {
@@ -419,9 +355,7 @@
             background: var(--card-bg); padding: 10px 16px; border-radius: 12px;
             border: 1px solid var(--border-color); font-weight: 600; box-shadow: var(--shadow);
         }
-        .weather-widget .uv-high { 
-            color: var(--red); border-color: var(--red); background-color: var(--red-bg); 
-        }
+        .weather-widget .uv-high { color: var(--red); border-color: var(--red); background-color: var(--red-bg); }
 
         #uv-alert { 
             display: none; background: var(--red); color: white; 
@@ -442,14 +376,15 @@
             border: 1px solid var(--border-color); margin-bottom: 25px;
             display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;
         }
-        .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 150px; }
         .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
         .form-input {
             padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 10px;
             background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 14px;
-            transition: 0.2s;
+            transition: 0.2s; width: 100%; box-sizing: border-box;
         }
         .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+        select.form-input { appearance: none; -webkit-appearance: none; cursor: pointer; }
 
         .product-table { width: 100%; border-collapse: collapse; background: var(--bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
         .product-table th, .product-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
@@ -463,6 +398,44 @@
             border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit;
         }
         .btn-delete-product:hover { background: #FCA5A5; color: #7F1D1D; }
+        
+        .category-header {
+            background: var(--primary-light); color: var(--primary); font-weight: 800; 
+            padding: 10px 15px; border-radius: 8px; margin-top: 20px; margin-bottom: 10px;
+            font-size: 14px; display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .pao-badge { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+        .pao-ok { background: var(--green-bg); color: var(--green); }
+        .pao-warn { background: #FEF3C7; color: #D97706; }
+        .pao-danger { background: var(--red-bg); color: var(--red); }
+
+        .spend-badge {
+            background: var(--primary); color: white; padding: 10px 15px; 
+            border-radius: 12px; font-weight: 800; font-size: 15px;
+            display: inline-block; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(124,154,136,0.3);
+        }
+
+        /* ДОСТИЖЕНИЯ */
+        .achievement-toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #2D3748; color: white; padding: 16px 24px; border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; display: flex; align-items: center; gap: 15px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .achievement-toast.show { transform: translateX(-50%) translateY(0); }
+        .achievement-icon { font-size: 32px; }
+        
+        .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .achievement-card {
+            background: var(--bg); border: 1px solid var(--border-color); border-radius: 16px;
+            padding: 20px; text-align: center; transition: 0.2s; position: relative; overflow: hidden;
+        }
+        .achievement-card.unlocked { border-color: var(--primary); background: var(--primary-light); }
+        .achievement-card.locked { opacity: 0.5; filter: grayscale(1); }
+        .achievement-card .icon { font-size: 40px; margin-bottom: 10px; }
+        .achievement-card .title { font-weight: 800; font-size: 14px; margin-bottom: 5px; }
+        .achievement-card .desc { font-size: 12px; color: var(--text-muted); }
 
         /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
         @media (max-width: 900px) {
@@ -502,7 +475,6 @@
             .stat-card { padding: 20px; }
             .stat-value { font-size: 32px; }
             
-            /* Адаптив для полочки товаров в модалке */
             .product-form { flex-direction: column; align-items: stretch; }
             .product-table tr { margin-bottom: 15px; border: 1px solid var(--border-color); }
             .product-table td { display: flex; justify-content: space-between; border: none; border-bottom: 1px solid var(--border-color); }
@@ -516,12 +488,10 @@
 <div class="container">
     <!-- ВКЛАДКИ -->
     <div class="tabs">
-        <button class="tab-btn active" id="tab-skin" onclick="switchTab('skin')"
-                title="Трекер ежедневного ухода за кожей (утро/вечер) и тела">
+        <button class="tab-btn active" id="tab-skin" onclick="switchTab('skin')" title="Трекер ежедневного ухода за кожей">
             🧴 Уход за кожей
         </button>
-        <button class="tab-btn" id="tab-habits" onclick="switchTab('habits')"
-                title="Трекер ежедневных привычек (английский, чтение, тренировки и т.д.)">
+        <button class="tab-btn" id="tab-habits" onclick="switchTab('habits')" title="Трекер ежедневных привычек">
             🧠 Мои привычки
         </button>
     </div>
@@ -531,44 +501,39 @@
     <!-- ТОПБАР -->
     <div class="topbar">
         <div class="nav-group left">
-            <button class="btn btn-danger" onclick="resetAll()"
-                    title="Сохранить текущую неделю в Архив и сбросить все галочки для новой недели">
+            <button class="btn btn-danger" onclick="resetAll()" title="Сохранить в Архив и начать новую неделю">
                 🔄 Новая неделя
             </button>
-            <button class="btn btn-primary" id="productsBtn" onclick="openProductsModal()"
-                    title="Полка с вашими косметическими средствами: название, цена и ссылка на магазин">
+            <button class="btn btn-primary" id="productsBtn" onclick="openProductsModal()" title="Мои косметические средства">
                 🛍️ Мои средства
             </button>
         </div>
 
         <div class="nav-group right">
-            <!-- ОБЪЕДИНЁННОЕ МЕНЮ: Данные + Настройки -->
             <div class="dropdown">
-                <button class="btn" onclick="toggleDropdown(event)"
-                        title="Меню: настройки расписания, архив, резервное копирование и восстановление данных">
+                <button class="btn" onclick="toggleDropdown(event)" title="Настройки и данные">
                     ⚙️ Меню ▾
                 </button>
                 <div class="dropdown-content" id="dataDropdown">
-                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openSettings)"
-                            title="Настроить расписание процедур по уходу за кожей и привычек по дням недели">
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openAchievements)" title="Посмотреть достижения">
+                        <span class="dropdown-title">🏆 Достижения</span>
+                        <span class="dropdown-desc">Ваши награды и успехи</span>
+                    </button>
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openSettings)" title="Настройки расписания">
                         <span class="dropdown-title">⚙️ Настройки</span>
                         <span class="dropdown-desc">Расписание процедур и привычек</span>
                     </button>
-                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openHistory)"
-                            title="Посмотреть прошлые недели, детали ухода и привычки">
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openHistory)" title="Архив прошлых недель">
                         <span class="dropdown-title">📜 Архив</span>
-                        <span class="dropdown-desc">Посмотреть прошлые недели и заметки</span>
+                        <span class="dropdown-desc">Посмотреть прошлые недели</span>
                     </button>
-                    <button class="dropdown-item"
-                            onclick="document.getElementById('restoreInput').click()"
-                            title="Загрузить файл резервной копии (.json) и восстановить все данные">
+                    <button class="dropdown-item" onclick="document.getElementById('restoreInput').click()" title="Восстановить бэкап">
                         <span class="dropdown-title">📂 Восстановить</span>
-                        <span class="dropdown-desc">Загрузить файл бэкапа (.json)</span>
+                        <span class="dropdown-desc">Загрузить файл (.json)</span>
                     </button>
-                    <button class="dropdown-item" onclick="downloadBackup()"
-                            title="Скачать резервную копию всех данных в формате .json">
+                    <button class="dropdown-item" onclick="downloadBackup()" title="Скачать бэкап">
                         <span class="dropdown-title">💾 Бэкап</span>
-                        <span class="dropdown-desc">Скачать резервную копию данных</span>
+                        <span class="dropdown-desc">Скачать резервную копию</span>
                     </button>
                 </div>
             </div>
@@ -593,15 +558,15 @@
 
         <div class="dashboard">
             <div class="stat-card">
-                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Выполнение за неделю</div>
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Выполнение за неделю</div>
                 <div class="stat-value" id="progressValue">0%</div>
             </div>
             <div class="stat-card">
-                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Идеальных дней</div>
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Идеальных дней</div>
                 <div class="stat-value fire" id="streakValue">0 🔥</div>
             </div>
             <div class="stat-card">
-                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Всего идеальных</div>
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Всего идеальных</div>
                 <div class="stat-value gold" id="globalStreakValue">0 🏆</div>
             </div>
         </div>
@@ -630,15 +595,8 @@
         <div class="table-wrapper">
             <table>
                 <colgroup>
-                    <col style="width: 7%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 11%;">
-                    <col style="width: 7%;">
-                    <col style="width: 20%;">
+                    <col style="width: 7%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;">
+                    <col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 7%;"><col style="width: 20%;">
                 </colgroup>
                 <thead>
                     <tr>
@@ -651,11 +609,11 @@
                     </tr>
                     <tr>
                         <th class="morning" id="th-spf"><div class="th-title" data-tooltip="Наносить утром на чистую кожу.">1. СПФ</div></th>
-                        <th class="evening"><div class="th-title" id="th-micellar" data-tooltip="Наносить на СУХУЮ кожу, затем смыть водой!">1. Мицеллярка</div></th>
-                        <th class="evening"><div class="th-title" id="th-cleanser" data-tooltip="Вспенить, нанести, смыть.">2. Пенка</div></th>
-                        <th class="evening"><div class="th-title" id="th-efizel" data-tooltip="Наносить ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
-                        <th class="evening"><div class="th-title" id="th-moisturizer" data-tooltip="Через 20-30 минут ПОСЛЕ Эффезела.">4. Крем (лицо)</div></th>
-                        <th class="body-gel"><div class="th-title" id="th-bodyGel" data-tooltip="Гель с кислотами для тела. Нанести на 3-4 минуты и смыть.">🧴 Гель (тело)</div></th>
+                        <th class="evening"><div class="th-title" id="th-micellar" data-tooltip="Наносить на СУХУЮ кожу!">1. Мицеллярка</div></th>
+                        <th class="evening"><div class="th-title" id="th-cleanser" data-tooltip="Вспенить и смыть.">2. Пенка</div></th>
+                        <th class="evening"><div class="th-title" id="th-efizel" data-tooltip="ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
+                        <th class="evening"><div class="th-title" id="th-moisturizer" data-tooltip="Через 20-30 минут после Эффезела.">4. Крем</div></th>
+                        <th class="body-gel"><div class="th-title" id="th-bodyGel" data-tooltip="Нанести на 3-4 минуты и смыть.">🧴 Гель</div></th>
                     </tr>
                 </thead>
                 <tbody id="skinTableBody"></tbody>
@@ -673,8 +631,12 @@
     <div id="content-habits" class="tab-content">
         <div class="dashboard">
             <div class="stat-card">
-                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Выполнение привычек</div>
+                <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Выполнение привычек</div>
                 <div class="stat-value" id="habitsProgressValue">0%</div>
+            </div>
+            <div class="stat-card" style="background: #FEF3C7; border-color: #FDE68A; dark-mode: background: #4A3A1A;">
+                <div style="color: #B45309; font-size: 13px; font-weight: 600; text-transform: uppercase;">Дней подряд (Streak)</div>
+                <div class="stat-value fire" id="habitDailyStreak" style="color: #D97706;">0 🔥</div>
             </div>
         </div>
 
@@ -693,12 +655,8 @@
         <div class="table-wrapper">
             <table>
                 <colgroup>
-                    <col style="width: 12%;">
-                    <col style="width: 17.6%;">
-                    <col style="width: 17.6%;">
-                    <col style="width: 17.6%;">
-                    <col style="width: 17.6%;">
-                    <col style="width: 17.6%;">
+                    <col style="width: 12%;"><col style="width: 17.6%;"><col style="width: 17.6%;">
+                    <col style="width: 17.6%;"><col style="width: 17.6%;"><col style="width: 17.6%;">
                 </colgroup>
                 <thead>
                     <tr>
@@ -720,7 +678,6 @@
             <div class="chart-box full"><canvas id="habitLineChart"></canvas></div>
         </div>
     </div>
-
 </div>
 
 <!-- Модальное окно: МОИ СРЕДСТВА -->
@@ -729,35 +686,63 @@
         <span class="close-btn" onclick="closeProductsModal()">&times;</span>
         <h2 style="margin-top:0;">🛍️ Мои средства</h2>
         
+        <div id="monthlySpendDisplay" class="spend-badge">Потрачено в этом месяце: 0 ₽</div>
+
         <div class="product-form">
-            <div class="form-group">
+            <div class="form-group" style="flex: 2; min-width: 200px;">
                 <label>Название средства</label>
-                <input type="text" id="prodName" class="form-input" placeholder="Например: Uriage Hyseac Hydra">
+                <input type="text" id="prodName" class="form-input" placeholder="Например: Uriage Hyseac">
             </div>
-            <div class="form-group" style="max-width: 120px;">
+            <div class="form-group" style="min-width: 130px;">
+                <label>Категория</label>
+                <select id="prodCategory" class="form-input">
+                    <option value="Очищение">Очищение</option>
+                    <option value="Уход (кремы)">Уход (кремы)</option>
+                    <option value="СПФ">СПФ</option>
+                    <option value="Активы (лечение)">Активы (лечение)</option>
+                    <option value="Тело">Тело</option>
+                    <option value="Другое">Другое</option>
+                </select>
+            </div>
+            <div class="form-group" style="max-width: 100px;">
                 <label>Цена (₽)</label>
                 <input type="text" id="prodPrice" class="form-input" placeholder="1500">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="max-width: 130px;">
+                <label>Дата покупки</label>
+                <input type="date" id="prodBuyDate" class="form-input">
+            </div>
+        </div>
+        
+        <div class="product-form" style="margin-top: -15px;">
+            <div class="form-group" style="min-width: 200px;">
                 <label>Ссылка (URL)</label>
                 <input type="text" id="prodLink" class="form-input" placeholder="https://ozon.ru/...">
             </div>
-            <button class="btn btn-primary" style="height: 42px;" onclick="addProduct()">➕ Добавить</button>
+            <div class="form-group" style="max-width: 140px;">
+                <label>Дата вскрытия</label>
+                <input type="date" id="prodOpenDate" class="form-input" title="Когда вы открыли баночку">
+            </div>
+            <div class="form-group" style="max-width: 120px;">
+                <label>Срок (ПАО, мес)</label>
+                <input type="number" id="prodPao" class="form-input" placeholder="6 или 12" title="Сколько месяцев можно использовать после вскрытия">
+            </div>
+            <button class="btn btn-primary" style="height: 42px; flex: 1; justify-content: center;" onclick="addProduct()">➕ Добавить</button>
         </div>
 
         <div class="table-wrapper" style="background: transparent; border: none; box-shadow: none;">
-            <table class="product-table">
-                <thead>
-                    <tr>
-                        <th>Средство</th>
-                        <th style="width: 100px;">Цена</th>
-                        <th style="width: 100px;">Ссылка</th>
-                        <th style="width: 50px;"></th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody"></tbody>
-            </table>
+            <div id="productsContainer"></div>
         </div>
+    </div>
+</div>
+
+<!-- Модальное окно: ДОСТИЖЕНИЯ -->
+<div id="achievementsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeAchievements()">&times;</span>
+        <h2 style="margin-top:0;">🏆 Мои Достижения</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Выполняйте задания, чтобы получать медали!</p>
+        <div class="achievements-grid" id="achievementsList"></div>
     </div>
 </div>
 
@@ -782,12 +767,7 @@
         <h3 style="margin-top: 20px; font-size: 18px; color: var(--primary);">Уход за кожей</h3>
         <div style="overflow-x: auto;">
             <table class="settings-table">
-                <thead>
-                    <tr>
-                        <th>Процедура</th>
-                        <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Процедура</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr></thead>
                 <tbody id="settingsBody"></tbody>
             </table>
         </div>
@@ -795,19 +775,9 @@
         <h3 style="margin-top: 30px; font-size: 18px; color: var(--primary);">Привычки</h3>
         <div style="overflow-x: auto;">
             <table class="settings-table">
-                <thead>
-                    <tr>
-                        <th>Привычка</th>
-                        <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Привычка</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr></thead>
                 <tbody id="habitsSettingsBody"></tbody>
             </table>
-        </div>
-
-        <div style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
-            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 10px;">Хотите проверить, как работает празднование?</p>
-            <button class="btn btn-primary" onclick="triggerCelebration(0)">🎉 Тест конфетти и звука</button>
         </div>
 
         <div style="margin-top: 30px; text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
@@ -821,6 +791,66 @@
 <button class="floating-theme-btn" id="themeToggleBtn" onclick="toggleDarkMode()" title="Сменить тему">🌙</button>
 
 <script>
+    // --- УВЕДОМЛЕНИЯ О ДОСТИЖЕНИЯХ ---
+    function showAchievementToast(icon, title) {
+        const toast = document.createElement('div');
+        toast.className = 'achievement-toast';
+        toast.innerHTML = `<div class="achievement-icon">${icon}</div><div><div style="font-weight:800; font-size:16px;">Новое достижение!</div><div style="font-size:14px;">${title}</div></div>`;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
+        
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.1 } });
+    }
+
+    // --- ЛОГИКА ДОСТИЖЕНИЙ ---
+    const allAchievements = [
+        { id: 'first_check', icon: '🌱', title: 'Первые шаги', desc: 'Отметить первую процедуру' },
+        { id: 'streak_7', icon: '🔥', title: 'Несгибаемый', desc: '7 идеальных дней подряд' },
+        { id: 'product_5', icon: '🧴', title: 'Эстет', desc: 'Добавить 5 средств на полочку' },
+        { id: 'perfect_week', icon: '🏆', title: 'Идеальная неделя', desc: 'Завершить неделю на 100%' }
+    ];
+
+    function getUnlockedAchievements() {
+        return JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
+    }
+
+    function unlockAchievement(id) {
+        let unlocked = getUnlockedAchievements();
+        if (!unlocked.includes(id)) {
+            unlocked.push(id);
+            localStorage.setItem('unlockedAchievements', JSON.stringify(unlocked));
+            const ach = allAchievements.find(a => a.id === id);
+            if (ach) showAchievementToast(ach.icon, ach.title);
+            if (document.getElementById('achievementsModal').style.display === 'block') renderAchievements();
+        }
+    }
+
+    function openAchievements() {
+        document.getElementById('achievementsModal').style.display = "block";
+        renderAchievements();
+    }
+    function closeAchievements() { document.getElementById('achievementsModal').style.display = "none"; }
+
+    function renderAchievements() {
+        const list = document.getElementById('achievementsList');
+        list.innerHTML = '';
+        const unlocked = getUnlockedAchievements();
+        
+        allAchievements.forEach(ach => {
+            const isUnlocked = unlocked.includes(ach.id);
+            const div = document.createElement('div');
+            div.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+            div.innerHTML = `
+                <div class="icon">${ach.icon}</div>
+                <div class="title">${ach.title}</div>
+                <div class="desc">${isUnlocked ? 'Получено!' : ach.desc}</div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
     // --- АВТО-РАСТЯЖЕНИЕ ПОЛЯ ЗАМЕТОК ---
     function autoResize(textarea) {
         textarea.style.height = 'auto';
@@ -830,19 +860,15 @@
     // --- ВЫПАДАЮЩЕЕ МЕНЮ ---
     function toggleDropdown(event) {
         event.stopPropagation();
-        const dropdown = document.getElementById('dataDropdown');
-        dropdown.classList.toggle('show');
+        document.getElementById('dataDropdown').classList.toggle('show');
     }
-
     function closeDropdownAndOpen(fn) {
         document.getElementById('dataDropdown').classList.remove('show');
         fn();
     }
-
     window.addEventListener('click', function(event) {
         const dropdown = document.getElementById('dataDropdown');
-        const btn = event.target.closest('.dropdown');
-        if (!btn && dropdown.classList.contains('show')) {
+        if (!event.target.closest('.dropdown') && dropdown.classList.contains('show')) {
             dropdown.classList.remove('show');
         }
     });
@@ -853,11 +879,9 @@
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById('content-' + tabName).classList.add('active');
         document.getElementById('tab-' + tabName).classList.add('active');
-
+        
         const productsBtn = document.getElementById('productsBtn');
-        if (productsBtn) {
-            productsBtn.style.display = (tabName === 'habits') ? 'none' : 'inline-flex';
-        }
+        if (productsBtn) productsBtn.style.display = (tabName === 'habits') ? 'none' : 'inline-flex';
     }
 
     // --- ОБЩИЕ ФУНКЦИИ ---
@@ -905,7 +929,6 @@
         const isDark = document.body.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDark);
         document.getElementById('themeToggleBtn').textContent = isDark ? '☀️' : '🌙';
-        
         if (document.getElementById('content-skin').classList.contains('active')) updateSkinStats();
         else updateHabitsStats();
     }
@@ -992,7 +1015,10 @@
                 const label = document.createElement('label'); label.className = 'checkbox-container';
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `check-${dayIndex}-${colName}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
-                input.addEventListener('change', () => { updateSkinStats(dayIndex); });
+                input.addEventListener('change', () => { 
+                    if(input.checked) unlockAchievement('first_check');
+                    updateSkinStats(dayIndex); 
+                });
                 const span = document.createElement('span'); span.className = 'checkmark';
                 label.appendChild(input); label.appendChild(span); td.appendChild(label); tr.appendChild(td);
             });
@@ -1001,10 +1027,7 @@
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
             
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
-            noteInput.addEventListener('input', (e) => { 
-                localStorage.setItem(e.target.id, e.target.value); 
-                autoResize(e.target);
-            });
+            noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); autoResize(e.target); });
             
             tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
             setTimeout(() => autoResize(noteInput), 0);
@@ -1022,9 +1045,8 @@
             const currentVal = lastFocusedNoteInput.value.trim(); 
             lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
             localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
-            lastFocusedNoteInput.focus(); 
-            autoResize(lastFocusedNoteInput);
-        } else { alert("Сначала кликните в поле 'Заметки' напротив нужного дня!"); }
+            lastFocusedNoteInput.focus(); autoResize(lastFocusedNoteInput);
+        } else { alert("Сначала кликните в поле 'Заметки'!"); }
     }
 
     function updateSkinStats(changedDayIndex = -1) {
@@ -1050,8 +1072,8 @@
         if(progressPercent > 100) progressPercent = 100; 
         document.getElementById('progressValue').textContent = `${progressPercent}%`; document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
         document.getElementById('progressBarText').textContent = `${progressPercent}%`; document.getElementById('progressBarFill').style.width = `${progressPercent}%`;
-        let globalPerfectDays = perfectDaysCount;
         
+        let globalPerfectDays = perfectDaysCount;
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
         history.forEach(week => {
             let checks = week.skinChecks || week.checks || {};
@@ -1076,17 +1098,16 @@
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar', data: { labels: skinColumns.map((col, i) => `${skinColumnNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); let lineLabels = [], lineData = [];
         history.slice(-7).forEach((week) => { 
-            let totalC = 0; 
-            let checks = week.skinChecks || week.checks || {};
+            let totalC = 0; let checks = week.skinChecks || week.checks || {};
             for (let key in checks) if(checks[key]) totalC++; 
             let pct = totalExpectedWeek > 0 ? Math.round((totalC / totalExpectedWeek) * 100) : 0; 
             lineLabels.push(week.date); lineData.push(pct); 
@@ -1095,18 +1116,14 @@
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
             type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 12, family: 'Inter'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
         });
     }
 
     // --- ЛОГИКА ПРИВЫЧЕК ---
     const habitColumns = ["english", "reading", "workout", "no_sugar", "morning_routine"];
     const habitNames = { english: "🇬🇧 Английский", reading: "📚 Чтение", workout: "🏋️ Тренировка", no_sugar: "🚫 Без сладкого", morning_routine: "🧴 Утренняя рутина" };
-    
-    const defaultHabitSettings = {
-        english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0],
-        no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1]
-    };
+    const defaultHabitSettings = { english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0], no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1] };
     let currentHabitSettings = JSON.parse(localStorage.getItem('userHabitSchedule')) || defaultHabitSettings;
 
     let habitBarChartInstance = null, habitDailyChartInstance = null, habitLineChartInstance = null;
@@ -1122,7 +1139,10 @@
                 const label = document.createElement('label'); label.className = 'checkbox-container';
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `habit-${dayIndex}-${colName}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
-                input.addEventListener('change', () => { updateHabitsStats(dayIndex); });
+                input.addEventListener('change', () => { 
+                    if(input.checked) unlockAchievement('first_check');
+                    updateHabitsStats(dayIndex); 
+                });
                 const span = document.createElement('span'); span.className = 'checkmark';
                 label.appendChild(input); label.appendChild(span); td.appendChild(label); tr.appendChild(td);
             });
@@ -1134,19 +1154,20 @@
         let totalChecked = 0; let totalExpectedWeek = 0; let perfectDaysCount = 0;
         let habitBarData = new Array(habitColumns.length).fill(0);
         let habitDailyData = new Array(7).fill(0);
+        let currentStreak = 0;
+
+        let todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
         daysOfWeek.forEach((day, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
             habitColumns.forEach((colName, colIndex) => {
                 const input = document.getElementById(`habit-${dayIndex}-${colName}`); if (!input) return;
                 localStorage.setItem(input.id, input.checked);
-                if (input.checked) { 
-                    totalChecked++; dayChecked++; 
-                    habitBarData[colIndex]++; habitDailyData[dayIndex]++;
-                }
+                if (input.checked) { totalChecked++; dayChecked++; habitBarData[colIndex]++; habitDailyData[dayIndex]++; }
                 if (currentHabitSettings[colName][dayIndex] === 1) { totalExpectedWeek++; dayExpected++; }
             });
-            if (dayChecked >= dayExpected && dayExpected > 0) {
+            const isPerfect = (dayChecked >= dayExpected && dayExpected > 0);
+            if (isPerfect) {
                 perfectDaysCount++;
                 if (changedDayIndex === dayIndex) {
                     const wasPerfect = localStorage.getItem(`habit_perfect_${dayIndex}`) === 'true';
@@ -1154,11 +1175,21 @@
                 }
             } else { localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); }
         });
+
+        // Расчет Daily Streak
+        for (let i = todayIdx; i >= 0; i--) {
+            if (localStorage.getItem(`habit_perfect_${i}`) === 'true') currentStreak++;
+            else break;
+        }
+
+        if (currentStreak >= 7) unlockAchievement('streak_7');
+
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
         if(progressPercent > 100) progressPercent = 100; 
         document.getElementById('habitsProgressValue').textContent = `${progressPercent}%`;
         document.getElementById('habitsProgressBarText').textContent = `${progressPercent}%`;
         document.getElementById('habitsProgressBarFill').style.width = `${progressPercent}%`;
+        document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
 
         updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek);
     }
@@ -1174,27 +1205,24 @@
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
             type: 'bar', data: { labels: habitColumns.map((col, i) => `${habitNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
         if (habitDailyChartInstance) habitDailyChartInstance.destroy();
         habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
         let lineLabels = [], lineData = [];
-        history.slice(-7).forEach((week) => { 
-            lineLabels.push(week.date); 
-            lineData.push(week.habitPercent || 0); 
-        });
+        history.slice(-7).forEach((week) => { lineLabels.push(week.date); lineData.push(week.habitPercent || 0); });
         lineLabels.push('Текущая'); lineData.push(currentProgress);
 
         if (habitLineChartInstance) habitLineChartInstance.destroy();
         habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
             type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 12, family: 'Inter'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
         });
     }
 
@@ -1203,83 +1231,139 @@
 
     function openProductsModal() {
         document.getElementById('productsModal').style.display = "block";
+        // Установка текущей даты по умолчанию
+        if(!document.getElementById('prodBuyDate').value) {
+            document.getElementById('prodBuyDate').valueAsDate = new Date();
+        }
         renderProducts();
     }
-    function closeProductsModal() {
-        document.getElementById('productsModal').style.display = "none";
+    function closeProductsModal() { document.getElementById('productsModal').style.display = "none"; }
+
+    function calculatePAO(openDate, paoMonths) {
+        if (!openDate || !paoMonths) return { status: '', text: '' };
+        let expireDate = new Date(openDate);
+        expireDate.setMonth(expireDate.getMonth() + parseInt(paoMonths));
+        let today = new Date();
+        let diffTime = expireDate - today;
+        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) return { status: 'pao-danger', text: '❌ Просрочено' };
+        if (diffDays <= 14) return { status: 'pao-warn', text: `⚠️ ${diffDays} дн.` };
+        return { status: 'pao-ok', text: `✅ ${Math.floor(diffDays/30)} мес.` };
     }
 
     function renderProducts() {
-        const tbody = document.getElementById('productsTableBody');
-        tbody.innerHTML = '';
+        const container = document.getElementById('productsContainer');
+        container.innerHTML = '';
         
+        // Считаем расходы за месяц
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let monthlySpend = 0;
+
+        // Группируем по категориям
+        let grouped = {};
+        products.forEach((p, index) => {
+            if (p.buyDate) {
+                let d = new Date(p.buyDate);
+                if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                    monthlySpend += (parseFloat(p.price) || 0);
+                }
+            }
+            let cat = p.category || 'Без категории';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push({ ...p, originalIndex: index });
+        });
+
+        document.getElementById('monthlySpendDisplay').textContent = `Потрачено в этом месяце: ${monthlySpend} ₽`;
+
         if (products.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Пока нет добавленных средств.</td></tr>';
+            container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Пока нет добавленных средств.</p>';
             return;
         }
 
-        products.forEach((product, index) => {
-            const tr = document.createElement('tr');
-            
-            const tdName = document.createElement('td');
-            tdName.textContent = product.name;
-            tdName.style.fontWeight = '600';
-            
-            const tdPrice = document.createElement('td');
-            tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
-            tdPrice.className = 'product-price';
-            
-            const tdLink = document.createElement('td');
-            if (product.link) {
-                const a = document.createElement('a');
-                a.href = product.link;
-                a.target = '_blank';
-                a.textContent = 'Открыть 🔗';
-                tdLink.appendChild(a);
-            } else {
-                tdLink.textContent = '—';
-            }
-            
-            const tdAction = document.createElement('td');
-            const btnDel = document.createElement('button');
-            btnDel.className = 'btn-delete-product';
-            btnDel.textContent = '✕';
-            btnDel.onclick = () => deleteProduct(index);
-            tdAction.appendChild(btnDel);
+        for (let cat in grouped) {
+            let catHeader = document.createElement('div');
+            catHeader.className = 'category-header';
+            catHeader.innerHTML = `<span>📁 ${cat}</span> <span>${grouped[cat].length} шт.</span>`;
+            container.appendChild(catHeader);
 
-            tdName.setAttribute('data-label', 'Средство');
-            tdPrice.setAttribute('data-label', 'Цена');
-            tdLink.setAttribute('data-label', 'Ссылка');
-            tdAction.setAttribute('data-label', 'Удалить');
+            let table = document.createElement('table');
+            table.className = 'product-table';
+            table.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>ПАО</th><th>Ссылка</th><th></th></tr></thead>`;
+            let tbody = document.createElement('tbody');
+
+            grouped[cat].forEach(product => {
+                let tr = document.createElement('tr');
+                
+                let tdName = document.createElement('td');
+                tdName.innerHTML = `<div style="font-weight:600;">${product.name}</div>`;
+                if(product.buyDate) tdName.innerHTML += `<div style="font-size:11px; color:var(--text-muted);">Куплено: ${product.buyDate}</div>`;
+                
+                let tdPrice = document.createElement('td');
+                tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
+                
+                let tdPao = document.createElement('td');
+                if (product.openDate && product.pao) {
+                    let paoInfo = calculatePAO(product.openDate, product.pao);
+                    tdPao.innerHTML = `<span class="pao-badge ${paoInfo.status}">${paoInfo.text}</span>`;
+                } else {
+                    tdPao.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">-</span>`;
+                }
+
+                let tdLink = document.createElement('td');
+                if (product.link) {
+                    tdLink.innerHTML = `<a href="${product.link}" target="_blank">Открыть 🔗</a>`;
+                } else { tdLink.textContent = '—'; }
+
+                let tdAction = document.createElement('td');
+                let btnDel = document.createElement('button');
+                btnDel.className = 'btn-delete-product';
+                btnDel.textContent = '✕';
+                btnDel.onclick = () => deleteProduct(product.originalIndex);
+                tdAction.appendChild(btnDel);
+
+                tdName.setAttribute('data-label', 'Средство');
+                tdPrice.setAttribute('data-label', 'Цена');
+                tdPao.setAttribute('data-label', 'ПАО');
+                tdLink.setAttribute('data-label', 'Ссылка');
+                tdAction.setAttribute('data-label', 'Удалить');
+
+                tr.appendChild(tdName); tr.appendChild(tdPrice); tr.appendChild(tdPao); tr.appendChild(tdLink); tr.appendChild(tdAction);
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
             
-            tr.appendChild(tdName);
-            tr.appendChild(tdPrice);
-            tr.appendChild(tdLink);
-            tr.appendChild(tdAction);
-            tbody.appendChild(tr);
-        });
+            let wrapper = document.createElement('div');
+            wrapper.className = 'table-wrapper';
+            wrapper.style.marginBottom = '15px';
+            wrapper.appendChild(table);
+            container.appendChild(wrapper);
+        }
     }
 
     function addProduct() {
-        const nameInput = document.getElementById('prodName');
-        const priceInput = document.getElementById('prodPrice');
-        const linkInput = document.getElementById('prodLink');
+        const name = document.getElementById('prodName').value.trim();
+        const category = document.getElementById('prodCategory').value;
+        const price = document.getElementById('prodPrice').value.trim();
+        const buyDate = document.getElementById('prodBuyDate').value;
+        const link = document.getElementById('prodLink').value.trim();
+        const openDate = document.getElementById('prodOpenDate').value;
+        const pao = document.getElementById('prodPao').value.trim();
         
-        const name = nameInput.value.trim();
-        const price = priceInput.value.trim();
-        const link = linkInput.value.trim();
-        
-        if (!name) {
-            alert("Введите название средства!");
-            return;
-        }
+        if (!name) { alert("Введите название средства!"); return; }
 
-        products.push({ name, price, link });
+        products.push({ name, category, price, buyDate, link, openDate, pao });
         localStorage.setItem('userProducts', JSON.stringify(products));
         
-        nameInput.value = '';
-        priceInput.value = '';
-        linkInput.value = '';
+        if (products.length >= 5) unlockAchievement('product_5');
+
+        // Очистка полей
+        document.getElementById('prodName').value = '';
+        document.getElementById('prodPrice').value = '';
+        document.getElementById('prodLink').value = '';
+        document.getElementById('prodOpenDate').value = '';
+        document.getElementById('prodPao').value = '';
         
         renderProducts();
     }
@@ -1338,14 +1422,8 @@
     }
 
     function resetAll() {
-        if(confirm("Сохранить текущую неделю в Архив и начать новую? (Сбросятся и уход, и привычки)")) {
-            let weekData = { 
-                date: new Date().toLocaleDateString('ru-RU'), 
-                skinChecks: {}, 
-                notes: {}, 
-                habitChecks: {}, 
-                habitPercent: 0 
-            };
+        if(confirm("Сохранить текущую неделю в Архив и начать новую?")) {
+            let weekData = { date: new Date().toLocaleDateString('ru-RU'), skinChecks: {}, notes: {}, habitChecks: {}, habitPercent: 0 };
 
             // Сохраняем уход
             skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { weekData.skinChecks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
@@ -1362,6 +1440,8 @@
                 });
             });
             weekData.habitPercent = habitTotalExp > 0 ? Math.round((habitTotalC / habitTotalExp) * 100) : 0;
+
+            if(weekData.habitPercent === 100) unlockAchievement('perfect_week');
 
             // Записываем в единую историю
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
@@ -1396,80 +1476,55 @@
             for (let i = history.length - 1; i >= 0; i--) {
                 let week = history[i];
                 let dateStr = week.date || 'Неизвестно';
+                let div = document.createElement('div'); div.className = 'history-card';
 
-                let div = document.createElement('div'); 
-                div.className = 'history-card';
-
-                // --- ДЕТАЛИ УХОДА ---
-                let skinHtml = '';
-                let totalSkinChecks = 0;
-                let hasSkinDetails = false;
-                let skinChecks = week.skinChecks || week.checks || {}; // Поддержка старого формата
+                let skinHtml = ''; let totalSkinChecks = 0; let hasSkinDetails = false;
+                let skinChecks = week.skinChecks || week.checks || {};
                 
                 for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
                     let dayChecks = [];
                     skinColumns.forEach(col => { if (skinChecks[`check-${dayIdx}-${col}`]) { dayChecks.push(skinColumnNames[col]); totalSkinChecks++; } });
                     let note = week.notes && week.notes[`note-${dayIdx}`] ? week.notes[`note-${dayIdx}`] : '';
-                    
                     if (dayChecks.length > 0 || note.trim() !== '') {
                         hasSkinDetails = true;
-                        skinHtml += `
-                            <div style="margin-bottom: 8px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
-                                <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${daysOfWeek[dayIdx]}</div>
-                                ${dayChecks.length > 0 ? `<div style="font-size: 12px; color: var(--green); font-weight: 600;">✅ Уход: ${dayChecks.join(', ')}</div>` : ''}
-                                ${note.trim() !== '' ? `<div style="font-size: 12px; color: var(--text); white-space: pre-wrap; margin-top: 4px;">📝 ${note}</div>` : ''}
-                            </div>
-                        `;
+                        skinHtml += `<div style="margin-bottom: 8px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${daysOfWeek[dayIdx]}</div>
+                            ${dayChecks.length > 0 ? `<div style="font-size: 12px; color: var(--green); font-weight: 600;">✅ Уход: ${dayChecks.join(', ')}</div>` : ''}
+                            ${note.trim() !== '' ? `<div style="font-size: 12px; color: var(--text); white-space: pre-wrap; margin-top: 4px;">📝 ${note}</div>` : ''}
+                        </div>`;
                     }
                 }
                 if (!hasSkinDetails) skinHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет данных по уходу.</p>';
 
-                // --- ДЕТАЛИ ПРИВЫЧЕК ---
                 let habitHtml = '';
-                if (week.habitChecks) { // Новый формат
+                if (week.habitChecks) { 
                     let hasHabitDetails = false;
                     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
                         let dayHabits = [];
                         habitColumns.forEach(col => { if (week.habitChecks[`habit-${dayIdx}-${col}`]) { dayHabits.push(habitNames[col]); } });
-                        
                         if (dayHabits.length > 0) {
                             hasHabitDetails = true;
-                            habitHtml += `
-                                <div style="margin-bottom: 6px; font-size: 12px;">
-                                    <span style="font-weight: 700; color: var(--primary);">${daysOfWeek[dayIdx]}:</span> ${dayHabits.join(', ')}
-                                </div>
-                            `;
+                            habitHtml += `<div style="margin-bottom: 6px; font-size: 12px;"><span style="font-weight: 700; color: var(--primary);">${daysOfWeek[dayIdx]}:</span> ${dayHabits.join(', ')}</div>`;
                         }
                     }
                     if (!hasHabitDetails) habitHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет выполненных привычек.</p>';
-                } else if (week.habitPercent !== undefined) { // Старый формат
+                } else if (week.habitPercent !== undefined) { 
                     habitHtml = `<div style="font-size: 14px; font-weight: 600; color: var(--primary);">Выполнено на ${week.habitPercent}%</div>`;
-                } else {
-                    habitHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет данных по привычкам.</p>';
-                }
+                } else { habitHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет данных по привычкам.</p>'; }
 
-                // Собираем карточку
                 div.innerHTML = `
                     <div class="history-header">
                         <h4>Неделя от ${dateStr}</h4>
                         <button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️ Удалить</button>
                     </div>
-                    
                     <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                        <!-- Колонка Уход -->
                         <div style="flex: 1; min-width: 250px;">
                             <div style="font-weight: 800; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🧴 Уход (выполнено: ${totalSkinChecks})</div>
-                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
-                                ${skinHtml}
-                            </div>
+                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">${skinHtml}</div>
                         </div>
-                        
-                        <!-- Колонка Привычки -->
                         <div style="flex: 1; min-width: 250px;">
                             <div style="font-weight: 800; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🧠 Привычки</div>
-                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
-                                ${habitHtml}
-                            </div>
+                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">${habitHtml}</div>
                         </div>
                     </div>
                 `;
@@ -1482,14 +1537,19 @@
     function deleteWeek(index) {
         if(confirm("Удалить эту неделю из архива?")) {
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
-            history.splice(index, 1); 
-            localStorage.setItem('weeklyHistory', JSON.stringify(history));
+            history.splice(index, 1); localStorage.setItem('weeklyHistory', JSON.stringify(history));
             openHistory(); updateSkinStats(); updateHabitsStats();
         }
     }
     function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
     function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); openHistory(); updateSkinStats(); updateHabitsStats(); } }
-    window.onclick = function(event) { if (event.target == document.getElementById('historyModal')) closeHistory(); if (event.target == document.getElementById('settingsModal')) closeSettings(); if (event.target == document.getElementById('productsModal')) closeProductsModal(); }
+    
+    window.onclick = function(event) { 
+        if (event.target == document.getElementById('historyModal')) closeHistory(); 
+        if (event.target == document.getElementById('settingsModal')) closeSettings(); 
+        if (event.target == document.getElementById('productsModal')) closeProductsModal(); 
+        if (event.target == document.getElementById('achievementsModal')) closeAchievements();
+    }
 
     // --- ИНИЦИАЛИЗАЦИЯ ---
     window.addEventListener('DOMContentLoaded', () => {
