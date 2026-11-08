@@ -177,7 +177,7 @@
         .stat-card {
             background: var(--card-bg); padding: 20px 20px 15px 20px; border-radius: 20px; 
             box-shadow: var(--shadow); border: 1px solid var(--border-color); 
-            flex: 1; min-width: 200px; text-align: center; transition: transform 0.3s;
+            flex: 1; min-width: 180px; text-align: center; transition: transform 0.3s;
             display: flex; flex-direction: column; justify-content: space-between;
         }
         .stat-card:hover { transform: translateY(-4px); }
@@ -573,6 +573,11 @@
             <div class="stat-card">
                 <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Всего идеальных</div>
                 <div class="stat-value gold" id="globalStreakValue">0 🏆</div>
+            </div>
+            <!-- НОВАЯ КАРТОЧКА ДЛЯ УХОДА -->
+            <div class="stat-card" style="background: var(--primary-light); border-color: var(--primary);">
+                <div style="color: var(--primary); font-size: 13px; font-weight: 600; text-transform: uppercase;">Личный рекорд</div>
+                <div class="stat-value gold" id="skinBestStreak">0 🏅</div>
             </div>
         </div>
 
@@ -1326,6 +1331,28 @@
         }
         document.getElementById('globalStreakValue').textContent = `${globalPerfectDays} 🏆`;
         
+        // ЛИЧНЫЙ РЕКОРД (МАКС СТРИК ЗА НЕДЕЛЮ)
+        let maxSkinStreak = parseInt(localStorage.getItem('bestSkinStreak') || 0);
+        let weekStreak = 0;
+        for (let i = 0; i < 7; i++) {
+            let dayChecked = 0, dayExpected = 0;
+            skinColumns.forEach((col, colIndex) => {
+                const input = document.getElementById(`check-${i}-${col.id}`); 
+                if(input && input.checked) dayChecked++;
+                if(skinWeekSchedule[i].expected[colIndex] === 1) dayExpected++;
+            });
+            if (dayChecked >= dayExpected && dayExpected > 0) {
+                weekStreak++;
+                if (weekStreak > maxSkinStreak) {
+                    maxSkinStreak = weekStreak;
+                    localStorage.setItem('bestSkinStreak', maxSkinStreak);
+                }
+            } else {
+                weekStreak = 0;
+            }
+        }
+        document.getElementById('skinBestStreak').textContent = `${maxSkinStreak} 🏅`;
+        
         updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek);
         renderSkinSparkline(dailyData);
         queueSync();
@@ -1391,7 +1418,6 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
         
-        // ИСПРАВЛЕНО: Добавлено объявление history
         let history = safeParse('weeklyHistory', []); 
         if (!Array.isArray(history)) history = [];
         let lineLabels = [], lineData = [];
@@ -1470,7 +1496,7 @@
             else break;
         }
 
-        // ЛИЧНЫЙ РЕКОРД
+        // ЛИЧНЫЙ РЕКОРД ДЛЯ ПРИВЫЧЕК
         let bestStreak = parseInt(localStorage.getItem('bestStreak') || 0);
         if (currentStreak > bestStreak) {
             bestStreak = currentStreak;
@@ -1553,7 +1579,6 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
-        // ИСПРАВЛЕНО: Добавлено объявление history
         let history = safeParse('weeklyHistory', []); 
         if (!Array.isArray(history)) history = [];
         let lineLabels = [], lineData = [];
