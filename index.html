@@ -107,6 +107,23 @@
         .btn-auth { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
         .btn-auth:hover { background: #0284C7; color: white; }
 
+        /* БЛОК АВТОРИЗАЦИИ */
+        .auth-info-pill {
+            display: flex; align-items: center; gap: 8px; 
+            background: var(--hover-bg); border: 1px solid var(--border-color);
+            padding: 4px 6px 4px 12px; border-radius: 12px;
+        }
+        .auth-email-text {
+            font-size: 12px; font-weight: 600; color: var(--text-muted);
+            max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .btn-logout-icon {
+            padding: 4px 8px; font-size: 14px; border-radius: 8px;
+            background: transparent; border: none; cursor: pointer; color: var(--red);
+            transition: 0.2s;
+        }
+        .btn-logout-icon:hover { background: var(--red-bg); }
+
         /* ВЫПАДАЮЩЕЕ МЕНЮ */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-content {
@@ -456,7 +473,7 @@
         .auth-switch span { color: var(--primary); font-weight: 600; }
         .auth-error { color: var(--red); font-size: 13px; text-align: center; margin-top: 10px; display: none; }
         
-        .sync-indicator { font-size: 16px; margin-right: 5px; transition: 0.3s; }
+        .sync-indicator { font-size: 14px; margin-right: 2px; transition: 0.3s; }
         .sync-saving { opacity: 0.5; animation: pulse 1s infinite; }
         .sync-saved { color: var(--green); }
         .sync-error { color: var(--red); }
@@ -480,6 +497,11 @@
             .tabs { flex-direction: row; padding: 4px; }
             .tab-btn { font-size: 13px; padding: 10px 5px; }
             .header-title h1 { font-size: 26px; }
+
+            /* Скрываем email на мобильных, оставляем только иконку выхода */
+            .auth-email-text { display: none; }
+            .auth-info-pill { padding: 4px; border: none; background: transparent; }
+            .btn-logout-icon { font-size: 18px; padding: 8px; background: var(--red-bg); border-radius: 50%; }
 
             .table-wrapper { border: none; box-shadow: none; background: transparent; }
             table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
@@ -547,9 +569,18 @@
         </div>
 
         <div class="nav-group right">
-            <div id="auth-status" style="display: flex; align-items: center; gap: 8px; margin-right: 10px;">
+            
+            <!-- Блок авторизации -->
+            <div id="auth-status" style="display: flex; align-items: center; gap: 8px; margin-right: 5px;">
                 <span id="sync-icon" class="sync-indicator" style="display: none;" title="Синхронизировано">✅</span>
-                <span id="user-email" style="font-size: 13px; font-weight: 600; color: var(--text-muted); display: none;"></span>
+                
+                <!-- Плашка для авторизованного пользователя -->
+                <div id="user-info" class="auth-info-pill" style="display: none;">
+                    <span id="user-email" class="auth-email-text" title="">mail@example.com</span>
+                    <button class="btn-logout-icon" onclick="logout()" title="Выйти">🚪</button>
+                </div>
+
+                <!-- Кнопка входа (показывается, если не авторизован) -->
                 <button id="auth-btn" class="btn btn-auth" onclick="openAuthModal()">🔑 Войти</button>
             </div>
 
@@ -893,22 +924,24 @@
     auth.onAuthStateChanged(user => {
         currentUser = user;
         const authBtn = document.getElementById('auth-btn');
-        const userEmailSpan = document.getElementById('user-email');
+        const userInfo = document.getElementById('user-info');
         const syncIcon = document.getElementById('sync-icon');
+        const userEmail = document.getElementById('user-email');
 
         if (user) {
-            authBtn.textContent = 'Выйти';
-            authBtn.className = 'btn btn-danger';
-            authBtn.onclick = logout;
-            userEmailSpan.textContent = user.email;
-            userEmailSpan.style.display = 'inline-block';
+            // Пользователь вошел
+            userInfo.style.display = 'flex';
+            authBtn.style.display = 'none';
             syncIcon.style.display = 'inline-block';
+            
+            userEmail.textContent = user.email;
+            userEmail.title = user.email; // Показываем полный email при наведении
+            
             pullFromCloud(user.uid);
         } else {
-            authBtn.textContent = '🔑 Войти';
-            authBtn.className = 'btn btn-auth';
-            authBtn.onclick = openAuthModal;
-            userEmailSpan.style.display = 'none';
+            // Пользователь вышел
+            userInfo.style.display = 'none';
+            authBtn.style.display = 'inline-flex';
             syncIcon.style.display = 'none';
         }
     });
@@ -1325,7 +1358,7 @@
         queueSync();
     }
 
-function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+    function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
         const isDark = document.body.classList.contains('dark-mode'); 
         const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -1339,22 +1372,19 @@ function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek
         const maxGoal = Math.max(...goals, 1);
         const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
         
-        // НОВОЕ: Динамическая высота для графика выполнения
         const chartContainer = document.getElementById('barChart').parentElement;
         chartContainer.style.height = Math.max(350, skinColumns.length * 40) + 'px';
 
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
-            type: 'bar', data: { labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 6, barThickness: 20 }] },
+            type: 'bar', data: { labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 6 }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
-        
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
-        
         let history = safeParse('weeklyHistory', []); 
         if (!Array.isArray(history)) history = [];
         let lineLabels = [], lineData = [];
@@ -1365,7 +1395,6 @@ function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek
             lineLabels.push(week.date); lineData.push(pct); 
         });
         lineLabels.push('Текущая'); lineData.push(currentProgress);
-        
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
             type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
@@ -1461,13 +1490,12 @@ function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek
         const maxGoal = Math.max(...goals, 1);
         const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
 
-        // НОВОЕ: Динамическая высота для графика привычек
         const habitChartContainer = document.getElementById('habitBarChart').parentElement;
         habitChartContainer.style.height = Math.max(350, habitColumns.length * 40) + 'px';
 
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
-            type: 'bar', data: { labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 6, barThickness: 20 }] },
+            type: 'bar', data: { labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 6 }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
@@ -1896,7 +1924,6 @@ function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek
             renderHabitsTable();
         } catch (e) {
             console.error("Ошибка инициализации:", e);
-            // Если что-то сломалось, пробуем аварийный запуск с дефолтными настройками
             skinColumns = defaultSkinColumns;
             habitColumns = defaultHabitColumns;
             currentSkinSettings = defaultSkinSettings;
