@@ -403,8 +403,8 @@
         }
         .btn-delete-product { background: var(--red-bg); color: var(--red); }
         .btn-delete-product:hover { background: #FCA5A5; color: #7F1D1D; }
-        .btn-edit-product { background: var(--primary-light); color: var(--primary); }
-        .btn-edit-product:hover { background: var(--primary); color: white; }
+        .btn-edit-product { background: #E0F2FE; color: #0284C7; }
+        .btn-edit-product:hover { background: #0284C7; color: white; }
         
         .category-header {
             background: var(--primary-light); color: var(--primary); font-weight: 800; 
@@ -725,13 +725,9 @@
                 <label>Ссылка (URL)</label>
                 <input type="text" id="prodLink" class="form-input" placeholder="https://ozon.ru/...">
             </div>
-            <div class="form-group" style="max-width: 140px;">
-                <label>Дата вскрытия</label>
-                <input type="date" id="prodOpenDate" class="form-input" title="Когда вы открыли баночку">
-            </div>
-            <div class="form-group" style="max-width: 120px;">
-                <label>Срок (ПАО, мес)</label>
-                <input type="number" id="prodPao" class="form-input" placeholder="6 или 12" title="Сколько месяцев можно использовать после вскрытия">
+            <div class="form-group" style="max-width: 160px;">
+                <label>Годен до (месяц/год)</label>
+                <input type="month" id="prodExpDate" class="form-input" title="Выберите месяц и год срока годности с упаковки">
             </div>
             <button id="prodSubmitBtn" class="btn btn-primary" style="height: 42px; flex: 1; justify-content: center;" onclick="addProduct()">➕ Добавить</button>
             <button id="prodCancelBtn" class="btn btn-danger" style="height: 42px; display: none;" onclick="cancelEditProduct()">Отмена</button>
@@ -1238,6 +1234,22 @@
     let products = JSON.parse(localStorage.getItem('userProducts')) || [];
     let editingProductIndex = -1;
 
+    // Миграция старых данных (из ПАО в Срок годности)
+    let needsMigration = false;
+    products.forEach(p => {
+        if (p.openDate && p.pao && !p.expDate) {
+            let d = new Date(p.openDate);
+            d.setMonth(d.getMonth() + parseInt(p.pao));
+            let mm = String(d.getMonth() + 1).padStart(2, '0');
+            let yyyy = d.getFullYear();
+            p.expDate = `${yyyy}-${mm}`;
+            delete p.openDate;
+            delete p.pao;
+            needsMigration = true;
+        }
+    });
+    if (needsMigration) localStorage.setItem('userProducts', JSON.stringify(products));
+
     function openProductsModal() {
         document.getElementById('productsModal').style.display = "block";
         if(!document.getElementById('prodBuyDate').value) {
@@ -1250,17 +1262,24 @@
         cancelEditProduct();
     }
 
-    function calculatePAO(openDate, paoMonths) {
-        if (!openDate || !paoMonths) return { status: '', text: '' };
-        let expireDate = new Date(openDate);
-        expireDate.setMonth(expireDate.getMonth() + parseInt(paoMonths));
+    function calculateExpiration(expMonthStr) {
+        if (!expMonthStr) return { status: '', text: '' };
+        let parts = expMonthStr.split('-'); // YYYY-MM
+        let year = parseInt(parts[0]);
+        let month = parseInt(parts[1]);
+        
+        // Последний день указанного месяца
+        let expDate = new Date(year, month, 0); 
         let today = new Date();
-        let diffTime = expireDate - today;
+        today.setHours(0,0,0,0);
+        
+        let diffTime = expDate - today;
         let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         
+        let mmStr = String(month).padStart(2, '0');
         if (diffDays < 0) return { status: 'pao-danger', text: '❌ Просрочено' };
-        if (diffDays <= 14) return { status: 'pao-warn', text: `⚠️ ${diffDays} дн.` };
-        return { status: 'pao-ok', text: `✅ ${Math.floor(diffDays/30)} мес.` };
+        if (diffDays <= 30) return { status: 'pao-warn', text: `⚠️ Истекает` };
+        return { status: 'pao-ok', text: `✅ ${mmStr}.${year}` };
     }
 
     function renderProducts() {
@@ -1299,7 +1318,7 @@
 
             let table = document.createElement('table');
             table.className = 'product-table';
-            table.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>ПАО</th><th>Ссылка</th><th style="text-align:center;">Действия</th></tr></thead>`;
+            table.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>Годен до</th><th>Ссылка</th><th style="text-align:center;">Действия</th></tr></thead>`;
             let tbody = document.createElement('tbody');
 
             grouped[cat].forEach(product => {
@@ -1313,8 +1332,8 @@
                 tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
                 
                 let tdPao = document.createElement('td');
-                if (product.openDate && product.pao) {
-                    let paoInfo = calculatePAO(product.openDate, product.pao);
+                if (product.expDate) {
+                    let paoInfo = calculateExpiration(product.expDate);
                     tdPao.innerHTML = `<span class="pao-badge ${paoInfo.status}">${paoInfo.text}</span>`;
                 } else {
                     tdPao.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">-</span>`;
@@ -1332,20 +1351,20 @@
                 btnEdit.className = 'btn-action btn-edit-product';
                 btnEdit.textContent = '✏️';
                 btnEdit.title = 'Редактировать';
-                btnEdit.onclick = () => editProduct(product.originalIndex);
+                btnEdit.onclick = (e) => { e.preventDefault(); editProduct(product.originalIndex); };
                 
                 let btnDel = document.createElement('button');
                 btnDel.className = 'btn-action btn-delete-product';
                 btnDel.textContent = '✕';
                 btnDel.title = 'Удалить';
-                btnDel.onclick = () => deleteProduct(product.originalIndex);
+                btnDel.onclick = (e) => { e.preventDefault(); deleteProduct(product.originalIndex); };
                 
                 tdAction.appendChild(btnEdit);
                 tdAction.appendChild(btnDel);
 
                 tdName.setAttribute('data-label', 'Средство');
                 tdPrice.setAttribute('data-label', 'Цена');
-                tdPao.setAttribute('data-label', 'ПАО');
+                tdPao.setAttribute('data-label', 'Годен до');
                 tdLink.setAttribute('data-label', 'Ссылка');
                 tdAction.setAttribute('data-label', 'Действия');
 
@@ -1368,20 +1387,19 @@
         const price = document.getElementById('prodPrice').value.trim();
         const buyDate = document.getElementById('prodBuyDate').value;
         const link = document.getElementById('prodLink').value.trim();
-        const openDate = document.getElementById('prodOpenDate').value;
-        const pao = document.getElementById('prodPao').value.trim();
+        const expDate = document.getElementById('prodExpDate').value;
         
         if (!name) { alert("Введите название средства!"); return; }
 
         if (editingProductIndex >= 0) {
             // Режим редактирования
-            products[editingProductIndex] = { name, category, price, buyDate, link, openDate, pao };
+            products[editingProductIndex] = { name, category, price, buyDate, link, expDate };
             localStorage.setItem('userProducts', JSON.stringify(products));
             cancelEditProduct();
             renderProducts();
         } else {
             // Режим добавления
-            products.push({ name, category, price, buyDate, link, openDate, pao });
+            products.push({ name, category, price, buyDate, link, expDate });
             localStorage.setItem('userProducts', JSON.stringify(products));
             
             if (products.length >= 5) unlockAchievement('product_5');
@@ -1390,8 +1408,7 @@
             document.getElementById('prodName').value = '';
             document.getElementById('prodPrice').value = '';
             document.getElementById('prodLink').value = '';
-            document.getElementById('prodOpenDate').value = '';
-            document.getElementById('prodPao').value = '';
+            document.getElementById('prodExpDate').value = '';
             
             renderProducts();
         }
@@ -1404,8 +1421,7 @@
         document.getElementById('prodPrice').value = p.price || '';
         document.getElementById('prodBuyDate').value = p.buyDate || '';
         document.getElementById('prodLink').value = p.link || '';
-        document.getElementById('prodOpenDate').value = p.openDate || '';
-        document.getElementById('prodPao').value = p.pao || '';
+        document.getElementById('prodExpDate').value = p.expDate || '';
         
         editingProductIndex = index;
         
@@ -1417,7 +1433,7 @@
         document.getElementById('prodCancelBtn').style.display = 'inline-flex';
         
         // Прокрутка к форме
-        document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('productsModal').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function cancelEditProduct() {
@@ -1425,8 +1441,7 @@
         document.getElementById('prodName').value = '';
         document.getElementById('prodPrice').value = '';
         document.getElementById('prodLink').value = '';
-        document.getElementById('prodOpenDate').value = '';
-        document.getElementById('prodPao').value = '';
+        document.getElementById('prodExpDate').value = '';
         document.getElementById('prodBuyDate').valueAsDate = new Date();
         
         let btnSubmit = document.getElementById('prodSubmitBtn');
