@@ -341,15 +341,32 @@
         }
         .th-title:hover::after, .th-title:hover::before { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
-        /* ГРАФИКИ */
-        .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px; }
-        .chart-box { 
+        /* БЛОК АНАЛИТИКИ (ГРАФИКИ) */
+        .analytics-section {
             background: var(--card-bg); padding: 24px; border-radius: 24px; 
             box-shadow: var(--shadow); border: 1px solid var(--border-color); 
-            position: relative; height: 350px; transition: transform 0.3s;
+            margin-top: 30px;
         }
-        .chart-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
-        .chart-box.full { grid-column: 1 / -1; height: 320px; }
+        
+        .chart-tabs {
+            display: flex; gap: 8px; margin-bottom: 20px; background: var(--bg);
+            padding: 6px; border-radius: 16px; border: 1px solid var(--border-color);
+        }
+        .chart-tab-btn {
+            flex: 1; padding: 10px; border: none; background: transparent; border-radius: 12px;
+            font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; 
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .chart-tab-btn:hover { color: var(--text); background: var(--hover-bg); }
+        .chart-tab-btn.active { 
+            background: var(--card-bg); color: var(--primary); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+        }
+        
+        .chart-box { 
+            display: none; position: relative; height: 350px; 
+        }
+        .chart-box.active { display: block; animation: fadeIn 0.3s ease; }
         .chart-box canvas { width: 100% !important; height: 100% !important; }
 
         /* МОДАЛЬНЫЕ ОКНА */
@@ -517,8 +534,11 @@
 
             tr.today-row .day-cell { box-shadow: none; }
 
-            .charts-container { grid-template-columns: 1fr; }
-            .chart-box { height: 300px; padding: 15px; }
+            .analytics-section { padding: 15px; }
+            .chart-tabs { flex-direction: row; padding: 4px; }
+            .chart-tab-btn { font-size: 12px; padding: 8px 5px; flex-direction: column; gap: 4px; }
+            .chart-box { height: 300px; }
+            
             .dashboard { flex-direction: column; }
             .stat-card { padding: 24px; }
             .stat-value { font-size: 36px; }
@@ -664,10 +684,23 @@
             </table>
         </div>
 
-        <div class="charts-container">
-            <div class="chart-box"><canvas id="barChart"></canvas></div>
-            <div class="chart-box"><canvas id="dailyChart"></canvas></div>
-            <div class="chart-box full"><canvas id="lineChart"></canvas></div>
+        <!-- НОВЫЙ БЛОК АНАЛИТИКИ (С ВКЛАДКАМИ) -->
+        <div class="analytics-section">
+            <div class="chart-tabs">
+                <button class="chart-tab-btn active" id="btn-chart-skin-fact" onclick="switchChartTab('skin', 'fact')">📊 Факт</button>
+                <button class="chart-tab-btn" id="btn-chart-skin-days" onclick="switchChartTab('skin', 'days')">📅 По дням</button>
+                <button class="chart-tab-btn" id="btn-chart-skin-trends" onclick="switchChartTab('skin', 'trends')">📈 Динамика</button>
+            </div>
+            
+            <div class="chart-box active" id="chart-skin-fact">
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="chart-box" id="chart-skin-days">
+                <canvas id="dailyChart"></canvas>
+            </div>
+            <div class="chart-box" id="chart-skin-trends">
+                <canvas id="lineChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -710,10 +743,23 @@
             </table>
         </div>
 
-        <div class="charts-container">
-            <div class="chart-box"><canvas id="habitBarChart"></canvas></div>
-            <div class="chart-box"><canvas id="habitDailyChart"></canvas></div>
-            <div class="chart-box full"><canvas id="habitLineChart"></canvas></div>
+        <!-- НОВЫЙ БЛОК АНАЛИТИКИ ДЛЯ ПРИВЫЧЕК -->
+        <div class="analytics-section">
+            <div class="chart-tabs">
+                <button class="chart-tab-btn active" id="btn-chart-habit-fact" onclick="switchChartTab('habit', 'fact')">📊 Факт</button>
+                <button class="chart-tab-btn" id="btn-chart-habit-days" onclick="switchChartTab('habit', 'days')">📅 По дням</button>
+                <button class="chart-tab-btn" id="btn-chart-habit-trends" onclick="switchChartTab('habit', 'trends')">📈 Динамика</button>
+            </div>
+            
+            <div class="chart-box active" id="chart-habit-fact">
+                <canvas id="habitBarChart"></canvas>
+            </div>
+            <div class="chart-box" id="chart-habit-days">
+                <canvas id="habitDailyChart"></canvas>
+            </div>
+            <div class="chart-box" id="chart-habit-trends">
+                <canvas id="habitLineChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -1145,6 +1191,35 @@
         if (productsBtn) productsBtn.style.display = (tabName === 'habits') ? 'none' : 'inline-flex';
     }
 
+    // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК В ГРАФИКАХ
+    function switchChartTab(type, chart) {
+        // Скрываем все кнопки и графики для этого типа
+        document.getElementById(`btn-chart-${type}-fact`).classList.remove('active');
+        document.getElementById(`btn-chart-${type}-days`).classList.remove('active');
+        document.getElementById(`btn-chart-${type}-trends`).classList.remove('active');
+        
+        document.getElementById(`chart-${type}-fact`).classList.remove('active');
+        document.getElementById(`chart-${type}-days`).classList.remove('active');
+        document.getElementById(`chart-${type}-trends`).classList.remove('active');
+
+        // Включаем нужные
+        document.getElementById(`btn-chart-${type}-${chart}`).classList.add('active');
+        document.getElementById(`chart-${type}-${chart}`).classList.add('active');
+
+        // Перерисовываем график, так как при display:none Chart.js не видит размеров
+        setTimeout(() => {
+            if (type === 'skin') {
+                if (chart === 'fact' && barChartInstance) barChartInstance.resize();
+                if (chart === 'days' && dailyChartInstance) dailyChartInstance.resize();
+                if (chart === 'trends' && lineChartInstance) lineChartInstance.resize();
+            } else if (type === 'habit') {
+                if (chart === 'fact' && habitBarChartInstance) habitBarChartInstance.resize();
+                if (chart === 'days' && habitDailyChartInstance) habitDailyChartInstance.resize();
+                if (chart === 'trends' && habitLineChartInstance) habitLineChartInstance.resize();
+            }
+        }, 10);
+    }
+
     function updateWeekDates() {
         const today = new Date();
         const dayOfWeek = today.getDay(); 
@@ -1568,18 +1643,19 @@
         const maxGoal = Math.max(...goals, 1);
         const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
         
-        const chartContainer = document.getElementById('barChart').parentElement;
-        chartContainer.style.height = Math.max(350, skinColumns.length * 45) + 'px';
+        // Динамическая высота для графика выполнения
+        const chartContainer = document.getElementById('chart-skin-fact');
+        if (chartContainer) chartContainer.style.height = Math.max(350, skinColumns.length * 45) + 'px';
 
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar', data: { labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
         
         let history = safeParse('weeklyHistory', []); 
@@ -1595,7 +1671,7 @@
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
             type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
         });
     }
 
@@ -1726,19 +1802,19 @@
         const maxGoal = Math.max(...goals, 1);
         const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
 
-        const habitChartContainer = document.getElementById('habitBarChart').parentElement;
-        habitChartContainer.style.height = Math.max(350, habitColumns.length * 45) + 'px';
+        const habitChartContainer = document.getElementById('chart-habit-fact');
+        if (habitChartContainer) habitChartContainer.style.height = Math.max(350, habitColumns.length * 45) + 'px';
 
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
             type: 'bar', data: { labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
         if (habitDailyChartInstance) habitDailyChartInstance.destroy();
         habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
         let history = safeParse('weeklyHistory', []); 
@@ -1750,7 +1826,7 @@
         if (habitLineChartInstance) habitLineChartInstance.destroy();
         habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
             type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
         });
     }
 
