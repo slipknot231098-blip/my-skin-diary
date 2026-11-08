@@ -269,7 +269,6 @@
         th:last-child, td:last-child { border-right: none; } 
         tr:last-child td { border-bottom: none; } 
         
-        /* Липкие заголовки таблицы */
         th { 
             background-color: var(--card-bg); color: var(--text-muted); font-weight: 700; font-size: 12px; 
             text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10;
@@ -285,7 +284,6 @@
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
         
-        /* Зебра для таблицы */
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.015); }
         body.dark-mode tbody tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
         body.dark-mode tbody tr:hover { background-color: var(--hover-bg); }
@@ -368,6 +366,28 @@
         }
         .chart-box.active { display: block; animation: fadeIn 0.3s ease; }
         .chart-box canvas { width: 100% !important; height: 100% !important; }
+
+        /* МИНИ-АНАЛИТИКА ПО ТЕГАМ */
+        .tags-analytics-section {
+            background: var(--card-bg); padding: 20px 24px; border-radius: 24px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
+            margin-top: 30px;
+        }
+        .tags-analytics-title {
+            font-weight: 700; font-size: 15px; color: var(--text); margin-bottom: 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tags-analytics-list {
+            display: flex; gap: 10px; flex-wrap: wrap;
+        }
+        .tag-stat-pill {
+            background: var(--bg); border: 1px solid var(--border-color); padding: 8px 16px;
+            border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--text);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tag-stat-count {
+            background: var(--primary); color: white; border-radius: 6px; padding: 2px 8px; font-size: 12px;
+        }
 
         /* МОДАЛЬНЫЕ ОКНА */
         .modal { 
@@ -552,6 +572,39 @@
             .floating-achievement-btn { bottom: 100px; right: 20px; width: 56px; height: 56px; font-size: 22px; }
             .floating-theme-btn { bottom: 25px; right: 20px; width: 56px; height: 56px; font-size: 22px; }
         }
+
+        /* --- СТИЛИ ДЛЯ ПЕЧАТИ (ЭКСПОРТ В PDF) --- */
+        @media print {
+            body { background: white !important; color: black !important; padding: 0; margin: 0; }
+            .container { max-width: 100%; margin: 0; padding: 20px; }
+            .tabs, .topbar, .tags-panel, .floating-theme-btn, .floating-achievement-btn, .dropdown, .chart-tabs, .analytics-section, .tags-analytics-section { display: none !important; }
+            .header-title { margin-bottom: 20px; text-align: center; }
+            .header-title span { display: none; }
+            .header-title h1 { border: none !important; font-size: 24px; }
+            .dashboard { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+            .stat-card { box-shadow: none !important; border: 1px solid #ccc !important; background: #f9f9f9 !important; break-inside: avoid; padding: 15px; }
+            .stat-value { font-size: 28px !important; color: #000 !important; }
+            .progress-container { box-shadow: none !important; border: 1px solid #ccc !important; padding: 15px; margin-bottom: 20px; }
+            .progress-bar-fill { background: #555 !important; }
+            .week-dates-container { margin-bottom: 10px; }
+            .week-dates { background: transparent !important; border: none !important; box-shadow: none !important; font-size: 16px; color: black !important; }
+            .table-wrapper { border: 1px solid #ccc !important; box-shadow: none !important; max-height: none !important; overflow: visible !important; }
+            table { border-collapse: collapse !important; min-width: 100% !important; }
+            th, td { border: 1px solid #ccc !important; padding: 8px !important; color: black !important; font-size: 12px; }
+            th { background: #eee !important; color: black !important; }
+            .checkbox-container input[type="checkbox"] { display: none; }
+            .checkmark { 
+                background: transparent !important; border: 1px solid #ccc !important; transform: none !important; box-shadow: none !important;
+            }
+            .checkbox-container input:checked ~ .checkmark { background: transparent !important; }
+            .checkbox-container input:checked ~ .checkmark:after { 
+                border-color: #000 !important; transform: rotate(45deg) scale(1) !important; 
+            }
+            textarea.notes-input { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; overflow: visible !important; font-size: 12px; color: black !important; }
+            .tab-content { display: none !important; }
+            .tab-content.active { display: block !important; }
+            /* Скрываем вкладку привычек при печати ухода (или печатаем обе? Оставим только активную) */
+        }
     </style>
 </head>
 <body>
@@ -604,6 +657,10 @@
                     <button class="dropdown-item" onclick="closeDropdownAndOpen(openHistory)" title="Архив прошлых недель">
                         <span class="dropdown-title">📜 Архив</span>
                         <span class="dropdown-desc">Посмотреть прошлые недели</span>
+                    </button>
+                    <button class="dropdown-item" onclick="exportToPDF()" title="Экспорт отчета">
+                        <span class="dropdown-title">📄 Экспорт в PDF</span>
+                        <span class="dropdown-desc">Скачать отчет для врача</span>
                     </button>
                     <button class="dropdown-item" onclick="document.getElementById('restoreInput').click()" title="Восстановить бэкап">
                         <span class="dropdown-title">📂 Восстановить</span>
@@ -682,6 +739,14 @@
                 <thead id="skinTableHead"></thead>
                 <tbody id="skinTableBody"></tbody>
             </table>
+        </div>
+
+        <!-- НОВЫЙ БЛОК: МИНИ-АНАЛИТИКА ПО ТЕГАМ -->
+        <div class="tags-analytics-section" id="tags-analytics-container">
+            <div class="tags-analytics-title">🏷️ Частые темы (за неделю)</div>
+            <div class="tags-analytics-list" id="tags-analytics-list">
+                <!-- Сюда будут рендериться пилюли с тегами -->
+            </div>
         </div>
 
         <!-- НОВЫЙ БЛОК АНАЛИТИКИ (С ВКЛАДКАМИ) -->
@@ -1193,7 +1258,6 @@
 
     // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК В ГРАФИКАХ
     function switchChartTab(type, chart) {
-        // Скрываем все кнопки и графики для этого типа
         document.getElementById(`btn-chart-${type}-fact`).classList.remove('active');
         document.getElementById(`btn-chart-${type}-days`).classList.remove('active');
         document.getElementById(`btn-chart-${type}-trends`).classList.remove('active');
@@ -1202,11 +1266,9 @@
         document.getElementById(`chart-${type}-days`).classList.remove('active');
         document.getElementById(`chart-${type}-trends`).classList.remove('active');
 
-        // Включаем нужные
         document.getElementById(`btn-chart-${type}-${chart}`).classList.add('active');
         document.getElementById(`chart-${type}-${chart}`).classList.add('active');
 
-        // Перерисовываем график, так как при display:none Chart.js не видит размеров
         setTimeout(() => {
             if (type === 'skin') {
                 if (chart === 'fact' && barChartInstance) barChartInstance.resize();
@@ -1270,6 +1332,17 @@
     }
 
     // ==========================================
+    // ЭКСПОРТ В PDF
+    // ==========================================
+    function exportToPDF() {
+        closeDropdownAndOpen(() => {});
+        // Небольшая задержка, чтобы меню закрылось перед печатью
+        setTimeout(() => {
+            window.print();
+        }, 300);
+    }
+
+    // ==========================================
     // ТЕГИ
     // ==========================================
     const defaultTags = ["Сухость", "Покраснение", "Новое высыпание", "Жирность", "Кожа спокойна"];
@@ -1277,7 +1350,6 @@
 
     function renderQuickTags() {
         const container = document.getElementById('tags-panel-container');
-        // Очищаем все кнопки, кроме заголовка и кнопки настройки
         const manageBtn = container.querySelector('.btn-manage-tags');
         container.innerHTML = '<span>👉 Быстрые теги:</span>';
         
@@ -1334,11 +1406,8 @@
         queueSync();
     }
 
-    // УЛУЧШЕННОЕ ДОБАВЛЕНИЕ ТЕГА
     function addTag(text) {
         let targetInput = lastFocusedNoteInput;
-        
-        // Если поле не выбрано, берем сегодняшний день
         if (!targetInput) {
             const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
             targetInput = document.getElementById(`note-${todayIdx}`);
@@ -1349,15 +1418,49 @@
             targetInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
             localStorage.setItem(targetInput.id, targetInput.value); 
             
-            // Визуальный отклик
             targetInput.focus(); 
             targetInput.style.borderColor = 'var(--primary)';
             setTimeout(() => { targetInput.style.borderColor = ''; }, 500);
             
             autoResize(targetInput);
+            updateSkinStats(); // Пересчитываем мини-аналитику
             queueSync();
         } else {
             alert("Не удалось найти поле для заметок. Откройте сегодняшний день и попробуйте снова.");
+        }
+    }
+
+    function renderTagsAnalytics() {
+        const container = document.getElementById('tags-analytics-list');
+        if (!container) return;
+        container.innerHTML = '';
+
+        let allNotesText = "";
+        for (let i = 0; i < 7; i++) {
+            const noteEl = document.getElementById(`note-${i}`);
+            if (noteEl) allNotesText += noteEl.value + " ";
+        }
+
+        let tagCounts = [];
+        quickTags.forEach(tag => {
+            let regex = new RegExp(tag, "gi");
+            let matches = allNotesText.match(regex);
+            if (matches && matches.length > 0) {
+                tagCounts.push({ tag: tag, count: matches.length });
+            }
+        });
+
+        tagCounts.sort((a, b) => b.count - a.count);
+
+        if (tagCounts.length === 0) {
+            container.innerHTML = '<span style="color: var(--text-muted); font-size: 13px;">На этой неделе теги в заметках не использовались.</span>';
+        } else {
+            tagCounts.forEach(item => {
+                const pill = document.createElement('div');
+                pill.className = 'tag-stat-pill';
+                pill.innerHTML = `${item.tag} <span class="tag-stat-count">${item.count}</span>`;
+                container.appendChild(pill);
+            });
         }
     }
 
@@ -1400,7 +1503,6 @@
 
     let skinWeekSchedule = [];
     
-    // Переменные для графиков
     let barChartInstance = null, dailyChartInstance = null, lineChartInstance = null;
     let habitBarChartInstance = null, habitDailyChartInstance = null, habitLineChartInstance = null;
     let skinSparkInstance = null, habitSparkInstance = null;
@@ -1491,7 +1593,7 @@
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
             
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
-            noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); autoResize(e.target); queueSync(); });
+            noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); autoResize(e.target); updateSkinStats(); queueSync(); });
             
             tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
             setTimeout(() => autoResize(noteInput), 0);
@@ -1505,7 +1607,6 @@
         let barData = new Array(skinColumns.length).fill(0); 
         let dailyData = new Array(7).fill(0); 
         
-        // Массивы для подсказок (Tooltips)
         let procDetailsArray = Array(skinColumns.length).fill().map(() => []);
         let dayDetailsArray = Array(7).fill().map(() => []);
 
@@ -1522,7 +1623,6 @@
                 localStorage.setItem(input.id, input.checked);
                 if (input.checked) { 
                     totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
-                    // Заполняем подсказки
                     procDetailsArray[colIndex].push(daysOfWeek[dayIndex]);
                     dayDetailsArray[dayIndex].push(col.name);
                 }
@@ -1604,6 +1704,7 @@
         
         updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek, procDetailsArray, dayDetailsArray);
         renderSkinSparkline(dailyData);
+        renderTagsAnalytics();
         queueSync();
     }
 
@@ -1663,23 +1764,14 @@
                 datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] 
             },
             options: { 
-                indexAxis: 'y', 
-                responsive: true, 
-                maintainAspectRatio: false, 
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false, 
                 plugins: { 
-                    title: { display: false }, 
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let lines = [`Выполнено: ${context.raw} раз(а)`];
-                                if (procDetailsArray[context.dataIndex].length > 0) {
-                                    lines.push(`Дни: ${procDetailsArray[context.dataIndex].join(', ')}`);
-                                }
-                                return lines;
-                            }
-                        }
-                    }
+                    title: { display: false }, legend: { display: false },
+                    tooltip: { callbacks: { label: function(context) {
+                        let lines = [`Выполнено: ${context.raw} раз(а)`];
+                        if (procDetailsArray[context.dataIndex].length > 0) lines.push(`Дни: ${procDetailsArray[context.dataIndex].join(', ')}`);
+                        return lines;
+                    }}}
                 }, 
                 scales: { 
                     x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
@@ -1691,29 +1783,17 @@
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
             type: 'bar', 
-            data: { 
-                labels: daysOfWeek, 
-                datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] 
-            },
+            data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] },
             options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
+                responsive: true, maintainAspectRatio: false, 
                 plugins: { 
-                    title: { display: false }, 
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let lines = [`Всего сделано: ${context.raw}`];
-                                if (dayDetailsArray[context.dataIndex].length > 0) {
-                                    lines.push(...dayDetailsArray[context.dataIndex]); // Spread array to make each a new line
-                                } else {
-                                    lines.push('Нет выполненных процедур');
-                                }
-                                return lines;
-                            }
-                        }
-                    }
+                    title: { display: false }, legend: { display: false },
+                    tooltip: { callbacks: { label: function(context) {
+                        let lines = [`Всего сделано: ${context.raw}`];
+                        if (dayDetailsArray[context.dataIndex].length > 0) lines.push(...dayDetailsArray[context.dataIndex]);
+                        else lines.push('Нет выполненных процедур');
+                        return lines;
+                    }}}
                 }, 
                 scales: { 
                     y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
@@ -1736,23 +1816,12 @@
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
             type: 'line', 
-            data: { 
-                labels: lineLabels, 
-                datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] 
-            },
+            data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] },
             options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
+                responsive: true, maintainAspectRatio: false, 
                 plugins: { 
-                    title: { display: false }, 
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `Выполнение: ${context.raw}%`;
-                            }
-                        }
-                    }
+                    title: { display: false }, legend: { display: false },
+                    tooltip: { callbacks: { label: function(context) { return `Выполнение: ${context.raw}%`; }}}
                 }, 
                 scales: { 
                     y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, 
@@ -1795,7 +1864,6 @@
         let currentStreak = 0;
         let todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
-        // Массивы для подсказок (Tooltips)
         let procDetailsArray = Array(habitColumns.length).fill().map(() => []);
         let dayDetailsArray = Array(7).fill().map(() => []);
 
@@ -1807,7 +1875,6 @@
                 localStorage.setItem(input.id, input.checked);
                 if (input.checked) { 
                     totalChecked++; dayChecked++; habitBarData[colIndex]++; habitDailyData[dayIndex]++; 
-                    // Заполняем подсказки
                     procDetailsArray[colIndex].push(daysOfWeek[dayIndex]);
                     dayDetailsArray[dayIndex].push(col.name);
                 }
@@ -1904,28 +1971,16 @@
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
             type: 'bar', 
-            data: { 
-                labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), 
-                datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] 
-            },
+            data: { labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
             options: { 
-                indexAxis: 'y', 
-                responsive: true, 
-                maintainAspectRatio: false, 
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false, 
                 plugins: { 
-                    title: { display: false }, 
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let lines = [`Выполнено: ${context.raw} раз(а)`];
-                                if (procDetailsArray[context.dataIndex].length > 0) {
-                                    lines.push(`Дни: ${procDetailsArray[context.dataIndex].join(', ')}`);
-                                }
-                                return lines;
-                            }
-                        }
-                    }
+                    title: { display: false }, legend: { display: false },
+                    tooltip: { callbacks: { label: function(context) {
+                        let lines = [`Выполнено: ${context.raw} раз(а)`];
+                        if (procDetailsArray[context.dataIndex].length > 0) lines.push(`Дни: ${procDetailsArray[context.dataIndex].join(', ')}`);
+                        return lines;
+                    }}}
                 }, 
                 scales: { 
                     x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
@@ -1937,29 +1992,17 @@
         if (habitDailyChartInstance) habitDailyChartInstance.destroy();
         habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
             type: 'bar', 
-            data: { 
-                labels: daysOfWeek, 
-                datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] 
-            },
+            data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] },
             options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
+                responsive: true, maintainAspectRatio: false, 
                 plugins: { 
-                    title: { display: false }, 
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let lines = [`Всего сделано: ${context.raw}`];
-                                if (dayDetailsArray[context.dataIndex].length > 0) {
-                                    lines.push(...dayDetailsArray[context.dataIndex]);
-                                } else {
-                                    lines.push('Нет выполненных привычек');
-                                }
-                                return lines;
-                            }
-                        }
-                    }
+                    title: { display: false }, legend: { display: false },
+                    tooltip: { callbacks: { label: function(context) {
+                        let lines = [`Всего сделано: ${context.raw}`];
+                        if (dayDetailsArray[context.dataIndex].length > 0) lines.push(...dayDetailsArray[context.dataIndex]);
+                        else lines.push('Нет выполненных привычек');
+                        return lines;
+                    }}}
                 }, 
                 scales: { 
                     y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
@@ -1977,23 +2020,12 @@
         if (habitLineChartInstance) habitLineChartInstance.destroy();
         habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
             type: 'line', 
-            data: { 
-                labels: lineLabels, 
-                datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] 
-            },
+            data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] },
             options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
+                responsive: true, maintainAspectRatio: false, 
                 plugins: { 
-                    title: { display: false }, 
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `Выполнение: ${context.raw}%`;
-                            }
-                        }
-                    }
+                    title: { display: false }, legend: { display: false },
+                    tooltip: { callbacks: { label: function(context) { return `Выполнение: ${context.raw}%`; }}}
                 }, 
                 scales: { 
                     y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, 
@@ -2266,7 +2298,10 @@
     }
 
     function resetAll() {
-        if(confirm("Сохранить текущую неделю в Архив и начать новую?")) {
+        if(confirm("Сохранить текущую неделю в Архив и начать новую?\n\n(Перед сбросом автоматически скачается файл резервной копии)")) {
+            
+            downloadBackup();
+
             let weekData = { date: new Date().toLocaleDateString('ru-RU'), skinChecks: {}, notes: {}, habitChecks: {}, habitPercent: 0 };
 
             skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { weekData.skinChecks[`check-${day}-${col.id}`] = document.getElementById(`check-${day}-${col.id}`).checked; }); });
@@ -2298,7 +2333,12 @@
 
             habitColumns.forEach((col) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${col.id}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${col.id}`); if(input) input.checked = false; }); });
 
-            updateSkinStats(); updateHabitsStats(); alert("Новая неделя начата! Все данные сохранены в Архив.");
+            updateSkinStats(); updateHabitsStats(); 
+            
+            setTimeout(() => {
+                alert("Новая неделя начата! Данные сохранены в Архив, а бэкап скачан в папку 'Загрузки'.");
+            }, 1000);
+
             queueSync();
         }
     }
