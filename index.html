@@ -388,7 +388,7 @@
         .chart-box.active { display: block; animation: fadeIn 0.3s ease; }
         .chart-box canvas { width: 100% !important; height: 100% !important; }
 
-        /* МИНИ-АНАЛИТИКА ПО ТЕГАМ (внутри вкладки) */
+        /* МИНИ-АНАЛИТИКА ПО ТЕГАМ */
         .tags-analytics-container {
             display: flex; gap: 10px; flex-wrap: wrap; padding: 20px 0;
         }
@@ -407,54 +407,26 @@
             background: var(--primary); color: white; border-radius: 8px; padding: 2px 10px; font-size: 13px;
         }
 
-        /* КАСТОМНЫЙ ТУЛТИП ДЛЯ ТЕГОВ */
         .tag-tooltip {
-            position: absolute;
-            bottom: calc(100% + 10px);
-            left: 50%;
-            transform: translateX(-50%) translateY(5px);
-            background: var(--tooltip-bg);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 400;
-            line-height: 1.5;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            width: max-content;
-            max-width: 350px;
-            max-height: 250px;
-            overflow-y: auto;
-            pointer-events: auto;
-            text-align: left;
-            white-space: normal;
-            border: 1px solid rgba(255,255,255,0.1);
+            position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(5px);
+            background: var(--tooltip-bg); color: white; padding: 12px 16px; border-radius: 12px;
+            font-size: 13px; font-weight: 400; line-height: 1.5; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+            width: max-content; max-width: 350px; max-height: 250px; overflow-y: auto; pointer-events: auto;
+            text-align: left; white-space: normal; border: 1px solid rgba(255,255,255,0.1);
         }
         .tag-tooltip::-webkit-scrollbar { width: 6px; }
         .tag-tooltip::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        
         .tag-tooltip::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 6px;
-            border-style: solid;
-            border-color: var(--tooltip-bg) transparent transparent transparent;
+            content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border-width: 6px; border-style: solid; border-color: var(--tooltip-bg) transparent transparent transparent;
         }
         .tag-tooltip div { margin-bottom: 8px; }
         .tag-tooltip div:last-child { margin-bottom: 0; }
         .tag-tooltip b { color: var(--primary-light); display: block; margin-bottom: 4px; }
         
         .tag-stat-pill:hover .tag-tooltip {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
+            opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
         }
 
         /* МОДАЛЬНЫЕ ОКНА */
@@ -591,6 +563,10 @@
         .btn-del-manage { background: var(--red-bg); color: var(--red); border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-del-manage:hover { background: #FCA5A5; color: #7F1D1D; transform: scale(1.05); }
         .add-form-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; align-items: flex-end; }
+
+        /* СТРИК */
+        .streak-cell { text-align: center; vertical-align: middle; }
+        .streak-col { min-width: 80px; }
 
         /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
         @media (max-width: 900px) {
@@ -861,6 +837,12 @@
 
     <!-- ВКЛАДКА 2: ПРИВЫЧКИ -->
     <div id="content-habits" class="tab-content">
+        <!-- НОВЫЙ БЛОК: УМНЫЙ СОВЕТ ДЛЯ ПРИВЫЧЕК -->
+        <div class="recommendation-card" id="habits-recommendation-card">
+            <div class="rec-icon" id="habits-rec-icon">💡</div>
+            <div class="rec-text" id="habits-rec-text">Анализируем ваши привычки...</div>
+        </div>
+
         <div class="dashboard">
             <div class="stat-card">
                 <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Выполнение привычек</div>
@@ -1642,6 +1624,42 @@
         recIcon.textContent = icon;
     }
 
+    function updateHabitsRecommendation(checked, expected) {
+        const recText = document.getElementById('habits-rec-text');
+        const recIcon = document.getElementById('habits-rec-icon');
+        if (!recText) return;
+
+        const hour = new Date().getHours();
+        let msg = "";
+        let icon = "💡";
+
+        if (expected === 0) {
+            msg = "На сегодня у вас не запланировано привычек. Отдыхайте! 😊";
+            icon = "🛋️";
+        } else if (checked >= expected) {
+            msg = "Вау! Вы выполнили все привычки на сегодня. Так держать! 🎉";
+            icon = "🏆";
+        } else {
+            const remaining = expected - checked;
+            if (hour >= 6 && hour < 12) {
+                icon = "🌅";
+                msg = `Доброе утро! Отличное время, чтобы начать полезные привычки. Осталось выполнить: <b>${remaining}</b>.`;
+            } else if (hour >= 12 && hour < 17) {
+                icon = "☀️";
+                msg = `Как проходит день? Не забудьте про запланированные привычки. Осталось: <b>${remaining}</b>.`;
+            } else if (hour >= 17 && hour < 23) {
+                icon = "🌙";
+                msg = `Вечер — время подвести итоги. Вы ещё успеваете выполнить оставшиеся привычки (<b>${remaining}</b>)!`;
+            } else {
+                icon = "😴";
+                msg = `Уже поздно. Если что-то не успели — перенесите на завтра. Сон тоже важная привычка!`;
+            }
+        }
+
+        recText.innerHTML = msg;
+        recIcon.textContent = icon;
+    }
+
     // ==========================================
     // ДИНАМИЧЕСКАЯ ЛОГИКА (ПРОЦЕДУРЫ И ПРИВЫЧКИ)
     // ==========================================
@@ -1794,7 +1812,6 @@
             return exp;
         }
 
-        // Проходим по архиву (непрерывность сохраняется между неделями)
         let history = safeParse('weeklyHistory', []);
         if (!Array.isArray(history)) history = [];
 
@@ -1806,7 +1823,7 @@
                 skinColumns.forEach(col => {
                     if (checks[`check-${i}-${col.id}`]) dayChecked++;
                 });
-                if (dayExpected === 0) { currentStreak = 0; continue; }
+                if (dayExpected === 0) { continue; } // День отдыха не сбрасывает серию
                 if (dayChecked >= dayExpected) {
                     currentStreak++;
                     if (currentStreak > bestStreak) bestStreak = currentStreak;
@@ -1816,7 +1833,6 @@
             }
         });
 
-        // Проходим по текущей неделе (серия продолжается!)
         for (let i = 0; i < 7; i++) {
             const dayExpected = getDayExpected(i);
             let dayChecked = 0;
@@ -1824,7 +1840,7 @@
                 const input = document.getElementById(`check-${i}-${col.id}`);
                 if (input && input.checked) dayChecked++;
             });
-            if (dayExpected === 0) { currentStreak = 0; continue; }
+            if (dayExpected === 0) { continue; } // День отдыха не сбрасывает серию
             if (dayChecked >= dayExpected) {
                 currentStreak++;
                 if (currentStreak > bestStreak) bestStreak = currentStreak;
@@ -1860,7 +1876,7 @@
                 habitColumns.forEach(col => {
                     if (week.habitChecks[`habit-${i}-${col.id}`]) dayChecked++;
                 });
-                if (dayExpected === 0) { currentStreak = 0; continue; }
+                if (dayExpected === 0) { continue; } // День отдыха не сбрасывает серию
                 if (dayChecked >= dayExpected) {
                     currentStreak++;
                     if (currentStreak > bestStreak) bestStreak = currentStreak;
@@ -1877,7 +1893,7 @@
                 const input = document.getElementById(`habit-${i}-${col.id}`);
                 if (input && input.checked) dayChecked++;
             });
-            if (dayExpected === 0) { currentStreak = 0; continue; }
+            if (dayExpected === 0) { continue; } // День отдыха не сбрасывает серию
             if (dayChecked >= dayExpected) {
                 currentStreak++;
                 if (currentStreak > bestStreak) bestStreak = currentStreak;
@@ -1901,6 +1917,8 @@
             totalExpectedWeek += day.expected.reduce((a,b)=>a+b, 0); 
         });
 
+        let runningStreak = 0; // Счётчик непрерывной серии
+
         skinWeekSchedule.forEach((dayData, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
             skinColumns.forEach((col, colIndex) => {
@@ -1916,12 +1934,23 @@
             });
             const streakCell = document.getElementById(`streak-${dayIndex}`);
             if(streakCell) {
-                const isPerfectNow = (dayChecked >= dayExpected && dayExpected > 0);
+                if (dayExpected === 0) {
+                    streakCell.innerHTML = `<span style="color: var(--text-muted); font-size: 14px;" title="День отдыха">🛋️</span>`;
+                    continue; // Отдых не сбрасывает runningStreak
+                }
+                
+                const isPerfectNow = (dayChecked >= dayExpected);
                 if (isPerfectNow) {
-                    streakCell.textContent = '🔥'; perfectDaysCount++;
+                    runningStreak++;
+                    streakCell.innerHTML = `<span style="color: #E29E60; font-weight: 800; font-size: 15px; background: var(--bg); padding: 4px 8px; border-radius: 8px; display: inline-block; min-width: 40px;">🔥 ${runningStreak}</span>`;
+                    perfectDaysCount++;
                     if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
                     previousPerfectDays.add(dayIndex);
-                } else { streakCell.textContent = '—'; previousPerfectDays.delete(dayIndex); }
+                } else { 
+                    runningStreak = 0; // Сбрасываем серию, если день не идеальный
+                    streakCell.innerHTML = `<span style="color: var(--text-muted); font-size: 14px; opacity: 0.4;">—</span>`;
+                    previousPerfectDays.delete(dayIndex); 
+                }
             }
         });
         
@@ -2178,6 +2207,17 @@
         document.getElementById('habitsProgressBarText').textContent = `${progressPercent}%`;
         document.getElementById('habitsProgressBarFill').style.width = `${progressPercent}%`;
         document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
+
+        // Расчёт для умной рекомендации
+        let todayChecked = 0;
+        let todayExpected = 0;
+        habitColumns.forEach(col => {
+            const input = document.getElementById(`habit-${todayIdx}-${col.id}`);
+            if (input && input.checked) todayChecked++;
+            let arr = currentHabitSettings[col.id];
+            if (Array.isArray(arr) && arr[todayIdx] === 1) todayExpected++;
+        });
+        updateHabitsRecommendation(todayChecked, todayExpected);
 
         updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek, procDetailsArray, dayDetailsArray);
         renderHabitSparkline(habitDailyData);
