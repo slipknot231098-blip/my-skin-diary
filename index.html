@@ -28,28 +28,28 @@
             --border-color: #E2E8F0;
             --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             --hover-bg: #F7FAF8;
-            
-            --today-bg: #EBF4EF; 
-            --today-text: #4A7C59; 
-            
+
+            --today-bg: #EBF4EF;
+            --today-text: #4A7C59;
+
             --tooltip-bg: rgba(30, 41, 59, 0.95);
         }
 
         body.dark-mode {
-            --bg: #1A202C; 
+            --bg: #1A202C;
             --text: #E2E8F0;
             --text-muted: #A0AEC0;
             --card-bg: #2D3748;
             --border-color: #3A475A;
             --hover-bg: #374151;
             --primary-light: #344C43;
-            
-            --today-bg: #263A33; 
-            --today-text: #81B29A; 
-            
+
+            --today-bg: #263A33;
+            --today-text: #81B29A;
+
             --modal-bg: rgba(0, 0, 0, 0.7);
             --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.2);
-            --primary: #81B29A; 
+            --primary: #81B29A;
             --primary-hover: #9FC2AD;
             --tooltip-bg: rgba(15, 23, 42, 0.95);
         }
@@ -64,7 +64,7 @@
         }
 
         .container { max-width: 1250px; margin: 0 auto; }
-        
+
         /* ВКЛАДКИ */
         .tabs {
             display: flex; gap: 8px; margin-bottom: 25px; background: var(--card-bg);
@@ -83,7 +83,7 @@
         /* ТОПБАР */
         .topbar {
             display: flex; justify-content: space-between; align-items: center;
-            background-color: var(--card-bg); padding: 12px 20px; border-radius: 16px; 
+            background-color: var(--card-bg); padding: 12px 20px; border-radius: 16px;
             box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 30px; gap: 10px;
         }
         .nav-group { display: flex; gap: 8px; align-items: center; }
@@ -108,13 +108,13 @@
         .dropdown-content {
             display: none; position: absolute; right: 0; top: 100%;
             background-color: var(--card-bg); min-width: 240px; margin-top: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 12px;
             border: 1px solid var(--border-color); z-index: 1000; padding: 8px;
         }
         .dropdown-content.show { display: block; animation: fadeIn 0.2s; }
-        .dropdown-item { 
-            padding: 10px 12px; display: flex; flex-direction: column; 
-            border-radius: 8px; cursor: pointer; transition: 0.2s; 
+        .dropdown-item {
+            padding: 10px 12px; display: flex; flex-direction: column;
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
             border: none; background: transparent; width: 100%; text-align: left; font-family: inherit;
         }
         .dropdown-item:hover { background-color: var(--hover-bg); }
@@ -148,8 +148,8 @@
         /* КАРТОЧКИ СТАТИСТИКИ */
         .dashboard { display: flex; gap: 16px; margin-bottom: 25px; flex-wrap: wrap; }
         .stat-card {
-            background: var(--card-bg); padding: 24px 20px; border-radius: 20px; 
-            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            background: var(--card-bg); padding: 24px 20px; border-radius: 20px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
             flex: 1; min-width: 200px; text-align: center; transition: transform 0.3s;
         }
         .stat-card:hover { transform: translateY(-4px); }
@@ -159,7 +159,7 @@
 
         /* ПРОГРЕСС-БАР */
         .progress-container {
-            background: var(--card-bg); padding: 20px 25px; border-radius: 20px; 
+            background: var(--card-bg); padding: 20px 25px; border-radius: 20px;
             box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 25px;
         }
         .progress-bar-bg {
@@ -175,8 +175,8 @@
 
         /* ПАНЕЛЬ ТЕГОВ */
         .tags-panel {
-            background: var(--card-bg); padding: 14px 20px; border-radius: 16px; 
-            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
+            background: var(--card-bg); padding: 14px 20px; border-radius: 16px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
             margin-bottom: 25px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 14px;
         }
         .tags-panel span { font-weight: 600; color: var(--text-muted); font-size: 13px; }
@@ -195,40 +195,40 @@
         }
 
         /* ТАБЛИЦА */
-        .table-wrapper { 
-            width: 100%; 
+        .table-wrapper {
+            width: 100%;
             margin-top: 5px;
             overflow-x: auto;
-            border-radius: 20px; 
-            border: 1px solid var(--border-color); 
-            box-shadow: var(--shadow); 
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
             background: var(--card-bg);
-            transform: translateZ(0); 
-            isolation: isolate; 
+            transform: translateZ(0);
+            isolation: isolate;
         }
-        
-        table { 
-            width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0; 
-            min-width: 950px; 
-            table-layout: fixed; 
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 950px;
+            table-layout: fixed;
         }
-        
-        th, td { 
-            padding: 12px 8px; 
-            text-align: center; 
-            border-right: 1px solid var(--border-color); 
+
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border-right: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
             box-sizing: border-box;
             vertical-align: middle;
         }
-        
-        th:last-child, td:last-child { border-right: none; } 
-        tr:last-child td { border-bottom: none; } 
-        
-        th { 
-            background-color: var(--hover-bg); color: var(--text-muted); 
+
+        th:last-child, td:last-child { border-right: none; }
+        tr:last-child td { border-bottom: none; }
+
+        th {
+            background-color: var(--hover-bg); color: var(--text-muted);
             font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
         }
         th.morning { color: #C28B5E; }
@@ -239,65 +239,65 @@
 
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
-        
+
         /* Стили для текущего дня */
         tr.today-row { background-color: var(--today-bg); }
         tr.today-row:hover { background-color: var(--today-bg); }
-        tr.today-row .day-cell { 
-            font-weight: 800; 
-            color: var(--today-text); 
-            box-shadow: inset 4px 0 0 0 var(--primary); 
+        tr.today-row .day-cell {
+            font-weight: 800;
+            color: var(--today-text);
+            box-shadow: inset 4px 0 0 0 var(--primary);
         }
 
         /* ЧЕКБОКСЫ */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
         .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-        .checkmark { 
-            position: absolute; top: 0; left: 0; height: 24px; width: 24px; 
-            background-color: var(--bg); border: 2px solid var(--border-color); 
-            border-radius: 8px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        .checkmark {
+            position: absolute; top: 0; left: 0; height: 24px; width: 24px;
+            background-color: var(--bg); border: 2px solid var(--border-color);
+            border-radius: 8px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .checkbox-container:hover input ~ .checkmark { border-color: var(--primary); }
         .checkbox-container input:checked ~ .checkmark { background-color: var(--primary); border-color: var(--primary); }
-        .checkmark:after { 
-            content: ""; position: absolute; display: none; left: 8px; top: 3px; 
-            width: 5px; height: 11px; border: solid white; border-width: 0 2px 2px 0; 
-            transform: rotate(45deg); 
+        .checkmark:after {
+            content: ""; position: absolute; display: none; left: 8px; top: 3px;
+            width: 5px; height: 11px; border: solid white; border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
         }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
         /* ПОЛЕ ЗАМЕТОК (Авто-растяжение) */
         textarea.notes-input {
             display: block;
-            width: 100%; 
-            min-height: 44px; 
-            padding: 10px; 
-            border: 1px solid var(--border-color); 
+            width: 100%;
+            min-height: 44px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            background-color: var(--bg); 
-            color: var(--text); 
+            background-color: var(--bg);
+            color: var(--text);
             font-family: inherit;
-            font-size: 13px; 
+            font-size: 13px;
             line-height: 1.4;
-            transition: 0.2s; 
+            transition: 0.2s;
             resize: none;
             box-sizing: border-box;
             overflow: hidden;
             position: relative;
-            z-index: 10; 
+            z-index: 10;
         }
-        textarea.notes-input:focus { 
-            outline: none; 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 3px var(--primary-light); 
+        textarea.notes-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
 
         /* СТИЛЬНЫЕ ПОДСКАЗКИ */
-        .th-title { 
+        .th-title {
             position: relative;
-            cursor: help; 
-            border-bottom: 1px dashed var(--text-muted); 
-            display: inline-block; 
+            cursor: help;
+            border-bottom: 1px dashed var(--text-muted);
+            display: inline-block;
             padding-bottom: 2px;
             transition: color 0.2s, border-color 0.2s;
         }
@@ -345,7 +345,7 @@
             pointer-events: none;
         }
 
-        .th-title:hover::after, 
+        .th-title:hover::after,
         .th-title:hover::before {
             opacity: 1;
             visibility: visible;
@@ -354,91 +354,91 @@
 
         /* ГРАФИКИ */
         .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px; }
-        .chart-box { 
-            background: var(--card-bg); padding: 20px; border-radius: 20px; 
-            box-shadow: var(--shadow); border: 1px solid var(--border-color); 
-            position: relative; height: 350px; 
+        .chart-box {
+            background: var(--card-bg); padding: 20px; border-radius: 20px;
+            box-shadow: var(--shadow); border: 1px solid var(--border-color);
+            position: relative; height: 350px;
         }
         .chart-box.full { grid-column: 1 / -1; height: 320px; }
         .chart-box canvas { width: 100% !important; height: 100% !important; }
 
         /* МОДАЛЬНЫЕ ОКНА */
-        .modal { 
+        .modal {
             display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
             overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(4px);
         }
-        .modal-content { 
+        .modal-content {
             background-color: var(--card-bg); margin: 5% auto; padding: 30px;
             border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             border: 1px solid var(--border-color);
         }
         .close-btn { color: var(--text-muted); float: right; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s; line-height: 1; }
         .close-btn:hover { color: var(--red); }
-        
+
         .settings-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
         .settings-table th, .settings-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); border-right: none; }
         .settings-table th { background: transparent; color: var(--text-muted); font-size: 13px; }
         .settings-table td:first-child { text-align: left; font-weight: 600; }
 
-        .history-card { 
+        .history-card {
             border: 1px solid var(--border-color); padding: 20px; border-radius: 16px; margin-bottom: 16px;
             background-color: var(--bg); position: relative; transition: transform 0.2s;
         }
         .history-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .history-card h4 { margin: 0; color: var(--primary); font-size: 16px; }
-        .btn-delete-small { 
+        .btn-delete-small {
             background-color: transparent; color: var(--red); border: 1px solid transparent;
-            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; 
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px;
             transition: 0.2s; font-weight: 600;
         }
         .btn-delete-small:hover { background-color: var(--red-bg); }
-        
+
         .history-stats { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
         .history-notes { font-size: 14px; color: var(--text); line-height: 1.5; white-space: pre-wrap; background: var(--card-bg); padding: 12px; border-radius: 8px; }
 
         /* СТИЛИ ДЛЯ ПОГОДЫ */
         .weather-widget {
-            text-align: center; margin-bottom: 25px; font-size: 14px; 
+            text-align: center; margin-bottom: 25px; font-size: 14px;
             display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;
         }
-        .city-input { 
+        .city-input {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
             padding: 10px 16px; font-weight: 600; color: var(--text); outline: none;
             font-family: inherit; font-size: 14px; text-align: center; width: 150px;
-            transition: 0.2s; box-shadow: var(--shadow); 
+            transition: 0.2s; box-shadow: var(--shadow);
         }
         .city-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-        .city-btn { 
+        .city-btn {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
             width: 42px; height: 42px; cursor: pointer; display: flex; align-items: center;
             justify-content: center; transition: 0.2s; color: var(--text); box-shadow: var(--shadow);
         }
         .city-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); }
-        .weather-widget span { 
+        .weather-widget span {
             background: var(--card-bg); padding: 10px 16px; border-radius: 12px;
             border: 1px solid var(--border-color); font-weight: 600; box-shadow: var(--shadow);
         }
-        .weather-widget .uv-high { 
-            color: var(--red); border-color: var(--red); background-color: var(--red-bg); 
+        .weather-widget .uv-high {
+            color: var(--red); border-color: var(--red); background-color: var(--red-bg);
         }
 
-        #uv-alert { 
-            display: none; background: var(--red); color: white; 
-            padding: 16px; border-radius: 16px; text-align: center; font-weight: 600; 
+        #uv-alert {
+            display: none; background: var(--red); color: white;
+            padding: 16px; border-radius: 16px; text-align: center; font-weight: 600;
             font-size: 15px; margin-bottom: 25px; box-shadow: 0 10px 25px -5px rgba(217, 115, 115, 0.5);
-            animation: pulse 2s infinite; 
+            animation: pulse 2s infinite;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.01); } 100% { transform: scale(1); } }
         .uv-danger { animation: uv-glow 1.5s infinite alternate; }
-        @keyframes uv-glow { 
-            from { box-shadow: inset 0 0 0 rgba(255,0,0,0); } 
-            to { box-shadow: inset 0 0 20px rgba(217, 115, 115, 0.3); background-color: var(--red-bg); color: var(--red); } 
+        @keyframes uv-glow {
+            from { box-shadow: inset 0 0 0 rgba(255,0,0,0); }
+            to { box-shadow: inset 0 0 20px rgba(217, 115, 115, 0.3); background-color: var(--red-bg); color: var(--red); }
         }
 
         /* СТИЛИ ДЛЯ ПОЛОЧКИ ТОВАРОВ (МОДАЛКА) */
         .product-form {
-            background: var(--bg); padding: 20px; border-radius: 16px; 
+            background: var(--bg); padding: 20px; border-radius: 16px;
             border: 1px solid var(--border-color); margin-bottom: 25px;
             display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;
         }
@@ -477,13 +477,13 @@
             .table-wrapper { border: none; box-shadow: none; background: transparent; }
             table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { 
-                border: 1px solid var(--border-color); margin-bottom: 16px; border-radius: 20px; 
-                background: var(--card-bg); box-shadow: var(--shadow); padding: 8px 16px; 
+            tr {
+                border: 1px solid var(--border-color); margin-bottom: 16px; border-radius: 20px;
+                background: var(--card-bg); box-shadow: var(--shadow); padding: 8px 16px;
             }
-            td { 
+            td {
                 border: none; border-bottom: 1px solid var(--border-color); padding: 14px 0;
-                display: flex; justify-content: space-between; align-items: center; text-align: right; 
+                display: flex; justify-content: space-between; align-items: center; text-align: right;
                 border-right: none;
             }
             td:last-child { border-bottom: none; }
@@ -501,7 +501,7 @@
             .dashboard { flex-direction: column; }
             .stat-card { padding: 20px; }
             .stat-value { font-size: 32px; }
-            
+
             /* Адаптив для полочки товаров в модалке */
             .product-form { flex-direction: column; align-items: stretch; }
             .product-table tr { margin-bottom: 15px; border: 1px solid var(--border-color); }
@@ -516,8 +516,14 @@
 <div class="container">
     <!-- ВКЛАДКИ -->
     <div class="tabs">
-        <button class="tab-btn active" id="tab-skin" onclick="switchTab('skin')">🧴 Уход за кожей</button>
-        <button class="tab-btn" id="tab-habits" onclick="switchTab('habits')">🧠 Мои привычки</button>
+        <button class="tab-btn active" id="tab-skin" onclick="switchTab('skin')"
+                title="Трекер ежедневного ухода за кожей (утро/вечер) и тела">
+            🧴 Уход за кожей
+        </button>
+        <button class="tab-btn" id="tab-habits" onclick="switchTab('habits')"
+                title="Трекер ежедневных привычек (английский, чтение, тренировки и т.д.)">
+            🧠 Мои привычки
+        </button>
     </div>
 
     <div id="uv-alert"></div>
@@ -525,33 +531,48 @@
     <!-- ТОПБАР -->
     <div class="topbar">
         <div class="nav-group left">
-            <button class="btn btn-danger" onclick="resetAll()">🔄 Новая неделя</button>
-            <button class="btn btn-primary" onclick="openProductsModal()">🛍️ Мои средства</button>
+            <button class="btn btn-danger" onclick="resetAll()"
+                    title="Сохранить текущую неделю в Архив и сбросить все галочки для новой недели">
+                🔄 Новая неделя
+            </button>
+            <button class="btn btn-primary" id="productsBtn" onclick="openProductsModal()"
+                    title="Полка с вашими косметическими средствами: название, цена и ссылка на магазин">
+                🛍️ Мои средства
+            </button>
         </div>
 
         <div class="nav-group right">
-            <!-- ВЫПАДАЮЩЕЕ МЕНЮ ДАННЫХ -->
+            <!-- ОБЪЕДИНЁННОЕ МЕНЮ: Данные + Настройки -->
             <div class="dropdown">
-                <button class="btn" onclick="toggleDropdown(event)">⚙️ Данные ▾</button>
+                <button class="btn" onclick="toggleDropdown(event)"
+                        title="Меню: настройки расписания, архив, резервное копирование и восстановление данных">
+                    ⚙️ Меню ▾
+                </button>
                 <div class="dropdown-content" id="dataDropdown">
-                    <button class="dropdown-item" onclick="openHistory()">
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openSettings)"
+                            title="Настроить расписание процедур по уходу за кожей и привычек по дням недели">
+                        <span class="dropdown-title">⚙️ Настройки</span>
+                        <span class="dropdown-desc">Расписание процедур и привычек</span>
+                    </button>
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openHistory)"
+                            title="Посмотреть прошлые недели и заметки по уходу за кожей">
                         <span class="dropdown-title">📜 Архив</span>
                         <span class="dropdown-desc">Посмотреть прошлые недели и заметки</span>
                     </button>
-                    
-                    <button class="dropdown-item" onclick="document.getElementById('restoreInput').click()">
+                    <button class="dropdown-item"
+                            onclick="document.getElementById('restoreInput').click()"
+                            title="Загрузить файл резервной копии (.json) и восстановить все данные">
                         <span class="dropdown-title">📂 Восстановить</span>
                         <span class="dropdown-desc">Загрузить файл бэкапа (.json)</span>
                     </button>
-                    
-                    <button class="dropdown-item" onclick="downloadBackup()">
+                    <button class="dropdown-item" onclick="downloadBackup()"
+                            title="Скачать резервную копию всех данных в формате .json">
                         <span class="dropdown-title">💾 Бэкап</span>
                         <span class="dropdown-desc">Скачать резервную копию данных</span>
                     </button>
                 </div>
             </div>
             <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreBackup(event)">
-            <button class="btn" onclick="openSettings()">⚙️ Настройки</button>
         </div>
     </div>
 
@@ -707,7 +728,7 @@
     <div class="modal-content">
         <span class="close-btn" onclick="closeProductsModal()">&times;</span>
         <h2 style="margin-top:0;">🛍️ Мои средства</h2>
-        
+
         <div class="product-form">
             <div class="form-group">
                 <label>Название средства</label>
@@ -757,7 +778,7 @@
     <div class="modal-content">
         <span class="close-btn" onclick="closeSettings()">&times;</span>
         <h2 style="margin-top:0;">⚙️ Настройка расписания</h2>
-        
+
         <h3 style="margin-top: 20px; font-size: 18px; color: var(--primary);">Уход за кожей</h3>
         <div style="overflow-x: auto;">
             <table class="settings-table">
@@ -813,6 +834,11 @@
         dropdown.classList.toggle('show');
     }
 
+    function closeDropdownAndOpen(fn) {
+        document.getElementById('dataDropdown').classList.remove('show');
+        fn();
+    }
+
     // Закрываем меню при клике вне его
     window.addEventListener('click', function(event) {
         const dropdown = document.getElementById('dataDropdown');
@@ -828,13 +854,19 @@
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById('content-' + tabName).classList.add('active');
         document.getElementById('tab-' + tabName).classList.add('active');
+
+        // «Мои средства» показываем только во вкладке «Уход за кожей»
+        const productsBtn = document.getElementById('productsBtn');
+        if (productsBtn) {
+            productsBtn.style.display = (tabName === 'habits') ? 'none' : 'inline-flex';
+        }
     }
 
     // --- ОБЩИЕ ФУНКЦИИ ---
     function updateWeekDates() {
         const today = new Date();
-        const dayOfWeek = today.getDay(); 
-        const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); 
+        const dayOfWeek = today.getDay();
+        const diffToMonday = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
         const monday = new Date(today.setDate(diffToMonday));
         const sunday = new Date(today.setDate(diffToMonday + 6));
         const formatDate = (date) => date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
@@ -875,7 +907,7 @@
         const isDark = document.body.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDark);
         document.getElementById('themeToggleBtn').textContent = isDark ? '☀️' : '🌙';
-        
+
         if (document.getElementById('content-skin').classList.contains('active')) updateSkinStats();
         else updateHabitsStats();
     }
@@ -899,7 +931,7 @@
         const cityLower = city.toLowerCase().trim();
         try {
             let lat, lon, actualName;
-            if (cityCache[cityLower]) { lat = cityCache[cityLower].lat; lon = cityCache[cityLower].lon; actualName = cityCache[cityLower].name; document.getElementById('city-input').value = actualName; } 
+            if (cityCache[cityLower]) { lat = cityCache[cityLower].lat; lon = cityCache[cityLower].lon; actualName = cityCache[cityLower].name; document.getElementById('city-input').value = actualName; }
             else {
                 const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
                 let geoData; try { const geoRes = await fetch(geoUrl); geoData = await geoRes.json(); } catch(e) { const geoRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(geoUrl)}`); geoData = await geoRes.json(); }
@@ -927,7 +959,7 @@
     const daysOfWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
     const skinColumns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
     const skinColumnNames = { spf: "СПФ", micellar: "1. Мицеллярка", cleanser: "2. Пенка", efizel: "3. Эффезел", moisturizer: "4. Крем (лицо)", bodyGel: "🧴 Гель (тело)" };
-    
+
     const defaultSkinSettings = { spf: [1, 1, 1, 1, 1, 0, 0], micellar: [1, 1, 1, 1, 1, 0, 0], cleanser: [1, 0, 1, 0, 1, 0, 0], efizel: [1, 0, 1, 0, 1, 0, 1], moisturizer: [1, 0, 1, 0, 1, 0, 1], bodyGel: [1, 0, 1, 0, 1, 0, 0] };
     let currentSkinSettings = JSON.parse(localStorage.getItem('userSchedule')) || defaultSkinSettings;
     let skinWeekSchedule = [];
@@ -952,7 +984,7 @@
         document.getElementById('th-efizel').textContent = `3. Эффезел (${formatDays(currentSkinSettings.efizel)})`;
         document.getElementById('th-moisturizer').textContent = `4. Крем (${formatDays(currentSkinSettings.moisturizer)})`;
         document.getElementById('th-bodyGel').textContent = `🧴 Гель (${formatDays(currentSkinSettings.bodyGel)})`;
-        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
+        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
         skinWeekSchedule.forEach((dayData, dayIndex) => {
             const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
@@ -969,13 +1001,13 @@
             const tdStreak = document.createElement('td'); tdStreak.className = 'streak-cell'; tdStreak.id = `streak-${dayIndex}`; tdStreak.setAttribute('data-label', 'Стрик'); tr.appendChild(tdStreak);
             const tdNotes = document.createElement('td'); tdNotes.className = 'notes-cell'; tdNotes.setAttribute('data-label', 'Заметки');
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
-            
+
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
-            noteInput.addEventListener('input', (e) => { 
-                localStorage.setItem(e.target.id, e.target.value); 
+            noteInput.addEventListener('input', (e) => {
+                localStorage.setItem(e.target.id, e.target.value);
                 autoResize(e.target);
             });
-            
+
             tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
             setTimeout(() => autoResize(noteInput), 0);
         });
@@ -989,17 +1021,17 @@
 
     function addTag(text) {
         if (lastFocusedNoteInput) {
-            const currentVal = lastFocusedNoteInput.value.trim(); 
+            const currentVal = lastFocusedNoteInput.value.trim();
             lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
-            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
-            lastFocusedNoteInput.focus(); 
+            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value);
+            lastFocusedNoteInput.focus();
             autoResize(lastFocusedNoteInput);
         } else { alert("Сначала кликните в поле 'Заметки' напротив нужного дня!"); }
     }
 
     function updateSkinStats(changedDayIndex = -1) {
         let totalChecked = 0, perfectDaysCount = 0;
-        let barData = [0, 0, 0, 0, 0, 0], dailyData = [0, 0, 0, 0, 0, 0, 0]; 
+        let barData = [0, 0, 0, 0, 0, 0], dailyData = [0, 0, 0, 0, 0, 0, 0];
         let totalExpectedWeek = skinWeekSchedule.reduce((sum, day) => sum + day.expected.reduce((a,b)=>a+b, 0), 0);
         skinWeekSchedule.forEach((dayData, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
@@ -1017,7 +1049,7 @@
             } else { streakCell.textContent = '—'; previousPerfectDays.delete(dayIndex); }
         });
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
-        if(progressPercent > 100) progressPercent = 100; 
+        if(progressPercent > 100) progressPercent = 100;
         document.getElementById('progressValue').textContent = `${progressPercent}%`; document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
         document.getElementById('progressBarText').textContent = `${progressPercent}%`; document.getElementById('progressBarFill').style.width = `${progressPercent}%`;
         let globalPerfectDays = perfectDaysCount;
@@ -1034,13 +1066,13 @@
     }
 
     function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
-        const isDark = document.body.classList.contains('dark-mode'); 
-        const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
+        const isDark = document.body.classList.contains('dark-mode');
+        const textColor = isDark ? '#E2E8F0' : '#2D3748';
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
         const accentColor = isDark ? '#81B29A' : '#7C9A88';
-        
+
         let goals = []; skinColumns.forEach(col => { goals.push(currentSkinSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
-        
+
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar', data: { labels: skinColumns.map((col, i) => `${skinColumnNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
@@ -1064,7 +1096,7 @@
     // --- ЛОГИКА ПРИВЫЧЕК ---
     const habitColumns = ["english", "reading", "workout", "no_sugar", "morning_routine"];
     const habitNames = { english: "🇬🇧 Английский", reading: "📚 Чтение", workout: "🏋️ Тренировка", no_sugar: "🚫 Без сладкого", morning_routine: "🧴 Утренняя рутина" };
-    
+
     const defaultHabitSettings = {
         english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0],
         no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1]
@@ -1075,7 +1107,7 @@
 
     function renderHabitsTable() {
         const tbody = document.getElementById('habitsTableBody'); tbody.innerHTML = '';
-        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
+        const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
         daysOfWeek.forEach((day, dayIndex) => {
             const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
             const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
@@ -1102,8 +1134,8 @@
             habitColumns.forEach((colName, colIndex) => {
                 const input = document.getElementById(`habit-${dayIndex}-${colName}`); if (!input) return;
                 localStorage.setItem(input.id, input.checked);
-                if (input.checked) { 
-                    totalChecked++; dayChecked++; 
+                if (input.checked) {
+                    totalChecked++; dayChecked++;
                     habitBarData[colIndex]++; habitDailyData[dayIndex]++;
                 }
                 if (currentHabitSettings[colName][dayIndex] === 1) { totalExpectedWeek++; dayExpected++; }
@@ -1117,7 +1149,7 @@
             } else { localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); }
         });
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
-        if(progressPercent > 100) progressPercent = 100; 
+        if(progressPercent > 100) progressPercent = 100;
         document.getElementById('habitsProgressValue').textContent = `${progressPercent}%`;
         document.getElementById('habitsProgressBarText').textContent = `${progressPercent}%`;
         document.getElementById('habitsProgressBarFill').style.width = `${progressPercent}%`;
@@ -1126,11 +1158,11 @@
     }
 
     function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
-        const isDark = document.body.classList.contains('dark-mode'); 
-        const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
+        const isDark = document.body.classList.contains('dark-mode');
+        const textColor = isDark ? '#E2E8F0' : '#2D3748';
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
         const accentColor = isDark ? '#81B29A' : '#7C9A88';
-        
+
         let goals = []; habitColumns.forEach(col => { goals.push(currentHabitSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
 
         if (habitBarChartInstance) habitBarChartInstance.destroy();
@@ -1145,7 +1177,7 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
         });
 
-        let history = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]'); 
+        let history = JSON.parse(localStorage.getItem('habitWeeklyHistory') || '[]');
         let lineLabels = [], lineData = [];
         history.slice(-7).forEach((week) => { lineLabels.push(week.date); lineData.push(week.percent); });
         lineLabels.push('Текущая'); lineData.push(currentProgress);
@@ -1171,7 +1203,7 @@
     function renderProducts() {
         const tbody = document.getElementById('productsTableBody');
         tbody.innerHTML = '';
-        
+
         if (products.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Пока нет добавленных средств.</td></tr>';
             return;
@@ -1179,15 +1211,15 @@
 
         products.forEach((product, index) => {
             const tr = document.createElement('tr');
-            
+
             const tdName = document.createElement('td');
             tdName.textContent = product.name;
             tdName.style.fontWeight = '600';
-            
+
             const tdPrice = document.createElement('td');
             tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
             tdPrice.className = 'product-price';
-            
+
             const tdLink = document.createElement('td');
             if (product.link) {
                 const a = document.createElement('a');
@@ -1198,7 +1230,7 @@
             } else {
                 tdLink.textContent = '—';
             }
-            
+
             const tdAction = document.createElement('td');
             const btnDel = document.createElement('button');
             btnDel.className = 'btn-delete-product';
@@ -1210,7 +1242,7 @@
             tdPrice.setAttribute('data-label', 'Цена');
             tdLink.setAttribute('data-label', 'Ссылка');
             tdAction.setAttribute('data-label', 'Удалить');
-            
+
             tr.appendChild(tdName);
             tr.appendChild(tdPrice);
             tr.appendChild(tdLink);
@@ -1223,11 +1255,11 @@
         const nameInput = document.getElementById('prodName');
         const priceInput = document.getElementById('prodPrice');
         const linkInput = document.getElementById('prodLink');
-        
+
         const name = nameInput.value.trim();
         const price = priceInput.value.trim();
         const link = linkInput.value.trim();
-        
+
         if (!name) {
             alert("Введите название средства!");
             return;
@@ -1235,11 +1267,11 @@
 
         products.push({ name, price, link });
         localStorage.setItem('userProducts', JSON.stringify(products));
-        
+
         nameInput.value = '';
         priceInput.value = '';
         linkInput.value = '';
-        
+
         renderProducts();
     }
 
@@ -1290,7 +1322,7 @@
         const file = event.target.files[0]; if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
-            try { const data = JSON.parse(e.target.result); for (let key in data) localStorage.setItem(key, data[key]); alert("Бэкап восстановлен! Страница перезагрузится."); location.reload(); } 
+            try { const data = JSON.parse(e.target.result); for (let key in data) localStorage.setItem(key, data[key]); alert("Бэкап восстановлен! Страница перезагрузится."); location.reload(); }
             catch (err) { alert("Ошибка файла."); }
         };
         reader.readAsText(file);
@@ -1316,10 +1348,10 @@
             localStorage.setItem('habitWeeklyHistory', JSON.stringify(habitHistory));
 
             skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
-            daysOfWeek.forEach((_, dayIndex) => { 
-                localStorage.removeItem(`note-${dayIndex}`); 
+            daysOfWeek.forEach((_, dayIndex) => {
+                localStorage.removeItem(`note-${dayIndex}`);
                 const noteEl = document.getElementById(`note-${dayIndex}`);
-                noteEl.value = ""; 
+                noteEl.value = "";
                 noteEl.style.height = '44px';
             });
 
@@ -1332,7 +1364,7 @@
     function openHistory() {
         const modal = document.getElementById('historyModal'); const list = document.getElementById('historyList'); list.innerHTML = '';
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
-        if (history.length === 0) { list.innerHTML = '<p style="color:var(--text-muted);">Архив пока пуст (он сохраняет только уход за кожей).</p>'; } 
+        if (history.length === 0) { list.innerHTML = '<p style="color:var(--text-muted);">Архив пока пуст (он сохраняет только уход за кожей).</p>'; }
         else {
             for (let i = history.length - 1; i >= 0; i--) {
                 let week = history[i]; let div = document.createElement('div'); div.className = 'history-card';
@@ -1353,7 +1385,7 @@
     function deleteWeek(index) {
         if(confirm("Удалить эту неделю из архива?")) {
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); history.splice(index, 1); localStorage.setItem('weeklyHistory', JSON.stringify(history));
-            openHistory(); updateSkinStats(); 
+            openHistory(); updateSkinStats();
         }
     }
     function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
@@ -1363,7 +1395,7 @@
     // --- ИНИЦИАЛИЗАЦИЯ ---
     window.addEventListener('DOMContentLoaded', () => {
         const savedTitle = localStorage.getItem('customHeaderTitle'); if (savedTitle) document.getElementById('mainTitle').innerText = savedTitle;
-        
+
         const isDark = localStorage.getItem('darkMode') === 'true';
         if (isDark) {
             document.body.classList.add('dark-mode');
@@ -1373,7 +1405,7 @@
         }
 
         const savedCity = localStorage.getItem('userCity') || 'Казань'; document.getElementById('city-input').value = savedCity; fetchWeatherByCity(savedCity);
-        updateWeekDates(); 
+        updateWeekDates();
         renderSkinTable(); updateSkinStats();
         renderHabitsTable(); updateHabitsStats();
     });
