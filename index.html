@@ -202,7 +202,6 @@
         .close-btn { color: var(--text-muted); float: right; font-size: 32px; cursor: pointer; line-height: 1; margin-top: -10px; }
         .close-btn:hover { color: var(--red); }
 
-        /* --- ИСПРАВЛЕНИЕ ТАБЛИЦЫ НАСТРОЕК --- */
         .settings-table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -216,10 +215,7 @@
         .settings-table th:last-child, .settings-table td:last-child { border-right: none; }
         .settings-table th { background: var(--hover-bg); color: var(--text-muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
         .settings-table td:first-child { text-align: left; font-weight: 600; padding-left: 12px; white-space: nowrap; }
-        .settings-table input[type="checkbox"] {
-            width: 20px; height: 20px; cursor: pointer;
-            accent-color: var(--primary);
-        }
+        .settings-table input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
 
         .history-card { border: 1px solid var(--border-color); padding: 24px; border-radius: 20px; margin-bottom: 20px; background-color: var(--bg); }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -240,22 +236,13 @@
         .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
         .form-input { padding: 12px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        /* --- ИСПРАВЛЕНИЕ ТАБЛИЦЫ СРЕДСТВ --- */
         .product-table-wrapper {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
             margin-bottom: 15px;
         }
-        .product-table { 
-            width: 100%; 
-            min-width: 650px; /* Задаем минимальную ширину, чтобы кнопки не сплющивались */
-            border-collapse: collapse; 
-            background: var(--bg); 
-            border-radius: 16px; 
-            overflow: hidden; 
-            border: 1px solid var(--border-color); 
-        }
+        .product-table { width: 100%; min-width: 650px; border-collapse: collapse; background: var(--bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); }
         .product-table th, .product-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .product-table th { background: var(--hover-bg); font-weight: 600; color: var(--text-muted); font-size: 13px; }
         .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
@@ -1066,7 +1053,10 @@
                 const dayExpected = getDayExpected(i);
                 if (dayExpected === 0) continue;
                 let dayChecked = 0;
-                skinColumns.forEach(col => { if (checks[`check-${i}-${col.id}`]) dayChecked++; });
+                skinColumns.forEach(col => { 
+                    let arr = currentSkinSettings[col.id];
+                    if (Array.isArray(arr) && arr[i] === 1 && checks[`check-${i}-${col.id}`]) dayChecked++; 
+                });
                 if (dayChecked >= dayExpected) { currentStreak++; if (currentStreak > bestStreak) bestStreak = currentStreak; } 
                 else currentStreak = 0;
             }
@@ -1075,7 +1065,13 @@
             const dayExpected = getDayExpected(i);
             if (dayExpected === 0) continue;
             let dayChecked = 0;
-            skinColumns.forEach(col => { const input = document.getElementById(`check-${i}-${col.id}`); if (input && input.checked) dayChecked++; });
+            skinColumns.forEach(col => { 
+                let arr = currentSkinSettings[col.id];
+                if (Array.isArray(arr) && arr[i] === 1) {
+                    const input = document.getElementById(`check-${i}-${col.id}`); 
+                    if (input && input.checked) dayChecked++; 
+                }
+            });
             if (dayChecked >= dayExpected) { currentStreak++; if (currentStreak > bestStreak) bestStreak = currentStreak; } 
             else currentStreak = 0;
         }
@@ -1097,7 +1093,10 @@
                 const dayExpected = getDayExpected(i);
                 if (dayExpected === 0) continue;
                 let dayChecked = 0;
-                habitColumns.forEach(col => { if (week.habitChecks[`habit-${i}-${col.id}`]) dayChecked++; });
+                habitColumns.forEach(col => { 
+                    let arr = currentHabitSettings[col.id];
+                    if (Array.isArray(arr) && arr[i] === 1 && week.habitChecks[`habit-${i}-${col.id}`]) dayChecked++; 
+                });
                 if (dayChecked >= dayExpected) { currentStreak++; if (currentStreak > bestStreak) bestStreak = currentStreak; } 
                 else currentStreak = 0;
             }
@@ -1106,7 +1105,13 @@
             const dayExpected = getDayExpected(i);
             if (dayExpected === 0) continue;
             let dayChecked = 0;
-            habitColumns.forEach(col => { const input = document.getElementById(`habit-${i}-${col.id}`); if (input && input.checked) dayChecked++; });
+            habitColumns.forEach(col => { 
+                let arr = currentHabitSettings[col.id];
+                if (Array.isArray(arr) && arr[i] === 1) {
+                    const input = document.getElementById(`habit-${i}-${col.id}`); 
+                    if (input && input.checked) dayChecked++; 
+                }
+            });
             if (dayChecked >= dayExpected) { currentStreak++; if (currentStreak > bestStreak) bestStreak = currentStreak; } 
             else currentStreak = 0;
         }
@@ -1131,11 +1136,14 @@
                 const input = document.getElementById(`check-${dayIndex}-${col.id}`); 
                 if(!input) return;
                 if (input.checked) { 
-                    totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
+                    totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
                     procDetails[colIndex].push(daysOfWeek[dayIndex]);
                     dayDetails[dayIndex].push(col.name);
                 }
-                if (dayData.expected[colIndex] === 1) dayExpected++;
+                if (dayData.expected[colIndex] === 1) {
+                    dayExpected++;
+                    if (input.checked) dayChecked++; // ФИКС: считаем только запланированные и выполненные
+                }
             });
             
             const streakCell = document.getElementById(`streak-${dayIndex}`);
@@ -1177,7 +1185,9 @@
                     skinColumns.forEach(c => { if(currentSkinSettings[c.id] && currentSkinSettings[c.id][i] === 1) exp++; });
                     if(exp === 0) continue;
                     let chk = 0; 
-                    skinColumns.forEach(c => { if(checks[`check-${i}-${c.id}`]) chk++; });
+                    skinColumns.forEach(c => { 
+                        if(currentSkinSettings[c.id] && currentSkinSettings[c.id][i] === 1 && checks[`check-${i}-${c.id}`]) chk++; 
+                    });
                     if(chk >= exp) globalPerfect++;
                 }
             });
@@ -1242,6 +1252,15 @@
         if(Array.isArray(history)) {
             history.slice(-7).forEach(w => { 
                 let c = 0; let chks = w.skinChecks || {};
+                skinColumns.forEach(col => { 
+                    if (Array.isArray(currentSkinSettings[col.id])) {
+                        let planned = currentSkinSettings[col.id].filter(v => v === 1).length; 
+                        let completed = 0;
+                        for (let d = 0; d < 7; d++) {
+                            if (currentSkinSettings[col.id][d] === 1 && chks[`check-${d}-${col.id}`]) completed++;
+                        }
+                    }
+                });
                 for (let k in chks) if(chks[k]) c++; 
                 labels.push(w.date); data.push(totalExp > 0 ? Math.round((c / totalExp) * 100) : 0); 
             });
@@ -1301,7 +1320,7 @@
                 const input = document.getElementById(`habit-${dayIndex}-${col.id}`); 
                 if (!input) return;
                 if (input.checked) { 
-                    totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
+                    totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
                     procDetails[colIndex].push(daysOfWeek[dayIndex]);
                     dayDetails[dayIndex].push(col.name);
                 }
@@ -1309,6 +1328,7 @@
                 
                 if (currentHabitSettings[col.id][dayIndex] === 1) { 
                     totalExp++; dayExpected++; 
+                    if (input.checked) dayChecked++; // ФИКС
                     if (dayIndex === todayIdx && !input.checked) {
                         pendingHabits.push(col.name);
                     }
