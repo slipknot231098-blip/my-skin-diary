@@ -266,7 +266,7 @@
         }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
-        /* ПОЛЕ ЗАМЕТОК (Авто-растяжение) */
+        /* ПОЛЕ ЗАМЕТОК */
         textarea.notes-input {
             display: block;
             width: 100%; 
@@ -1174,4 +1174,340 @@
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
             type: 'bar', data: { labels: habitColumns.map((col, i) => `${habitNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛ
+            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+
+        if (habitDailyChartInstance) habitDailyChartInstance.destroy();
+        habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
+            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600', size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+
+        let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
+        let lineLabels = [], lineData = [];
+        history.slice(-7).forEach((week) => { 
+            lineLabels.push(week.date); 
+            lineData.push(week.habitPercent || 0); 
+        });
+        lineLabels.push('Текущая'); lineData.push(currentProgress);
+
+        if (habitLineChartInstance) habitLineChartInstance.destroy();
+        habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
+            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 2, pointRadius: 6 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ДИНАМИКА ПО НЕДЕЛЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor, font: {size: 12, family: 'Inter'} }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {size: 12, family: 'Inter'} }, grid: { display: false } } } }
+        });
+    }
+
+    // --- ЛОГИКА ПОЛОЧКИ ТОВАРОВ ---
+    let products = JSON.parse(localStorage.getItem('userProducts')) || [];
+
+    function openProductsModal() {
+        document.getElementById('productsModal').style.display = "block";
+        renderProducts();
+    }
+    function closeProductsModal() {
+        document.getElementById('productsModal').style.display = "none";
+    }
+
+    function renderProducts() {
+        const tbody = document.getElementById('productsTableBody');
+        tbody.innerHTML = '';
+        
+        if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Пока нет добавленных средств.</td></tr>';
+            return;
+        }
+
+        products.forEach((product, index) => {
+            const tr = document.createElement('tr');
+            
+            const tdName = document.createElement('td');
+            tdName.textContent = product.name;
+            tdName.style.fontWeight = '600';
+            
+            const tdPrice = document.createElement('td');
+            tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
+            tdPrice.className = 'product-price';
+            
+            const tdLink = document.createElement('td');
+            if (product.link) {
+                const a = document.createElement('a');
+                a.href = product.link;
+                a.target = '_blank';
+                a.textContent = 'Открыть 🔗';
+                tdLink.appendChild(a);
+            } else {
+                tdLink.textContent = '—';
+            }
+            
+            const tdAction = document.createElement('td');
+            const btnDel = document.createElement('button');
+            btnDel.className = 'btn-delete-product';
+            btnDel.textContent = '✕';
+            btnDel.onclick = () => deleteProduct(index);
+            tdAction.appendChild(btnDel);
+
+            tdName.setAttribute('data-label', 'Средство');
+            tdPrice.setAttribute('data-label', 'Цена');
+            tdLink.setAttribute('data-label', 'Ссылка');
+            tdAction.setAttribute('data-label', 'Удалить');
+            
+            tr.appendChild(tdName);
+            tr.appendChild(tdPrice);
+            tr.appendChild(tdLink);
+            tr.appendChild(tdAction);
+            tbody.appendChild(tr);
+        });
+    }
+
+    function addProduct() {
+        const nameInput = document.getElementById('prodName');
+        const priceInput = document.getElementById('prodPrice');
+        const linkInput = document.getElementById('prodLink');
+        
+        const name = nameInput.value.trim();
+        const price = priceInput.value.trim();
+        const link = linkInput.value.trim();
+        
+        if (!name) {
+            alert("Введите название средства!");
+            return;
+        }
+
+        products.push({ name, price, link });
+        localStorage.setItem('userProducts', JSON.stringify(products));
+        
+        nameInput.value = '';
+        priceInput.value = '';
+        linkInput.value = '';
+        
+        renderProducts();
+    }
+
+    function deleteProduct(index) {
+        if (confirm("Удалить это средство из списка?")) {
+            products.splice(index, 1);
+            localStorage.setItem('userProducts', JSON.stringify(products));
+            renderProducts();
+        }
+    }
+
+    // --- НАСТРОЙКИ ---
+    function openSettings() {
+        const modal = document.getElementById('settingsModal');
+        const tbodySkin = document.getElementById('settingsBody'); tbodySkin.innerHTML = '';
+        skinColumns.forEach(col => {
+            const tr = document.createElement('tr'); let html = `<td>${skinColumnNames[col]}</td>`;
+            for (let i = 0; i < 7; i++) { const checked = currentSkinSettings[col][i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-${col}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
+            tr.innerHTML = html; tbodySkin.appendChild(tr);
+        });
+        const tbodyHabits = document.getElementById('habitsSettingsBody'); tbodyHabits.innerHTML = '';
+        habitColumns.forEach(col => {
+            const tr = document.createElement('tr'); let html = `<td>${habitNames[col]}</td>`;
+            for (let i = 0; i < 7; i++) { const checked = currentHabitSettings[col][i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-habit-${col}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
+            tr.innerHTML = html; tbodyHabits.appendChild(tr);
+        });
+        modal.style.display = "block";
+    }
+
+    function saveSettings() {
+        skinColumns.forEach(col => { for (let i = 0; i < 7; i++) currentSkinSettings[col][i] = document.getElementById(`set-${col}-${i}`).checked ? 1 : 0; });
+        localStorage.setItem('userSchedule', JSON.stringify(currentSkinSettings));
+        habitColumns.forEach(col => { for (let i = 0; i < 7; i++) currentHabitSettings[col][i] = document.getElementById(`set-habit-${col}-${i}`).checked ? 1 : 0; });
+        localStorage.setItem('userHabitSchedule', JSON.stringify(currentHabitSettings));
+        closeSettings(); renderSkinTable(); updateSkinStats(); renderHabitsTable(); updateHabitsStats();
+    }
+    function closeSettings() { document.getElementById('settingsModal').style.display = "none"; }
+
+    // --- ОСТАЛЬНОЕ ---
+    function downloadBackup() {
+        let dataToSave = {};
+        for (let i = 0; i < localStorage.length; i++) { const key = localStorage.key(i); dataToSave[key] = localStorage.getItem(key); }
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToSave, null, 2));
+        const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "backup_all_data.json");
+        document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove();
+    }
+    function restoreBackup(event) {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try { const data = JSON.parse(e.target.result); for (let key in data) localStorage.setItem(key, data[key]); alert("Бэкап восстановлен! Страница перезагрузится."); location.reload(); } 
+            catch (err) { alert("Ошибка файла."); }
+        };
+        reader.readAsText(file);
+    }
+
+    function resetAll() {
+        if(confirm("Сохранить текущую неделю в Архив и начать новую? (Сбросятся и уход, и привычки)")) {
+            let weekData = { 
+                date: new Date().toLocaleDateString('ru-RU'), 
+                skinChecks: {}, 
+                notes: {}, 
+                habitChecks: {}, 
+                habitPercent: 0 
+            };
+
+            // Сохраняем уход
+            skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { weekData.skinChecks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
+            skinWeekSchedule.forEach((_, day) => { weekData.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
+
+            // Сохраняем привычки
+            let habitTotalC = 0, habitTotalExp = 0;
+            habitColumns.forEach((colName) => {
+                daysOfWeek.forEach((_, dayIndex) => {
+                    const isChecked = document.getElementById(`habit-${dayIndex}-${colName}`).checked;
+                    weekData.habitChecks[`habit-${dayIndex}-${colName}`] = isChecked;
+                    if(isChecked) habitTotalC++;
+                    if(currentHabitSettings[colName][dayIndex] === 1) habitTotalExp++;
+                });
+            });
+            weekData.habitPercent = habitTotalExp > 0 ? Math.round((habitTotalC / habitTotalExp) * 100) : 0;
+
+            // Записываем в единую историю
+            let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
+            history.push(weekData); 
+            localStorage.setItem('weeklyHistory', JSON.stringify(history));
+
+            // Очищаем уход
+            skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
+            daysOfWeek.forEach((_, dayIndex) => { 
+                localStorage.removeItem(`note-${dayIndex}`); 
+                const noteEl = document.getElementById(`note-${dayIndex}`);
+                noteEl.value = ""; 
+                noteEl.style.height = '44px';
+            });
+
+            // Очищаем привычки
+            habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
+
+            updateSkinStats(); updateHabitsStats(); alert("Новая неделя начата! Все данные сохранены в Архив.");
+        }
+    }
+
+    function openHistory() {
+        const modal = document.getElementById('historyModal'); 
+        const list = document.getElementById('historyList'); 
+        list.innerHTML = '';
+        let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
+        
+        if (history.length === 0) { 
+            list.innerHTML = '<p style="color:var(--text-muted);">Архив пока пуст.</p>'; 
+        } else {
+            for (let i = history.length - 1; i >= 0; i--) {
+                let week = history[i];
+                let dateStr = week.date || 'Неизвестно';
+
+                let div = document.createElement('div'); 
+                div.className = 'history-card';
+
+                // --- ДЕТАЛИ УХОДА ---
+                let skinHtml = '';
+                let totalSkinChecks = 0;
+                let hasSkinDetails = false;
+                let skinChecks = week.skinChecks || week.checks || {}; // Поддержка старого формата
+                
+                for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
+                    let dayChecks = [];
+                    skinColumns.forEach(col => { if (skinChecks[`check-${dayIdx}-${col}`]) { dayChecks.push(skinColumnNames[col]); totalSkinChecks++; } });
+                    let note = week.notes && week.notes[`note-${dayIdx}`] ? week.notes[`note-${dayIdx}`] : '';
+                    
+                    if (dayChecks.length > 0 || note.trim() !== '') {
+                        hasSkinDetails = true;
+                        skinHtml += `
+                            <div style="margin-bottom: 8px; background: var(--card-bg); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div style="font-weight: 700; color: var(--primary); margin-bottom: 4px;">${daysOfWeek[dayIdx]}</div>
+                                ${dayChecks.length > 0 ? `<div style="font-size: 12px; color: var(--green); font-weight: 600;">✅ Уход: ${dayChecks.join(', ')}</div>` : ''}
+                                ${note.trim() !== '' ? `<div style="font-size: 12px; color: var(--text); white-space: pre-wrap; margin-top: 4px;">📝 ${note}</div>` : ''}
+                            </div>
+                        `;
+                    }
+                }
+                if (!hasSkinDetails) skinHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет данных по уходу.</p>';
+
+                // --- ДЕТАЛИ ПРИВЫЧЕК ---
+                let habitHtml = '';
+                if (week.habitChecks) { // Новый формат
+                    let hasHabitDetails = false;
+                    for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
+                        let dayHabits = [];
+                        habitColumns.forEach(col => { if (week.habitChecks[`habit-${dayIdx}-${col}`]) { dayHabits.push(habitNames[col]); } });
+                        
+                        if (dayHabits.length > 0) {
+                            hasHabitDetails = true;
+                            habitHtml += `
+                                <div style="margin-bottom: 6px; font-size: 12px;">
+                                    <span style="font-weight: 700; color: var(--primary);">${daysOfWeek[dayIdx]}:</span> ${dayHabits.join(', ')}
+                                </div>
+                            `;
+                        }
+                    }
+                    if (!hasHabitDetails) habitHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет выполненных привычек.</p>';
+                } else if (week.habitPercent !== undefined) { // Старый формат
+                    habitHtml = `<div style="font-size: 14px; font-weight: 600; color: var(--primary);">Выполнено на ${week.habitPercent}%</div>`;
+                } else {
+                    habitHtml = '<p style="color:var(--text-muted); font-size: 12px;">Нет данных по привычкам.</p>';
+                }
+
+                // Собираем карточку
+                div.innerHTML = `
+                    <div class="history-header">
+                        <h4>Неделя от ${dateStr}</h4>
+                        <button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️ Удалить</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <!-- Колонка Уход -->
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="font-weight: 800; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🧴 Уход (выполнено: ${totalSkinChecks})</div>
+                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                                ${skinHtml}
+                            </div>
+                        </div>
+                        
+                        <!-- Колонка Привычки -->
+                        <div style="flex: 1; min-width: 250px;">
+                            <div style="font-weight: 800; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🧠 Привычки</div>
+                            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                                ${habitHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(div);
+            }
+        }
+        modal.style.display = "block";
+    }
+
+    function deleteWeek(index) {
+        if(confirm("Удалить эту неделю из архива?")) {
+            let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
+            history.splice(index, 1); 
+            localStorage.setItem('weeklyHistory', JSON.stringify(history));
+            openHistory(); updateSkinStats(); updateHabitsStats();
+        }
+    }
+    function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
+    function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); openHistory(); updateSkinStats(); updateHabitsStats(); } }
+    window.onclick = function(event) { if (event.target == document.getElementById('historyModal')) closeHistory(); if (event.target == document.getElementById('settingsModal')) closeSettings(); if (event.target == document.getElementById('productsModal')) closeProductsModal(); }
+
+    // --- ИНИЦИАЛИЗАЦИЯ ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedTitle = localStorage.getItem('customHeaderTitle'); if (savedTitle) document.getElementById('mainTitle').innerText = savedTitle;
+        
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeToggleBtn').textContent = '☀️';
+        } else {
+            document.getElementById('themeToggleBtn').textContent = '🌙';
+        }
+
+        const savedCity = localStorage.getItem('userCity') || 'Казань'; document.getElementById('city-input').value = savedCity; fetchWeatherByCity(savedCity);
+        updateWeekDates(); 
+        renderSkinTable(); updateSkinStats();
+        renderHabitsTable(); updateHabitsStats();
+    });
+</script>
+</body>
+</html>
