@@ -1505,6 +1505,10 @@
         let barData = new Array(skinColumns.length).fill(0); 
         let dailyData = new Array(7).fill(0); 
         
+        // Массивы для подсказок (Tooltips)
+        let procDetailsArray = Array(skinColumns.length).fill().map(() => []);
+        let dayDetailsArray = Array(7).fill().map(() => []);
+
         let totalExpectedWeek = 0;
         skinWeekSchedule.forEach(day => { 
             totalExpectedWeek += day.expected.reduce((a,b)=>a+b, 0); 
@@ -1516,7 +1520,12 @@
                 const input = document.getElementById(`check-${dayIndex}-${col.id}`); 
                 if(!input) return;
                 localStorage.setItem(input.id, input.checked);
-                if (input.checked) { totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; }
+                if (input.checked) { 
+                    totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
+                    // Заполняем подсказки
+                    procDetailsArray[colIndex].push(daysOfWeek[dayIndex]);
+                    dayDetailsArray[dayIndex].push(col.name);
+                }
                 if (dayData.expected[colIndex] === 1) dayExpected++;
             });
             const streakCell = document.getElementById(`streak-${dayIndex}`);
@@ -1593,7 +1602,7 @@
         }
         document.getElementById('skinBestStreak').textContent = `${maxSkinStreak} 🏅`;
         
-        updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek);
+        updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek, procDetailsArray, dayDetailsArray);
         renderSkinSparkline(dailyData);
         queueSync();
     }
@@ -1629,7 +1638,7 @@
         });
     }
 
-    function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+    function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek, procDetailsArray, dayDetailsArray) {
         const isDark = document.body.classList.contains('dark-mode'); 
         const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -1643,19 +1652,74 @@
         const maxGoal = Math.max(...goals, 1);
         const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
         
-        // Динамическая высота для графика выполнения
         const chartContainer = document.getElementById('chart-skin-fact');
         if (chartContainer) chartContainer.style.height = Math.max(350, skinColumns.length * 45) + 'px';
 
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
-            type: 'bar', data: { labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            type: 'bar', 
+            data: { 
+                labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), 
+                datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] 
+            },
+            options: { 
+                indexAxis: 'y', 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: false }, 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let lines = [`Выполнено: ${context.raw} раз(а)`];
+                                if (procDetailsArray[context.dataIndex].length > 0) {
+                                    lines.push(`Дни: ${procDetailsArray[context.dataIndex].join(', ')}`);
+                                }
+                                return lines;
+                            }
+                        }
+                    }
+                }, 
+                scales: { 
+                    x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
+                    y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } 
+                } 
+            }
         });
+
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
-            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            type: 'bar', 
+            data: { 
+                labels: daysOfWeek, 
+                datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: false }, 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let lines = [`Всего сделано: ${context.raw}`];
+                                if (dayDetailsArray[context.dataIndex].length > 0) {
+                                    lines.push(...dayDetailsArray[context.dataIndex]); // Spread array to make each a new line
+                                } else {
+                                    lines.push('Нет выполненных процедур');
+                                }
+                                return lines;
+                            }
+                        }
+                    }
+                }, 
+                scales: { 
+                    y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
+                    x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } 
+                } 
+            }
         });
         
         let history = safeParse('weeklyHistory', []); 
@@ -1668,10 +1732,33 @@
             lineLabels.push(week.date); lineData.push(pct); 
         });
         lineLabels.push('Текущая'); lineData.push(currentProgress);
+        
         if (lineChartInstance) lineChartInstance.destroy();
         lineChartInstance = new Chart(document.getElementById('lineChart'), {
-            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
+            type: 'line', 
+            data: { 
+                labels: lineLabels, 
+                datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: false }, 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Выполнение: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }, 
+                scales: { 
+                    y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, 
+                    x: { ticks: { color: textColor }, grid: { display: false } } 
+                } 
+            }
         });
     }
 
@@ -1708,13 +1795,22 @@
         let currentStreak = 0;
         let todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
+        // Массивы для подсказок (Tooltips)
+        let procDetailsArray = Array(habitColumns.length).fill().map(() => []);
+        let dayDetailsArray = Array(7).fill().map(() => []);
+
         daysOfWeek.forEach((day, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
             habitColumns.forEach((col, colIndex) => {
                 const input = document.getElementById(`habit-${dayIndex}-${col.id}`); 
                 if (!input) return;
                 localStorage.setItem(input.id, input.checked);
-                if (input.checked) { totalChecked++; dayChecked++; habitBarData[colIndex]++; habitDailyData[dayIndex]++; }
+                if (input.checked) { 
+                    totalChecked++; dayChecked++; habitBarData[colIndex]++; habitDailyData[dayIndex]++; 
+                    // Заполняем подсказки
+                    procDetailsArray[colIndex].push(daysOfWeek[dayIndex]);
+                    dayDetailsArray[dayIndex].push(col.name);
+                }
                 
                 if(!Array.isArray(currentHabitSettings[col.id]) || currentHabitSettings[col.id].length !== 7) {
                     currentHabitSettings[col.id] = [1,1,1,1,1,1,1];
@@ -1752,7 +1848,7 @@
         document.getElementById('habitsProgressBarFill').style.width = `${progressPercent}%`;
         document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
 
-        updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek);
+        updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek, procDetailsArray, dayDetailsArray);
         renderHabitSparkline(habitDailyData);
         queueSync();
     }
@@ -1788,7 +1884,7 @@
         });
     }
 
-    function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
+    function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek, procDetailsArray, dayDetailsArray) {
         const isDark = document.body.classList.contains('dark-mode'); 
         const textColor = isDark ? '#E2E8F0' : '#2D3748'; 
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -1807,14 +1903,69 @@
 
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
-            type: 'bar', data: { labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
-            options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            type: 'bar', 
+            data: { 
+                labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), 
+                datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] 
+            },
+            options: { 
+                indexAxis: 'y', 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: false }, 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let lines = [`Выполнено: ${context.raw} раз(а)`];
+                                if (procDetailsArray[context.dataIndex].length > 0) {
+                                    lines.push(`Дни: ${procDetailsArray[context.dataIndex].join(', ')}`);
+                                }
+                                return lines;
+                            }
+                        }
+                    }
+                }, 
+                scales: { 
+                    x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
+                    y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } 
+                } 
+            }
         });
 
         if (habitDailyChartInstance) habitDailyChartInstance.destroy();
         habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
-            type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            type: 'bar', 
+            data: { 
+                labels: daysOfWeek, 
+                datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 8 }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: false }, 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let lines = [`Всего сделано: ${context.raw}`];
+                                if (dayDetailsArray[context.dataIndex].length > 0) {
+                                    lines.push(...dayDetailsArray[context.dataIndex]);
+                                } else {
+                                    lines.push('Нет выполненных привычек');
+                                }
+                                return lines;
+                            }
+                        }
+                    }
+                }, 
+                scales: { 
+                    y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, 
+                    x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } 
+                } 
+            }
         });
 
         let history = safeParse('weeklyHistory', []); 
@@ -1825,8 +1976,30 @@
 
         if (habitLineChartInstance) habitLineChartInstance.destroy();
         habitLineChartInstance = new Chart(document.getElementById('habitLineChart'), {
-            type: 'line', data: { labels: lineLabels, datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { display: false } } } }
+            type: 'line', 
+            data: { 
+                labels: lineLabels, 
+                datasets: [{ label: 'Процент (%)', data: lineData, borderColor: accentColor, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 4, fill: true, tension: 0.4, pointBackgroundColor: accentColor, pointBorderColor: isDark ? '#1A202C' : '#fff', pointBorderWidth: 3, pointRadius: 6, pointHoverRadius: 8 }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    title: { display: false }, 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Выполнение: ${context.raw}%`;
+                            }
+                        }
+                    }
+                }, 
+                scales: { 
+                    y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: textColor }, grid: { color: gridColor } }, 
+                    x: { ticks: { color: textColor }, grid: { display: false } } 
+                } 
+            }
         });
     }
 
