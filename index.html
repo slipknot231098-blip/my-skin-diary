@@ -211,7 +211,7 @@
         
         table { 
             width: 100%; border-collapse: separate; border-spacing: 0; 
-            min-width: 950px; table-layout: fixed; 
+            min-width: 950px; table-layout: auto; /* Изменено с fixed на auto для подстройки под колонки */
         }
         
         th, td { 
@@ -262,7 +262,7 @@
 
         /* ЗАМЕТКИ */
         textarea.notes-input {
-            display: block; width: 100%; min-height: 44px; padding: 10px; 
+            display: block; width: 100%; min-width: 150px; min-height: 44px; padding: 10px; 
             border: 1px solid var(--border-color); border-radius: 8px;
             background-color: var(--bg); color: var(--text); font-family: inherit;
             font-size: 13px; line-height: 1.4; transition: 0.2s; resize: none;
@@ -461,6 +461,16 @@
         .sync-saved { color: var(--green); }
         .sync-error { color: var(--red); }
 
+        /* УПРАВЛЕНИЕ ПРОЦЕДУРАМИ */
+        .manage-list { margin-top: 15px; border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid var(--border-color); background: var(--bg); }
+        .manage-item:last-child { border-bottom: none; }
+        .manage-item-name { font-weight: 600; font-size: 14px; }
+        .manage-item-info { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .btn-del-manage { background: var(--red-bg); color: var(--red); border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-del-manage:hover { background: #FCA5A5; color: #7F1D1D; }
+        .add-form-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; align-items: flex-end; }
+
         /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
         @media (max-width: 900px) {
             body { padding: 15px 10px; }
@@ -623,29 +633,8 @@
         </div>
 
         <div class="table-wrapper">
-            <table>
-                <colgroup>
-                    <col style="width: 7%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;">
-                    <col style="width: 11%;"><col style="width: 11%;"><col style="width: 11%;"><col style="width: 7%;"><col style="width: 20%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th rowspan="2" class="day-col">День</th>
-                        <th class="morning" id="th-spf-main">УТРО</th>
-                        <th class="evening" colspan="4">ВЕЧЕР (ЛИЦО)</th>
-                        <th class="body-gel">ТЕЛО</th>
-                        <th class="fire streak-col" rowspan="2">Стрик</th>
-                        <th class="notes-col" rowspan="2">Заметки</th>
-                    </tr>
-                    <tr>
-                        <th class="morning" id="th-spf"><div class="th-title" data-tooltip="Наносить утром на чистую кожу.">1. СПФ</div></th>
-                        <th class="evening"><div class="th-title" id="th-micellar" data-tooltip="Наносить на СУХУЮ кожу!">1. Мицеллярка</div></th>
-                        <th class="evening"><div class="th-title" id="th-cleanser" data-tooltip="Вспенить и смыть.">2. Пенка</div></th>
-                        <th class="evening"><div class="th-title" id="th-efizel" data-tooltip="ТОЛЬКО на сухую кожу!">3. Эффезел</div></th>
-                        <th class="evening"><div class="th-title" id="th-moisturizer" data-tooltip="Через 20-30 минут после Эффезела.">4. Крем</div></th>
-                        <th class="body-gel"><div class="th-title" id="th-bodyGel" data-tooltip="Нанести на 3-4 минуты и смыть.">🧴 Гель</div></th>
-                    </tr>
-                </thead>
+            <table id="skinTable">
+                <thead id="skinTableHead"></thead>
                 <tbody id="skinTableBody"></tbody>
             </table>
         </div>
@@ -683,21 +672,8 @@
         </div>
 
         <div class="table-wrapper">
-            <table>
-                <colgroup>
-                    <col style="width: 12%;"><col style="width: 17.6%;"><col style="width: 17.6%;">
-                    <col style="width: 17.6%;"><col style="width: 17.6%;"><col style="width: 17.6%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th class="day-col">День</th>
-                        <th class="habit-col">🇬🇧 Английский</th>
-                        <th class="habit-col">📚 Чтение</th>
-                        <th class="habit-col">🏋️ Тренировка</th>
-                        <th class="habit-col">🚫 Без сладкого</th>
-                        <th class="habit-col">🧴 Утренняя рутина</th>
-                    </tr>
-                </thead>
+            <table id="habitsTable">
+                <thead id="habitsTableHead"></thead>
                 <tbody id="habitsTableBody"></tbody>
             </table>
         </div>
@@ -730,6 +706,45 @@
             <div class="auth-switch" onclick="toggleAuthMode()">
                 <span id="authSwitchText">Нет аккаунта? Зарегистрироваться</span>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно: УПРАВЛЕНИЕ ПРОЦЕДУРАМИ -->
+<div id="manageItemsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeManageItems()">&times;</span>
+        <h2 style="margin-top:0;">⚙️ Мои процедуры и привычки</h2>
+        
+        <!-- Управление уходом -->
+        <h3 style="margin-top: 20px; font-size: 18px; color: var(--primary);">🧴 Уход за кожей</h3>
+        <div class="manage-list" id="manageSkinList"></div>
+        <div class="add-form-row">
+            <div class="form-group" style="flex: 2;">
+                <input type="text" id="newSkinName" class="form-input" placeholder="Название (например, Сыворотка)">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <select id="newSkinType" class="form-input">
+                    <option value="morning">Утро</option>
+                    <option value="evening">Вечер</option>
+                    <option value="body">Тело</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="addCustomSkin()" style="height: 42px;">➕ Добавить</button>
+        </div>
+
+        <!-- Управление привычками -->
+        <h3 style="margin-top: 30px; font-size: 18px; color: var(--primary);">🧠 Привычки</h3>
+        <div class="manage-list" id="manageHabitsList"></div>
+        <div class="add-form-row">
+            <div class="form-group" style="flex: 2;">
+                <input type="text" id="newHabitName" class="form-input" placeholder="Название (например, Медитация)">
+            </div>
+            <button class="btn btn-primary" onclick="addCustomHabit()" style="height: 42px;">➕ Добавить</button>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: right;">
+            <button class="btn btn-primary" onclick="closeManageItems()">Готово</button>
         </div>
     </div>
 </div>
@@ -815,6 +830,12 @@
         <span class="close-btn" onclick="closeSettings()">&times;</span>
         <h2 style="margin-top:0;">⚙️ Настройка расписания</h2>
         
+        <div style="margin-bottom: 20px;">
+            <button class="btn btn-primary" onclick="closeSettings(); openManageItems();" style="width: 100%; padding: 12px; justify-content: center;">
+                ⚙️ Управление процедурами и привычками
+            </button>
+        </div>
+
         <h3 style="margin-top: 20px; font-size: 18px; color: var(--primary);">Уход за кожей</h3>
         <div style="overflow-x: auto;">
             <table class="settings-table">
@@ -862,7 +883,6 @@
     let currentUser = null;
     let syncTimeout = null;
 
-    // Обновление интерфейса при входе/выходе
     auth.onAuthStateChanged(user => {
         currentUser = user;
         const authBtn = document.getElementById('auth-btn');
@@ -876,8 +896,6 @@
             userEmailSpan.textContent = user.email;
             userEmailSpan.style.display = 'inline-block';
             syncIcon.style.display = 'inline-block';
-            
-            // Подтягиваем данные из облака при входе
             pullFromCloud(user.uid);
         } else {
             authBtn.textContent = '🔑 Войти';
@@ -888,7 +906,6 @@
         }
     });
 
-    // Авторизация
     let isLoginMode = true;
     function openAuthModal() { document.getElementById('authModal').style.display = 'block'; }
     function closeAuthModal() { 
@@ -935,25 +952,17 @@
             btn.disabled = false;
             errorEl.style.display = 'block';
             if (error.code === 'auth/email-already-in-use') errorEl.textContent = "Этот email уже зарегистрирован.";
-            else if (error.code === 'auth/wrong-password') errorEl.textContent = "Неверный пароль.";
+            else if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') errorEl.textContent = "Неверный пароль или аккаунт не существует.";
             else if (error.code === 'auth/user-not-found') errorEl.textContent = "Пользователь не найден.";
             else if (error.code === 'auth/weak-password') errorEl.textContent = "Пароль должен быть не менее 6 символов.";
             else errorEl.textContent = "Ошибка: " + error.message;
         });
     }
 
-    function logout() {
-        auth.signOut().then(() => {
-            // Опционально: очистить локальные данные при выходе
-            // localStorage.clear();
-            // location.reload();
-        });
-    }
+    function logout() { auth.signOut(); }
 
-    // Синхронизация с облаком
     function queueSync() {
-        if (!currentUser) return; // Если не вошли, ничего не делаем
-        
+        if (!currentUser) return;
         const syncIcon = document.getElementById('sync-icon');
         syncIcon.textContent = '☁️';
         syncIcon.className = 'sync-indicator sync-saving';
@@ -974,18 +983,16 @@
                 syncIcon.className = 'sync-indicator sync-saved';
                 setTimeout(() => { syncIcon.textContent = '✅'; }, 2000);
             }).catch(err => {
-                console.error("Ошибка синхронизации:", err);
                 syncIcon.textContent = '❌';
                 syncIcon.className = 'sync-indicator sync-error';
-                syncIcon.title = "Ошибка сохранения. Проверьте интернет.";
+                syncIcon.title = "Ошибка сохранения.";
             });
-        }, 2000); // Ждем 2 секунды тишины перед отправкой
+        }, 2000);
     }
 
     function pullFromCloud(uid) {
         db.collection('users').doc(uid).get().then(doc => {
             if (doc.exists && doc.data().diaryData) {
-                // Если в облаке есть данные, загружаем их
                 const cloudData = JSON.parse(doc.data().diaryData);
                 let changed = false;
                 for (let key in cloudData) {
@@ -994,30 +1001,25 @@
                         changed = true;
                     }
                 }
-                // Если данные отличались от локальных, перезагружаем страницу, чтобы применить
                 if (changed) {
                     location.reload();
                 }
             } else {
-                // Если облако пустое (новый пользователь), загружаем туда текущие данные
                 queueSync();
             }
         }).catch(err => console.error("Ошибка загрузки:", err));
     }
 
     // ==========================================
-    // ОСТАЛЬНАЯ ЛОГИКА ПРИЛОЖЕНИЯ
+    // ДОСТИЖЕНИЯ
     // ==========================================
-
     function showAchievementToast(icon, title) {
         const toast = document.createElement('div');
         toast.className = 'achievement-toast';
         toast.innerHTML = `<div class="achievement-icon">${icon}</div><div><div style="font-weight:800; font-size:16px;">Новое достижение!</div><div style="font-size:14px;">${title}</div></div>`;
         document.body.appendChild(toast);
-        
         setTimeout(() => toast.classList.add('show'), 100);
         setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 4000);
-        
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.1 } });
     }
 
@@ -1028,9 +1030,7 @@
         { id: 'perfect_week', icon: '🏆', title: 'Идеальная неделя', desc: 'Завершить неделю на 100%' }
     ];
 
-    function getUnlockedAchievements() {
-        return JSON.parse(localStorage.getItem('unlockedAchievements') || '[]');
-    }
+    function getUnlockedAchievements() { return JSON.parse(localStorage.getItem('unlockedAchievements') || '[]'); }
 
     function unlockAchievement(id) {
         let unlocked = getUnlockedAchievements();
@@ -1044,48 +1044,31 @@
         }
     }
 
-    function openAchievements() {
-        document.getElementById('achievementsModal').style.display = "block";
-        renderAchievements();
-    }
+    function openAchievements() { document.getElementById('achievementsModal').style.display = "block"; renderAchievements(); }
     function closeAchievements() { document.getElementById('achievementsModal').style.display = "none"; }
 
     function renderAchievements() {
-        const list = document.getElementById('achievementsList');
-        list.innerHTML = '';
+        const list = document.getElementById('achievementsList'); list.innerHTML = '';
         const unlocked = getUnlockedAchievements();
-        
         allAchievements.forEach(ach => {
             const isUnlocked = unlocked.includes(ach.id);
             const div = document.createElement('div');
             div.className = `achievement-card ${isUnlocked ? 'unlocked' : 'locked'}`;
-            div.innerHTML = `
-                <div class="icon">${ach.icon}</div>
-                <div class="title">${ach.title}</div>
-                <div class="desc">${isUnlocked ? 'Получено!' : ach.desc}</div>
-            `;
+            div.innerHTML = `<div class="icon">${ach.icon}</div><div class="title">${ach.title}</div><div class="desc">${isUnlocked ? 'Получено!' : ach.desc}</div>`;
             list.appendChild(div);
         });
     }
 
-    function autoResize(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
-    }
+    // ==========================================
+    // ОБЩИЕ ФУНКЦИИ
+    // ==========================================
+    function autoResize(textarea) { textarea.style.height = 'auto'; textarea.style.height = textarea.scrollHeight + 'px'; }
 
-    function toggleDropdown(event) {
-        event.stopPropagation();
-        document.getElementById('dataDropdown').classList.toggle('show');
-    }
-    function closeDropdownAndOpen(fn) {
-        document.getElementById('dataDropdown').classList.remove('show');
-        fn();
-    }
+    function toggleDropdown(event) { event.stopPropagation(); document.getElementById('dataDropdown').classList.toggle('show'); }
+    function closeDropdownAndOpen(fn) { document.getElementById('dataDropdown').classList.remove('show'); fn(); }
     window.addEventListener('click', function(event) {
         const dropdown = document.getElementById('dataDropdown');
-        if (!event.target.closest('.dropdown') && dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show');
-        }
+        if (!event.target.closest('.dropdown') && dropdown.classList.contains('show')) dropdown.classList.remove('show');
     });
 
     function switchTab(tabName) {
@@ -1093,7 +1076,6 @@
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById('content-' + tabName).classList.add('active');
         document.getElementById('tab-' + tabName).classList.add('active');
-        
         const productsBtn = document.getElementById('productsBtn');
         if (productsBtn) productsBtn.style.display = (tabName === 'habits') ? 'none' : 'inline-flex';
     }
@@ -1120,8 +1102,7 @@
     function playDing() {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator(); const gain = ctx.createGain();
+            const ctx = new AudioContext(); const osc = ctx.createOscillator(); const gain = ctx.createGain();
             osc.connect(gain); gain.connect(ctx.destination);
             osc.type = 'sine'; osc.frequency.setValueAtTime(880, ctx.currentTime); osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.1);
             gain.gain.setValueAtTime(0.3, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
@@ -1148,58 +1129,42 @@
         queueSync();
     }
 
-    // --- ПОГОДА ---
-    const cityCache = { 'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' }, 'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' }, 'санкт-петербург': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' }, 'спб': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' } };
-    async function getWeatherData(lat, lon, cityName) {
-        const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&daily=uv_index_max&timezone=auto`;
-        try { const res = await fetch(openMeteoUrl); if (res.ok) return await res.json(); } catch (e) {}
-        try { const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(openMeteoUrl)}`); if (res.ok) return await res.json(); } catch (e) {}
-        try { const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`); if (res.ok) {
-            const data = await res.json();
-            return { current: { temperature_2m: parseFloat(data.current_condition[0].temp_C) }, daily: { uv_index_max: [parseFloat(data.weather[0].uvIndex)] } };
-        }} catch (e) {}
-        throw new Error("Все способы не удались");
-    }
-    async function fetchWeatherByCity(city) {
-        const loading = document.getElementById('weather-loading'); const tempEl = document.getElementById('weather-temp'); const uvEl = document.getElementById('weather-uv');
-        if (!city) return; localStorage.setItem('userCity', city);
-        tempEl.style.display = 'none'; uvEl.style.display = 'none'; loading.style.display = 'inline-block'; loading.textContent = '⏳ Загрузка...';
-        const cityLower = city.toLowerCase().trim();
-        try {
-            let lat, lon, actualName;
-            if (cityCache[cityLower]) { lat = cityCache[cityLower].lat; lon = cityCache[cityLower].lon; actualName = cityCache[cityLower].name; document.getElementById('city-input').value = actualName; } 
-            else {
-                const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
-                let geoData; try { const geoRes = await fetch(geoUrl); geoData = await geoRes.json(); } catch(e) { const geoRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(geoUrl)}`); geoData = await geoRes.json(); }
-                if (!geoData.results || geoData.results.length === 0) { loading.textContent = '❌ Город не найден'; return; }
-                lat = geoData.results[0].latitude; lon = geoData.results[0].longitude; actualName = geoData.results[0].name;
-                document.getElementById('city-input').value = actualName; localStorage.setItem('userCity', actualName);
-            }
-            const weatherData = await getWeatherData(lat, lon, actualName);
-            const temp = weatherData.current.temperature_2m; const uv = weatherData.daily.uv_index_max[0];
-            loading.style.display = 'none'; tempEl.style.display = 'inline-block'; uvEl.style.display = 'inline-block'; tempEl.textContent = `🌡️ ${temp}°C`;
-            if (uv >= 3) {
-                uvEl.innerHTML = `☀️ Макс. UV: <b style="color:var(--red);">${uv}</b> (Высокий!)`; uvEl.classList.add('uv-high');
-                const alertBox = document.getElementById('uv-alert'); alertBox.style.display = 'block';
-                alertBox.innerHTML = `⚠️ Внимание! В ${actualName} сегодня днем ожидается высокий UV-индекс (${uv}). Не забудьте нанести СПФ.`;
-                document.getElementById('th-spf-main').classList.add('uv-danger'); document.getElementById('th-spf').classList.add('uv-danger');
-            } else {
-                uvEl.textContent = `☀️ Макс. UV: ${uv}`; uvEl.classList.remove('uv-high'); document.getElementById('uv-alert').style.display = 'none';
-                document.getElementById('th-spf-main').classList.remove('uv-danger'); document.getElementById('th-spf').classList.remove('uv-danger');
-            }
-        } catch (e) { loading.textContent = '☁️ Ошибка сети'; }
-    }
-    function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
-
-    // --- УХОД ---
+    // ==========================================
+    // ДИНАМИЧЕСКАЯ ЛОГИКА (ПРОЦЕДУРЫ И ПРИВЫЧКИ)
+    // ==========================================
     const daysOfWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
-    const skinColumns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
-    const skinColumnNames = { spf: "СПФ", micellar: "1. Мицеллярка", cleanser: "2. Пенка", efizel: "3. Эффезел", moisturizer: "4. Крем (лицо)", bodyGel: "🧴 Гель (тело)" };
     
+    // Дефолтные данные для первого запуска
+    const defaultSkinColumns = [
+        { id: 'spf', name: '1. СПФ', type: 'morning', tooltip: 'Наносить утром на чистую кожу.' },
+        { id: 'micellar', name: '1. Мицеллярка', type: 'evening', tooltip: 'Наносить на СУХУЮ кожу!' },
+        { id: 'cleanser', name: '2. Пенка', type: 'evening', tooltip: 'Вспенить и смыть.' },
+        { id: 'efizel', name: '3. Эффезел', type: 'evening', tooltip: 'ТОЛЬКО на сухую кожу!' },
+        { id: 'moisturizer', name: '4. Крем', type: 'evening', tooltip: 'Через 20-30 минут после Эффезела.' },
+        { id: 'bodyGel', name: '🧴 Гель', type: 'body', tooltip: 'Нанести на 3-4 минуты и смыть.' }
+    ];
+
+    const defaultHabitColumns = [
+        { id: 'english', name: '🇬🇧 Английский' },
+        { id: 'reading', name: '📚 Чтение' },
+        { id: 'workout', name: '🏋️ Тренировка' },
+        { id: 'no_sugar', name: '🚫 Без сладкого' },
+        { id: 'morning_routine', name: '🧴 Утренняя рутина' }
+    ];
+
+    // Загружаем списки из памяти или берем дефолт
+    let skinColumns = JSON.parse(localStorage.getItem('customSkinColumns_v2')) || defaultSkinColumns;
+    let habitColumns = JSON.parse(localStorage.getItem('customHabitColumns_v2')) || defaultHabitColumns;
+
     const defaultSkinSettings = { spf: [1, 1, 1, 1, 1, 0, 0], micellar: [1, 1, 1, 1, 1, 0, 0], cleanser: [1, 0, 1, 0, 1, 0, 0], efizel: [1, 0, 1, 0, 1, 0, 1], moisturizer: [1, 0, 1, 0, 1, 0, 1], bodyGel: [1, 0, 1, 0, 1, 0, 0] };
+    const defaultHabitSettings = { english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0], no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1] };
+
     let currentSkinSettings = JSON.parse(localStorage.getItem('userSchedule')) || defaultSkinSettings;
+    let currentHabitSettings = JSON.parse(localStorage.getItem('userHabitSchedule')) || defaultHabitSettings;
+
     let skinWeekSchedule = [];
     let barChartInstance = null, dailyChartInstance = null, lineChartInstance = null;
+    let habitBarChartInstance = null, habitDailyChartInstance = null, habitLineChartInstance = null;
     let lastFocusedNoteInput = null, previousPerfectDays = new Set();
 
     function formatDays(arr) {
@@ -1209,26 +1174,63 @@
         return active.join(', ');
     }
 
+    function renderDynamicHeaders() {
+        // Рендер ухода
+        let theadSkin = document.getElementById('skinTableHead');
+        let morningCols = skinColumns.filter(c => c.type === 'morning');
+        let eveningCols = skinColumns.filter(c => c.type === 'evening');
+        let bodyCols = skinColumns.filter(c => c.type === 'body');
+        
+        let html = `<tr>
+            <th rowspan="2" class="day-col">День</th>
+            ${morningCols.length > 0 ? `<th class="morning" colspan="${morningCols.length}">УТРО</th>` : ''}
+            ${eveningCols.length > 0 ? `<th class="evening" colspan="${eveningCols.length}">ВЕЧЕР (ЛИЦО)</th>` : ''}
+            ${bodyCols.length > 0 ? `<th class="body-gel" colspan="${bodyCols.length}">ТЕЛО</th>` : ''}
+            <th class="fire streak-col" rowspan="2">Стрик</th>
+            <th class="notes-col" rowspan="2">Заметки</th>
+        </tr><tr>`;
+        
+        [...morningCols, ...eveningCols, ...bodyCols].forEach(col => {
+            let cls = col.type === 'morning' ? 'morning' : (col.type === 'evening' ? 'evening' : 'body-gel');
+            let name = col.name;
+            // Добавляем график к названию, если это дефолтная колонка
+            if (currentSkinSettings[col.id]) name += ` (${formatDays(currentSkinSettings[col.id])})`;
+            
+            html += `<th class="${cls}"><div class="th-title" data-tooltip="${col.tooltip || 'Ваша процедура'}">${name}</div></th>`;
+        });
+        html += `</tr>`;
+        theadSkin.innerHTML = html;
+
+        // Рендер привычек
+        let theadHabits = document.getElementById('habitsTableHead');
+        let hHtml = `<tr><th class="day-col">День</th>`;
+        habitColumns.forEach(col => { hHtml += `<th class="habit-col">${col.name}</th>`; });
+        hHtml += `</tr>`;
+        theadHabits.innerHTML = hHtml;
+    }
+
     function renderSkinTable() {
+        renderDynamicHeaders();
         skinWeekSchedule = daysOfWeek.map((day, dayIndex) => {
-            let expected = []; skinColumns.forEach(col => expected.push(currentSkinSettings[col][dayIndex]));
+            let expected = []; 
+            skinColumns.forEach(col => {
+                if(!currentSkinSettings[col.id]) currentSkinSettings[col.id] = [0,0,0,0,0,0,0]; // Если новая, пустая
+                expected.push(currentSkinSettings[col.id][dayIndex]);
+            });
             return { day: day, expected: expected };
         });
+
         const tbody = document.getElementById('skinTableBody'); tbody.innerHTML = '';
-        document.getElementById('th-micellar').textContent = `1. Мицеллярка (${formatDays(currentSkinSettings.micellar)})`;
-        document.getElementById('th-cleanser').textContent = `2. Пенка (${formatDays(currentSkinSettings.cleanser)})`;
-        document.getElementById('th-efizel').textContent = `3. Эффезел (${formatDays(currentSkinSettings.efizel)})`;
-        document.getElementById('th-moisturizer').textContent = `4. Крем (${formatDays(currentSkinSettings.moisturizer)})`;
-        document.getElementById('th-bodyGel').textContent = `🧴 Гель (${formatDays(currentSkinSettings.bodyGel)})`;
         const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
 
         skinWeekSchedule.forEach((dayData, dayIndex) => {
             const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
             const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = dayData.day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
-            skinColumns.forEach((colName) => {
-                const td = document.createElement('td'); td.setAttribute('data-label', skinColumnNames[colName]);
+            
+            skinColumns.forEach((col) => {
+                const td = document.createElement('td'); td.setAttribute('data-label', col.name);
                 const label = document.createElement('label'); label.className = 'checkbox-container';
-                const input = document.createElement('input'); input.type = 'checkbox'; input.id = `check-${dayIndex}-${colName}`;
+                const input = document.createElement('input'); input.type = 'checkbox'; input.id = `check-${dayIndex}-${col.id}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
                 input.addEventListener('change', () => { 
                     if(input.checked) unlockAchievement('first_check');
@@ -1237,6 +1239,7 @@
                 const span = document.createElement('span'); span.className = 'checkmark';
                 label.appendChild(input); label.appendChild(span); td.appendChild(label); tr.appendChild(td);
             });
+
             const tdStreak = document.createElement('td'); tdStreak.className = 'streak-cell'; tdStreak.id = `streak-${dayIndex}`; tdStreak.setAttribute('data-label', 'Стрик'); tr.appendChild(tdStreak);
             const tdNotes = document.createElement('td'); tdNotes.className = 'notes-cell'; tdNotes.setAttribute('data-label', 'Заметки');
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
@@ -1248,54 +1251,52 @@
             setTimeout(() => autoResize(noteInput), 0);
         });
         previousPerfectDays.clear();
-        skinWeekSchedule.forEach((dayData, dayIndex) => {
-            let dayChecked = 0, dayExpected = 0;
-            skinColumns.forEach((col, i) => { if (document.getElementById(`check-${dayIndex}-${col}`).checked) dayChecked++; if (dayData.expected[i] === 1) dayExpected++; });
-            if (dayChecked >= dayExpected && dayExpected > 0) previousPerfectDays.add(dayIndex);
-        });
-    }
-
-    function addTag(text) {
-        if (lastFocusedNoteInput) {
-            const currentVal = lastFocusedNoteInput.value.trim(); 
-            lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
-            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
-            lastFocusedNoteInput.focus(); autoResize(lastFocusedNoteInput);
-            queueSync();
-        } else { alert("Сначала кликните в поле 'Заметки'!"); }
+        updateSkinStats();
     }
 
     function updateSkinStats(changedDayIndex = -1) {
         let totalChecked = 0, perfectDaysCount = 0;
-        let barData = [0, 0, 0, 0, 0, 0], dailyData = [0, 0, 0, 0, 0, 0, 0]; 
+        let barData = new Array(skinColumns.length).fill(0); 
+        let dailyData = new Array(7).fill(0); 
         let totalExpectedWeek = skinWeekSchedule.reduce((sum, day) => sum + day.expected.reduce((a,b)=>a+b, 0), 0);
+        
         skinWeekSchedule.forEach((dayData, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
-            skinColumns.forEach((colName, colIndex) => {
-                const input = document.getElementById(`check-${dayIndex}-${colName}`); localStorage.setItem(input.id, input.checked);
+            skinColumns.forEach((col, colIndex) => {
+                const input = document.getElementById(`check-${dayIndex}-${col.id}`); 
+                if(!input) return;
+                localStorage.setItem(input.id, input.checked);
                 if (input.checked) { totalChecked++; dayChecked++; barData[colIndex]++; dailyData[dayIndex]++; }
                 if (dayData.expected[colIndex] === 1) dayExpected++;
             });
             const streakCell = document.getElementById(`streak-${dayIndex}`);
-            const isPerfectNow = (dayChecked >= dayExpected && dayExpected > 0);
-            if (isPerfectNow) {
-                streakCell.textContent = '🔥'; perfectDaysCount++;
-                if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
-                previousPerfectDays.add(dayIndex);
-            } else { streakCell.textContent = '—'; previousPerfectDays.delete(dayIndex); }
+            if(streakCell) {
+                const isPerfectNow = (dayChecked >= dayExpected && dayExpected > 0);
+                if (isPerfectNow) {
+                    streakCell.textContent = '🔥'; perfectDaysCount++;
+                    if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
+                    previousPerfectDays.add(dayIndex);
+                } else { streakCell.textContent = '—'; previousPerfectDays.delete(dayIndex); }
+            }
         });
+        
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
         if(progressPercent > 100) progressPercent = 100; 
-        document.getElementById('progressValue').textContent = `${progressPercent}%`; document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
-        document.getElementById('progressBarText').textContent = `${progressPercent}%`; document.getElementById('progressBarFill').style.width = `${progressPercent}%`;
+        document.getElementById('progressValue').textContent = `${progressPercent}%`; 
+        document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
+        document.getElementById('progressBarText').textContent = `${progressPercent}%`; 
+        document.getElementById('progressBarFill').style.width = `${progressPercent}%`;
         
         let globalPerfectDays = perfectDaysCount;
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
         history.forEach(week => {
             let checks = week.skinChecks || week.checks || {};
             for(let i=0; i<7; i++) {
-                let dayExpected = skinWeekSchedule[i].expected.reduce((a,b)=>a+b, 0); if(dayExpected === 0) continue;
-                let dayChecked = 0; skinColumns.forEach(col => { if(checks[`check-${i}-${col}`]) dayChecked++; });
+                let dayExpected = 0;
+                skinColumns.forEach((col) => { if(currentSkinSettings[col.id] && currentSkinSettings[col.id][i] === 1) dayExpected++; });
+                if(dayExpected === 0) continue;
+                let dayChecked = 0; 
+                skinColumns.forEach(col => { if(checks[`check-${i}-${col.id}`]) dayChecked++; });
                 if(dayChecked >= dayExpected) globalPerfectDays++;
             }
         });
@@ -1310,17 +1311,23 @@
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
         const accentColor = isDark ? '#81B29A' : '#7C9A88';
         
-        let goals = []; skinColumns.forEach(col => { goals.push(currentSkinSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
+        let goals = []; 
+        skinColumns.forEach(col => { 
+            let arr = currentSkinSettings[col.id] || [0,0,0,0,0,0,0];
+            goals.push(arr.reduce((a,b)=>a+b, 0)); 
+        }); 
+        const maxGoal = Math.max(...goals, 1);
+        const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
         
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
-            type: 'bar', data: { labels: skinColumns.map((col, i) => `${skinColumnNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
+            type: 'bar', data: { labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 6, barThickness: 20 }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
         if (dailyChartInstance) dailyChartInstance.destroy();
         dailyChartInstance = new Chart(document.getElementById('dailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); let lineLabels = [], lineData = [];
         history.slice(-7).forEach((week) => { 
@@ -1338,23 +1345,17 @@
     }
 
     // --- ПРИВЫЧКИ ---
-    const habitColumns = ["english", "reading", "workout", "no_sugar", "morning_routine"];
-    const habitNames = { english: "🇬🇧 Английский", reading: "📚 Чтение", workout: "🏋️ Тренировка", no_sugar: "🚫 Без сладкого", morning_routine: "🧴 Утренняя рутина" };
-    const defaultHabitSettings = { english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0], no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1] };
-    let currentHabitSettings = JSON.parse(localStorage.getItem('userHabitSchedule')) || defaultHabitSettings;
-
-    let habitBarChartInstance = null, habitDailyChartInstance = null, habitLineChartInstance = null;
-
     function renderHabitsTable() {
+        renderDynamicHeaders();
         const tbody = document.getElementById('habitsTableBody'); tbody.innerHTML = '';
         const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
         daysOfWeek.forEach((day, dayIndex) => {
             const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
             const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
-            habitColumns.forEach((colName) => {
-                const td = document.createElement('td'); td.setAttribute('data-label', habitNames[colName]);
+            habitColumns.forEach((col) => {
+                const td = document.createElement('td'); td.setAttribute('data-label', col.name);
                 const label = document.createElement('label'); label.className = 'checkbox-container';
-                const input = document.createElement('input'); input.type = 'checkbox'; input.id = `habit-${dayIndex}-${colName}`;
+                const input = document.createElement('input'); input.type = 'checkbox'; input.id = `habit-${dayIndex}-${col.id}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
                 input.addEventListener('change', () => { 
                     if(input.checked) unlockAchievement('first_check');
@@ -1365,6 +1366,7 @@
             });
             tbody.appendChild(tr);
         });
+        updateHabitsStats();
     }
 
     function updateHabitsStats(changedDayIndex = -1) {
@@ -1372,16 +1374,17 @@
         let habitBarData = new Array(habitColumns.length).fill(0);
         let habitDailyData = new Array(7).fill(0);
         let currentStreak = 0;
-
         let todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
         daysOfWeek.forEach((day, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
-            habitColumns.forEach((colName, colIndex) => {
-                const input = document.getElementById(`habit-${dayIndex}-${colName}`); if (!input) return;
+            habitColumns.forEach((col, colIndex) => {
+                const input = document.getElementById(`habit-${dayIndex}-${col.id}`); 
+                if (!input) return;
                 localStorage.setItem(input.id, input.checked);
                 if (input.checked) { totalChecked++; dayChecked++; habitBarData[colIndex]++; habitDailyData[dayIndex]++; }
-                if (currentHabitSettings[colName][dayIndex] === 1) { totalExpectedWeek++; dayExpected++; }
+                let expectedArr = currentHabitSettings[col.id] || [0,0,0,0,0,0,0];
+                if (expectedArr[dayIndex] === 1) { totalExpectedWeek++; dayExpected++; }
             });
             const isPerfect = (dayChecked >= dayExpected && dayExpected > 0);
             if (isPerfect) {
@@ -1417,18 +1420,24 @@
         const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
         const accentColor = isDark ? '#81B29A' : '#7C9A88';
         
-        let goals = []; habitColumns.forEach(col => { goals.push(currentHabitSettings[col].reduce((a,b)=>a+b, 0)); }); const maxGoal = Math.max(...goals, 1);
+        let goals = []; 
+        habitColumns.forEach(col => { 
+            let arr = currentHabitSettings[col.id] || [0,0,0,0,0,0,0];
+            goals.push(arr.reduce((a,b)=>a+b, 0)); 
+        }); 
+        const maxGoal = Math.max(...goals, 1);
+        const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
 
         if (habitBarChartInstance) habitBarChartInstance.destroy();
         habitBarChartInstance = new Chart(document.getElementById('habitBarChart'), {
-            type: 'bar', data: { labels: habitColumns.map((col, i) => `${habitNames[col]} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C'], borderRadius: 6, barThickness: 20 }] },
+            type: 'bar', data: { labels: habitColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 6, barThickness: 20 }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'ФАКТ ВЫПОЛНЕНИЯ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
         if (habitDailyChartInstance) habitDailyChartInstance.destroy();
         habitDailyChartInstance = new Chart(document.getElementById('habitDailyChart'), {
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: 6, ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
@@ -1443,51 +1452,136 @@
         });
     }
 
+    // --- УПРАВЛЕНИЕ ПРОЦЕДУРАМИ (НОВОЕ) ---
+    function openManageItems() {
+        document.getElementById('manageItemsModal').style.display = 'block';
+        renderManageLists();
+    }
+    function closeManageItems() {
+        document.getElementById('manageItemsModal').style.display = 'none';
+        renderSkinTable();
+        renderHabitsTable();
+        if(document.getElementById('settingsModal').style.display === 'block') {
+            openSettings(); // Обновляем настройки
+        }
+        queueSync();
+    }
+
+    function renderManageLists() {
+        // Список ухода
+        let listSkin = document.getElementById('manageSkinList'); listSkin.innerHTML = '';
+        skinColumns.forEach((col, index) => {
+            let typeText = col.type === 'morning' ? 'Утро' : (col.type === 'evening' ? 'Вечер' : 'Тело');
+            let div = document.createElement('div');
+            div.className = 'manage-item';
+            div.innerHTML = `
+                <div>
+                    <div class="manage-item-name">${col.name}</div>
+                    <div class="manage-item-info">Блок: ${typeText}</div>
+                </div>
+                <button class="btn-del-manage" onclick="deleteSkinCol(${index})">🗑️</button>
+            `;
+            listSkin.appendChild(div);
+        });
+
+        // Список привычек
+        let listHabits = document.getElementById('manageHabitsList'); listHabits.innerHTML = '';
+        habitColumns.forEach((col, index) => {
+            let div = document.createElement('div');
+            div.className = 'manage-item';
+            div.innerHTML = `
+                <div>
+                    <div class="manage-item-name">${col.name}</div>
+                </div>
+                <button class="btn-del-manage" onclick="deleteHabitCol(${index})">🗑️</button>
+            `;
+            listHabits.appendChild(div);
+        });
+    }
+
+    function addCustomSkin() {
+        let name = document.getElementById('newSkinName').value.trim();
+        let type = document.getElementById('newSkinType').value;
+        if(!name) return alert("Введите название процедуры!");
+        
+        let newId = 'custom_skin_' + Date.now();
+        skinColumns.push({ id: newId, name: name, type: type, tooltip: 'Ваша процедура' });
+        currentSkinSettings[newId] = [1, 1, 1, 1, 1, 1, 1]; // по умолчанию каждый день
+        
+        localStorage.setItem('customSkinColumns_v2', JSON.stringify(skinColumns));
+        localStorage.setItem('userSchedule', JSON.stringify(currentSkinSettings));
+        
+        document.getElementById('newSkinName').value = '';
+        renderManageLists();
+        queueSync();
+    }
+
+    function addCustomHabit() {
+        let name = document.getElementById('newHabitName').value.trim();
+        if(!name) return alert("Введите название привычки!");
+        
+        let newId = 'custom_habit_' + Date.now();
+        habitColumns.push({ id: newId, name: name });
+        currentHabitSettings[newId] = [1, 1, 1, 1, 1, 1, 1];
+        
+        localStorage.setItem('customHabitColumns_v2', JSON.stringify(habitColumns));
+        localStorage.setItem('userHabitSchedule', JSON.stringify(currentHabitSettings));
+        
+        document.getElementById('newHabitName').value = '';
+        renderManageLists();
+        queueSync();
+    }
+
+    function deleteSkinCol(index) {
+        if(!confirm("Удалить эту процедуру? Все галочки по ней будут потеряны.")) return;
+        let col = skinColumns[index];
+        skinColumns.splice(index, 1);
+        delete currentSkinSettings[col.id];
+        
+        localStorage.setItem('customSkinColumns_v2', JSON.stringify(skinColumns));
+        localStorage.setItem('userSchedule', JSON.stringify(currentSkinSettings));
+        renderManageLists();
+        queueSync();
+    }
+
+    function deleteHabitCol(index) {
+        if(!confirm("Удалить эту привычку?")) return;
+        let col = habitColumns[index];
+        habitColumns.splice(index, 1);
+        delete currentHabitSettings[col.id];
+        
+        localStorage.setItem('customHabitColumns_v2', JSON.stringify(habitColumns));
+        localStorage.setItem('userHabitSchedule', JSON.stringify(currentHabitSettings));
+        renderManageLists();
+        queueSync();
+    }
+
     // --- СРЕДСТВА ---
     let products = JSON.parse(localStorage.getItem('userProducts')) || [];
     let editingProductIndex = -1;
 
-    // Миграция
     let needsMigration = false;
     products.forEach(p => {
         if (p.openDate && p.pao && !p.expDate) {
-            let d = new Date(p.openDate);
-            d.setMonth(d.getMonth() + parseInt(p.pao));
-            let mm = String(d.getMonth() + 1).padStart(2, '0');
-            let yyyy = d.getFullYear();
-            p.expDate = `${yyyy}-${mm}`;
-            delete p.openDate;
-            delete p.pao;
-            needsMigration = true;
+            let d = new Date(p.openDate); d.setMonth(d.getMonth() + parseInt(p.pao));
+            let mm = String(d.getMonth() + 1).padStart(2, '0'); let yyyy = d.getFullYear();
+            p.expDate = `${yyyy}-${mm}`; delete p.openDate; delete p.pao; needsMigration = true;
         }
     });
     if (needsMigration) { localStorage.setItem('userProducts', JSON.stringify(products)); }
 
     function openProductsModal() {
         document.getElementById('productsModal').style.display = "block";
-        if(!document.getElementById('prodBuyDate').value) {
-            document.getElementById('prodBuyDate').valueAsDate = new Date();
-        }
+        if(!document.getElementById('prodBuyDate').value) { document.getElementById('prodBuyDate').valueAsDate = new Date(); }
         renderProducts();
     }
-    function closeProductsModal() { 
-        document.getElementById('productsModal').style.display = "none"; 
-        cancelEditProduct();
-    }
+    function closeProductsModal() { document.getElementById('productsModal').style.display = "none"; cancelEditProduct(); }
 
     function calculateExpiration(expMonthStr) {
         if (!expMonthStr) return { status: '', text: '' };
-        let parts = expMonthStr.split('-'); 
-        let year = parseInt(parts[0]);
-        let month = parseInt(parts[1]);
-        
-        let expDate = new Date(year, month, 0); 
-        let today = new Date();
-        today.setHours(0,0,0,0);
-        
-        let diffTime = expDate - today;
-        let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+        let parts = expMonthStr.split('-'); let year = parseInt(parts[0]); let month = parseInt(parts[1]);
+        let expDate = new Date(year, month, 0); let today = new Date(); today.setHours(0,0,0,0);
+        let diffTime = expDate - today; let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         let mmStr = String(month).padStart(2, '0');
         if (diffDays < 0) return { status: 'pao-danger', text: '❌ Просрочено' };
         if (diffDays <= 30) return { status: 'pao-warn', text: `⚠️ Истекает` };
@@ -1495,20 +1589,14 @@
     }
 
     function renderProducts() {
-        const container = document.getElementById('productsContainer');
-        container.innerHTML = '';
-        
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-        let monthlySpend = 0;
-        let grouped = {};
+        const container = document.getElementById('productsContainer'); container.innerHTML = '';
+        let currentMonth = new Date().getMonth(); let currentYear = new Date().getFullYear();
+        let monthlySpend = 0; let grouped = {};
 
         products.forEach((p, index) => {
             if (p.buyDate) {
                 let d = new Date(p.buyDate);
-                if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
-                    monthlySpend += (parseFloat(p.price) || 0);
-                }
+                if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) monthlySpend += (parseFloat(p.price) || 0);
             }
             let cat = p.category || 'Без категории';
             if (!grouped[cat]) grouped[cat] = [];
@@ -1517,79 +1605,44 @@
 
         document.getElementById('monthlySpendDisplay').textContent = `Потрачено в этом месяце: ${monthlySpend} ₽`;
 
-        if (products.length === 0) {
-            container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Пока нет добавленных средств.</p>';
-            return;
-        }
+        if (products.length === 0) { container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Пока нет добавленных средств.</p>'; return; }
 
         for (let cat in grouped) {
-            let catHeader = document.createElement('div');
-            catHeader.className = 'category-header';
-            catHeader.innerHTML = `<span>📁 ${cat}</span> <span>${grouped[cat].length} шт.</span>`;
-            container.appendChild(catHeader);
+            let catHeader = document.createElement('div'); catHeader.className = 'category-header';
+            catHeader.innerHTML = `<span>📁 ${cat}</span> <span>${grouped[cat].length} шт.</span>`; container.appendChild(catHeader);
 
-            let table = document.createElement('table');
-            table.className = 'product-table';
+            let table = document.createElement('table'); table.className = 'product-table';
             table.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>Годен до</th><th>Ссылка</th><th style="text-align:center;">Действия</th></tr></thead>`;
             let tbody = document.createElement('tbody');
 
             grouped[cat].forEach(product => {
                 let tr = document.createElement('tr');
-                
                 let tdName = document.createElement('td');
                 tdName.innerHTML = `<div style="font-weight:600;">${product.name}</div>`;
                 if(product.buyDate) tdName.innerHTML += `<div style="font-size:11px; color:var(--text-muted);">Куплено: ${product.buyDate}</div>`;
                 
-                let tdPrice = document.createElement('td');
-                tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
+                let tdPrice = document.createElement('td'); tdPrice.textContent = product.price ? `${product.price} ₽` : '—';
                 
                 let tdPao = document.createElement('td');
-                if (product.expDate) {
-                    let paoInfo = calculateExpiration(product.expDate);
-                    tdPao.innerHTML = `<span class="pao-badge ${paoInfo.status}">${paoInfo.text}</span>`;
-                } else {
-                    tdPao.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">-</span>`;
-                }
+                if (product.expDate) { let paoInfo = calculateExpiration(product.expDate); tdPao.innerHTML = `<span class="pao-badge ${paoInfo.status}">${paoInfo.text}</span>`; } 
+                else { tdPao.innerHTML = `<span style="color:var(--text-muted); font-size:12px;">-</span>`; }
 
                 let tdLink = document.createElement('td');
-                if (product.link) {
-                    tdLink.innerHTML = `<a href="${product.link}" target="_blank">Открыть 🔗</a>`;
-                } else { tdLink.textContent = '—'; }
+                if (product.link) tdLink.innerHTML = `<a href="${product.link}" target="_blank">Открыть 🔗</a>`;
+                else tdLink.textContent = '—';
 
-                let tdAction = document.createElement('td');
-                tdAction.style.textAlign = 'center';
-                
-                let btnEdit = document.createElement('button');
-                btnEdit.className = 'btn-action btn-edit-product';
-                btnEdit.textContent = '✏️';
-                btnEdit.title = 'Редактировать';
+                let tdAction = document.createElement('td'); tdAction.style.textAlign = 'center';
+                let btnEdit = document.createElement('button'); btnEdit.className = 'btn-action btn-edit-product'; btnEdit.textContent = '✏️';
                 btnEdit.onclick = (e) => { e.preventDefault(); editProduct(product.originalIndex); };
-                
-                let btnDel = document.createElement('button');
-                btnDel.className = 'btn-action btn-delete-product';
-                btnDel.textContent = '✕';
-                btnDel.title = 'Удалить';
+                let btnDel = document.createElement('button'); btnDel.className = 'btn-action btn-delete-product'; btnDel.textContent = '✕';
                 btnDel.onclick = (e) => { e.preventDefault(); deleteProduct(product.originalIndex); };
-                
-                tdAction.appendChild(btnEdit);
-                tdAction.appendChild(btnDel);
-
-                tdName.setAttribute('data-label', 'Средство');
-                tdPrice.setAttribute('data-label', 'Цена');
-                tdPao.setAttribute('data-label', 'Годен до');
-                tdLink.setAttribute('data-label', 'Ссылка');
-                tdAction.setAttribute('data-label', 'Действия');
+                tdAction.appendChild(btnEdit); tdAction.appendChild(btnDel);
 
                 tr.appendChild(tdName); tr.appendChild(tdPrice); tr.appendChild(tdPao); tr.appendChild(tdLink); tr.appendChild(tdAction);
                 tbody.appendChild(tr);
             });
             table.appendChild(tbody);
-            
-            let wrapper = document.createElement('div');
-            wrapper.className = 'table-wrapper';
-            wrapper.style.marginBottom = '15px';
-            wrapper.appendChild(table);
-            container.appendChild(wrapper);
+            let wrapper = document.createElement('div'); wrapper.className = 'table-wrapper'; wrapper.style.marginBottom = '15px'; wrapper.appendChild(table); container.appendChild(wrapper);
         }
     }
 
@@ -1606,18 +1659,12 @@
         if (editingProductIndex >= 0) {
             products[editingProductIndex] = { name, category, price, buyDate, link, expDate };
             localStorage.setItem('userProducts', JSON.stringify(products));
-            cancelEditProduct();
-            renderProducts();
+            cancelEditProduct(); renderProducts();
         } else {
             products.push({ name, category, price, buyDate, link, expDate });
             localStorage.setItem('userProducts', JSON.stringify(products));
             if (products.length >= 5) unlockAchievement('product_5');
-
-            document.getElementById('prodName').value = '';
-            document.getElementById('prodPrice').value = '';
-            document.getElementById('prodLink').value = '';
-            document.getElementById('prodExpDate').value = '';
-            
+            document.getElementById('prodName').value = ''; document.getElementById('prodPrice').value = ''; document.getElementById('prodLink').value = ''; document.getElementById('prodExpDate').value = '';
             renderProducts();
         }
         queueSync();
@@ -1625,48 +1672,27 @@
 
     function editProduct(index) {
         let p = products[index];
-        document.getElementById('prodName').value = p.name;
-        document.getElementById('prodCategory').value = p.category || 'Другое';
-        document.getElementById('prodPrice').value = p.price || '';
-        document.getElementById('prodBuyDate').value = p.buyDate || '';
-        document.getElementById('prodLink').value = p.link || '';
-        document.getElementById('prodExpDate').value = p.expDate || '';
-        
+        document.getElementById('prodName').value = p.name; document.getElementById('prodCategory').value = p.category || 'Другое';
+        document.getElementById('prodPrice').value = p.price || ''; document.getElementById('prodBuyDate').value = p.buyDate || '';
+        document.getElementById('prodLink').value = p.link || ''; document.getElementById('prodExpDate').value = p.expDate || '';
         editingProductIndex = index;
-        
-        let btnSubmit = document.getElementById('prodSubmitBtn');
-        btnSubmit.textContent = '💾 Сохранить';
-        btnSubmit.classList.remove('btn-primary');
-        btnSubmit.style.background = '#6B9B7A';
-        
+        let btnSubmit = document.getElementById('prodSubmitBtn'); btnSubmit.textContent = '💾 Сохранить'; btnSubmit.classList.remove('btn-primary'); btnSubmit.style.background = '#6B9B7A';
         document.getElementById('prodCancelBtn').style.display = 'inline-flex';
         document.getElementById('productsModal').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function cancelEditProduct() {
         editingProductIndex = -1;
-        document.getElementById('prodName').value = '';
-        document.getElementById('prodPrice').value = '';
-        document.getElementById('prodLink').value = '';
-        document.getElementById('prodExpDate').value = '';
-        document.getElementById('prodBuyDate').valueAsDate = new Date();
-        
-        let btnSubmit = document.getElementById('prodSubmitBtn');
-        btnSubmit.textContent = '➕ Добавить';
-        btnSubmit.classList.add('btn-primary');
-        btnSubmit.style.background = '';
-        
+        document.getElementById('prodName').value = ''; document.getElementById('prodPrice').value = ''; document.getElementById('prodLink').value = ''; document.getElementById('prodExpDate').value = ''; document.getElementById('prodBuyDate').valueAsDate = new Date();
+        let btnSubmit = document.getElementById('prodSubmitBtn'); btnSubmit.textContent = '➕ Добавить'; btnSubmit.classList.add('btn-primary'); btnSubmit.style.background = '';
         document.getElementById('prodCancelBtn').style.display = 'none';
     }
 
     function deleteProduct(index) {
         if (confirm("Удалить это средство из списка?")) {
-            products.splice(index, 1);
-            localStorage.setItem('userProducts', JSON.stringify(products));
-            if (editingProductIndex === index) cancelEditProduct();
-            else if (editingProductIndex > index) editingProductIndex--;
-            renderProducts();
-            queueSync();
+            products.splice(index, 1); localStorage.setItem('userProducts', JSON.stringify(products));
+            if (editingProductIndex === index) cancelEditProduct(); else if (editingProductIndex > index) editingProductIndex--;
+            renderProducts(); queueSync();
         }
     }
 
@@ -1675,23 +1701,25 @@
         const modal = document.getElementById('settingsModal');
         const tbodySkin = document.getElementById('settingsBody'); tbodySkin.innerHTML = '';
         skinColumns.forEach(col => {
-            const tr = document.createElement('tr'); let html = `<td>${skinColumnNames[col]}</td>`;
-            for (let i = 0; i < 7; i++) { const checked = currentSkinSettings[col][i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-${col}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
+            const tr = document.createElement('tr'); let html = `<td>${col.name}</td>`;
+            let arr = currentSkinSettings[col.id] || [0,0,0,0,0,0,0];
+            for (let i = 0; i < 7; i++) { const checked = arr[i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-${col.id}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
             tr.innerHTML = html; tbodySkin.appendChild(tr);
         });
         const tbodyHabits = document.getElementById('habitsSettingsBody'); tbodyHabits.innerHTML = '';
         habitColumns.forEach(col => {
-            const tr = document.createElement('tr'); let html = `<td>${habitNames[col]}</td>`;
-            for (let i = 0; i < 7; i++) { const checked = currentHabitSettings[col][i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-habit-${col}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
+            const tr = document.createElement('tr'); let html = `<td>${col.name}</td>`;
+            let arr = currentHabitSettings[col.id] || [0,0,0,0,0,0,0];
+            for (let i = 0; i < 7; i++) { const checked = arr[i] === 1 ? 'checked' : ''; html += `<td><input type="checkbox" id="set-habit-${col.id}-${i}" ${checked} style="width:20px; height:20px; cursor:pointer; accent-color: var(--primary);"></td>`; }
             tr.innerHTML = html; tbodyHabits.appendChild(tr);
         });
         modal.style.display = "block";
     }
 
     function saveSettings() {
-        skinColumns.forEach(col => { for (let i = 0; i < 7; i++) currentSkinSettings[col][i] = document.getElementById(`set-${col}-${i}`).checked ? 1 : 0; });
+        skinColumns.forEach(col => { currentSkinSettings[col.id] = []; for (let i = 0; i < 7; i++) currentSkinSettings[col.id][i] = document.getElementById(`set-${col.id}-${i}`).checked ? 1 : 0; });
         localStorage.setItem('userSchedule', JSON.stringify(currentSkinSettings));
-        habitColumns.forEach(col => { for (let i = 0; i < 7; i++) currentHabitSettings[col][i] = document.getElementById(`set-habit-${col}-${i}`).checked ? 1 : 0; });
+        habitColumns.forEach(col => { currentHabitSettings[col.id] = []; for (let i = 0; i < 7; i++) currentHabitSettings[col.id][i] = document.getElementById(`set-habit-${col.id}-${i}`).checked ? 1 : 0; });
         localStorage.setItem('userHabitSchedule', JSON.stringify(currentHabitSettings));
         closeSettings(); renderSkinTable(); updateSkinStats(); renderHabitsTable(); updateHabitsStats();
         queueSync();
@@ -1720,16 +1748,16 @@
         if(confirm("Сохранить текущую неделю в Архив и начать новую?")) {
             let weekData = { date: new Date().toLocaleDateString('ru-RU'), skinChecks: {}, notes: {}, habitChecks: {}, habitPercent: 0 };
 
-            skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { weekData.skinChecks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
+            skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { weekData.skinChecks[`check-${day}-${col.id}`] = document.getElementById(`check-${day}-${col.id}`).checked; }); });
             skinWeekSchedule.forEach((_, day) => { weekData.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
 
             let habitTotalC = 0, habitTotalExp = 0;
-            habitColumns.forEach((colName) => {
+            habitColumns.forEach((col) => {
                 daysOfWeek.forEach((_, dayIndex) => {
-                    const isChecked = document.getElementById(`habit-${dayIndex}-${colName}`).checked;
-                    weekData.habitChecks[`habit-${dayIndex}-${colName}`] = isChecked;
+                    const isChecked = document.getElementById(`habit-${dayIndex}-${col.id}`).checked;
+                    weekData.habitChecks[`habit-${dayIndex}-${col.id}`] = isChecked;
                     if(isChecked) habitTotalC++;
-                    if(currentHabitSettings[colName][dayIndex] === 1) habitTotalExp++;
+                    if((currentHabitSettings[col.id] || [])[dayIndex] === 1) habitTotalExp++;
                 });
             });
             weekData.habitPercent = habitTotalExp > 0 ? Math.round((habitTotalC / habitTotalExp) * 100) : 0;
@@ -1740,15 +1768,14 @@
             history.push(weekData); 
             localStorage.setItem('weeklyHistory', JSON.stringify(history));
 
-            skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
+            skinColumns.forEach((col) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${col.id}`); const input = document.getElementById(`check-${dayIndex}-${col.id}`); if(input) input.checked = false; }); });
             daysOfWeek.forEach((_, dayIndex) => { 
                 localStorage.removeItem(`note-${dayIndex}`); 
                 const noteEl = document.getElementById(`note-${dayIndex}`);
-                noteEl.value = ""; 
-                noteEl.style.height = '44px';
+                if(noteEl) { noteEl.value = ""; noteEl.style.height = '44px'; }
             });
 
-            habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
+            habitColumns.forEach((col) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${col.id}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${col.id}`); if(input) input.checked = false; }); });
 
             updateSkinStats(); updateHabitsStats(); alert("Новая неделя начата! Все данные сохранены в Архив.");
             queueSync();
@@ -1757,16 +1784,13 @@
 
     function openHistory() {
         const modal = document.getElementById('historyModal'); 
-        const list = document.getElementById('historyList'); 
-        list.innerHTML = '';
+        const list = document.getElementById('historyList'); list.innerHTML = '';
         let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]');
         
-        if (history.length === 0) { 
-            list.innerHTML = '<p style="color:var(--text-muted);">Архив пока пуст.</p>'; 
-        } else {
+        if (history.length === 0) { list.innerHTML = '<p style="color:var(--text-muted);">Архив пока пуст.</p>'; } 
+        else {
             for (let i = history.length - 1; i >= 0; i--) {
-                let week = history[i];
-                let dateStr = week.date || 'Неизвестно';
+                let week = history[i]; let dateStr = week.date || 'Неизвестно';
                 let div = document.createElement('div'); div.className = 'history-card';
 
                 let skinHtml = ''; let totalSkinChecks = 0; let hasSkinDetails = false;
@@ -1774,7 +1798,7 @@
                 
                 for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
                     let dayChecks = [];
-                    skinColumns.forEach(col => { if (skinChecks[`check-${dayIdx}-${col}`]) { dayChecks.push(skinColumnNames[col]); totalSkinChecks++; } });
+                    skinColumns.forEach(col => { if (skinChecks[`check-${dayIdx}-${col.id}`]) { dayChecks.push(col.name); totalSkinChecks++; } });
                     let note = week.notes && week.notes[`note-${dayIdx}`] ? week.notes[`note-${dayIdx}`] : '';
                     if (dayChecks.length > 0 || note.trim() !== '') {
                         hasSkinDetails = true;
@@ -1792,7 +1816,7 @@
                     let hasHabitDetails = false;
                     for (let dayIdx = 0; dayIdx < 7; dayIdx++) {
                         let dayHabits = [];
-                        habitColumns.forEach(col => { if (week.habitChecks[`habit-${dayIdx}-${col}`]) { dayHabits.push(habitNames[col]); } });
+                        habitColumns.forEach(col => { if (week.habitChecks[`habit-${dayIdx}-${col.id}`]) { dayHabits.push(col.name); } });
                         if (dayHabits.length > 0) {
                             hasHabitDetails = true;
                             habitHtml += `<div style="margin-bottom: 6px; font-size: 12px;"><span style="font-weight: 700; color: var(--primary);">${daysOfWeek[dayIdx]}:</span> ${dayHabits.join(', ')}</div>`;
@@ -1829,17 +1853,12 @@
         if(confirm("Удалить эту неделю из архива?")) {
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
             history.splice(index, 1); localStorage.setItem('weeklyHistory', JSON.stringify(history));
-            openHistory(); updateSkinStats(); updateHabitsStats();
-            queueSync();
+            openHistory(); updateSkinStats(); updateHabitsStats(); queueSync();
         }
     }
     function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
     function clearHistory() { 
-        if(confirm("Удалить ВЕСЬ архив?")) { 
-            localStorage.removeItem('weeklyHistory'); 
-            openHistory(); updateSkinStats(); updateHabitsStats(); 
-            queueSync();
-        } 
+        if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); openHistory(); updateSkinStats(); updateHabitsStats(); queueSync(); } 
     }
     
     window.onclick = function(event) { 
@@ -1848,6 +1867,7 @@
         if (event.target == document.getElementById('productsModal')) closeProductsModal(); 
         if (event.target == document.getElementById('achievementsModal')) closeAchievements();
         if (event.target == document.getElementById('authModal')) closeAuthModal();
+        if (event.target == document.getElementById('manageItemsModal')) closeManageItems();
     }
 
     // --- ИНИЦИАЛИЗАЦИЯ ---
@@ -1855,17 +1875,13 @@
         const savedTitle = localStorage.getItem('customHeaderTitle'); if (savedTitle) document.getElementById('mainTitle').innerText = savedTitle;
         
         const isDark = localStorage.getItem('darkMode') === 'true';
-        if (isDark) {
-            document.body.classList.add('dark-mode');
-            document.getElementById('themeToggleBtn').textContent = '☀️';
-        } else {
-            document.getElementById('themeToggleBtn').textContent = '🌙';
-        }
+        if (isDark) { document.body.classList.add('dark-mode'); document.getElementById('themeToggleBtn').textContent = '☀️'; } 
+        else { document.getElementById('themeToggleBtn').textContent = '🌙'; }
 
         const savedCity = localStorage.getItem('userCity') || 'Казань'; document.getElementById('city-input').value = savedCity; fetchWeatherByCity(savedCity);
         updateWeekDates(); 
-        renderSkinTable(); updateSkinStats();
-        renderHabitsTable(); updateHabitsStats();
+        renderSkinTable();
+        renderHabitsTable();
     });
 </script>
 </body>
