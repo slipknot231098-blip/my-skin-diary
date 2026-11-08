@@ -202,9 +202,24 @@
         .close-btn { color: var(--text-muted); float: right; font-size: 32px; cursor: pointer; line-height: 1; margin-top: -10px; }
         .close-btn:hover { color: var(--red); }
 
-        .settings-table { width: 100%; margin-top: 15px; border-collapse: collapse; }
-        .settings-table th, .settings-table td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); border-right: none; }
-        .settings-table td:first-child { text-align: left; font-weight: 600; }
+        /* --- ИСПРАВЛЕНИЕ ТАБЛИЦЫ НАСТРОЕК --- */
+        .settings-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .settings-table { width: 100%; min-width: 500px; border-collapse: collapse; }
+        .settings-table th, .settings-table td { padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+        .settings-table th:last-child, .settings-table td:last-child { border-right: none; }
+        .settings-table th { background: var(--hover-bg); color: var(--text-muted); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+        .settings-table td:first-child { text-align: left; font-weight: 600; padding-left: 12px; white-space: nowrap; }
+        .settings-table input[type="checkbox"] {
+            width: 20px; height: 20px; cursor: pointer;
+            accent-color: var(--primary);
+        }
 
         .history-card { border: 1px solid var(--border-color); padding: 24px; border-radius: 20px; margin-bottom: 20px; background-color: var(--bg); }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -474,7 +489,7 @@
 
 <div id="historyModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeHistory()">&times;</span><h2>📜 Архив</h2><div id="historyList"></div><div style="margin-top: 30px;"><button class="btn btn-danger" onclick="clearHistory()">Удалить весь архив</button></div></div></div>
 
-<div id="settingsModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeSettings()">&times;</span><h2>⚙️ Настройка расписания</h2><button class="btn btn-primary" onclick="closeSettings(); openManageItems();" style="width: 100%; margin-bottom: 20px;">Управление процедурами</button><h3 style="color: var(--primary);">Кожа</h3><table class="settings-table"><thead><tr><th>Процедура</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr></thead><tbody id="settingsBody"></tbody></table><h3 style="color: var(--primary);">Привычки</h3><table class="settings-table"><thead><tr><th>Привычка</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr></thead><tbody id="habitsSettingsBody"></tbody></table><div style="margin-top: 35px; text-align: right;"><button class="btn" onclick="closeSettings()">Отмена</button><button class="btn btn-primary" onclick="saveSettings()">Сохранить</button></div></div></div>
+<div id="settingsModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeSettings()">&times;</span><h2>⚙️ Настройка расписания</h2><button class="btn btn-primary" onclick="closeSettings(); openManageItems();" style="width: 100%; margin-bottom: 20px;">Управление процедурами</button><h3 style="color: var(--primary);">Кожа</h3><div class="settings-table-wrapper"><table class="settings-table"><thead><tr><th>Процедура</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr></thead><tbody id="settingsBody"></tbody></table></div><h3 style="color: var(--primary);">Привычки</h3><div class="settings-table-wrapper"><table class="settings-table"><thead><tr><th>Привычка</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr></thead><tbody id="habitsSettingsBody"></tbody></table></div><div style="margin-top: 35px; text-align: right;"><button class="btn" onclick="closeSettings()">Отмена</button><button class="btn btn-primary" onclick="saveSettings()">Сохранить</button></div></div></div>
 
 <button class="floating-achievement-btn" onclick="openAchievements()">🏆</button>
 <button class="floating-theme-btn" id="themeToggleBtn" onclick="toggleDarkMode()">🌙</button>
@@ -893,7 +908,6 @@
         if(recIcon) recIcon.textContent = icon;
     }
 
-    // ОБНОВЛЕННАЯ ПОДСКАЗКА ДЛЯ ПРИВЫЧЕК
     function updateHabitsRecommendation(pendingNames) {
         const recText = document.getElementById('habits-rec-text');
         const recIcon = document.getElementById('habits-rec-icon');
@@ -1135,7 +1149,6 @@
             const streakCell = document.getElementById(`streak-${dayIndex}`);
             if(streakCell) {
                 if (dayExpected === 0) {
-                    // ИКОНКА ДНЯ ОТДЫХА
                     streakCell.innerHTML = `<span class="rest-icon">💤</span>`;
                 } else {
                     const isPerfect = (dayChecked >= dayExpected);
