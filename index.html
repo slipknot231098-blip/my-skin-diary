@@ -375,7 +375,7 @@
             background: var(--bg); border: 1px solid var(--border-color); padding: 10px 18px;
             border-radius: 14px; font-size: 15px; font-weight: 600; color: var(--text);
             display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-            transition: all 0.2s; cursor: help;
+            transition: all 0.2s; cursor: help; position: relative;
         }
         .tag-stat-pill:hover {
             border-color: var(--primary);
@@ -384,6 +384,51 @@
         }
         .tag-stat-count {
             background: var(--primary); color: white; border-radius: 8px; padding: 2px 10px; font-size: 13px;
+        }
+
+        /* КАСТОМНЫЙ ТУЛТИП ДЛЯ ТЕГОВ */
+        .tag-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: var(--tooltip-bg);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.5;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            width: max-content;
+            max-width: 300px;
+            pointer-events: none;
+            text-align: left;
+            white-space: normal;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .tag-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--tooltip-bg) transparent transparent transparent;
+        }
+        .tag-tooltip div { margin-bottom: 6px; }
+        .tag-tooltip div:last-child { margin-bottom: 0; }
+        .tag-tooltip b { color: var(--primary-light); }
+        
+        .tag-stat-pill:hover .tag-tooltip {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
         }
 
         /* МОДАЛЬНЫЕ ОКНА */
@@ -567,6 +612,11 @@
             
             .floating-achievement-btn { bottom: 100px; right: 20px; width: 56px; height: 56px; font-size: 22px; }
             .floating-theme-btn { bottom: 25px; right: 20px; width: 56px; height: 56px; font-size: 22px; }
+            
+            /* На мобильных тултип будет появляться по центру экрана сверху, чтобы не уходить за края */
+            .tag-tooltip { left: 0; transform: translateX(0); bottom: 120%; }
+            .tag-tooltip::after { left: 20px; transform: translateX(0); }
+            .tag-stat-pill:hover .tag-tooltip { transform: translateX(0) translateY(0); }
         }
 
         /* --- СТИЛИ ДЛЯ ПЕЧАТИ (ЭКСПОРТ В PDF) --- */
@@ -1463,9 +1513,8 @@
 
                     if (matchedLines.length > 0) {
                         tagData[tag].count += matchedLines.length;
-                        // Убираем дубликаты строк для одного дня
                         let uniqueLines = [...new Set(matchedLines)].join('; ');
-                        tagData[tag].details.push(`${daysOfWeek[i]}: ${uniqueLines}`);
+                        tagData[tag].details.push(`<div><b>${daysOfWeek[i]}:</b> ${uniqueLines}</div>`);
                     }
                 });
             }
@@ -1483,10 +1532,11 @@
                 const pill = document.createElement('div');
                 pill.className = 'tag-stat-pill';
                 
-                // Формируем красивую подсказку
-                pill.title = item.details.join('\n'); 
-                
-                pill.innerHTML = `${item.tag} <span class="tag-stat-count">${item.count}</span>`;
+                // Кастомный тултип
+                pill.innerHTML = `
+                    ${item.tag} <span class="tag-stat-count">${item.count}</span>
+                    <div class="tag-tooltip">${item.details.join('')}</div>
+                `;
                 container.appendChild(pill);
             });
         }
