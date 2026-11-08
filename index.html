@@ -130,10 +130,10 @@
             display: none; 
             position: absolute; 
             right: 0; 
-            top: calc(100% + 10px); /* Чуть больше отступ сверху */
+            top: calc(100% + 10px); 
             background-color: var(--card-bg); 
             min-width: 260px; 
-            box-shadow: 0 12px 30px -5px rgba(0,0,0,0.15), 0 8px 16px -6px rgba(0,0,0,0.1); 
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15), 0 8px 16px -6px rgba(0,0,0,0.1); 
             border-radius: 16px; 
             border: 1px solid var(--border-color); 
             z-index: 1000; 
@@ -148,6 +148,7 @@
             from { opacity: 0; transform: scale(0.95) translateY(-10px); }
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
+        
         .dropdown-item { 
             padding: 12px 14px; 
             display: flex; 
@@ -160,7 +161,9 @@
             width: 100%; 
             text-align: left; 
             font-family: inherit;
+            margin-bottom: 2px;
         }
+        .dropdown-item:last-child { margin-bottom: 0; }
         .dropdown-item:active { transform: scale(0.98); }
         .dropdown-item:hover { background-color: var(--hover-bg); }
         
@@ -170,16 +173,29 @@
             color: var(--text); 
             display: flex; 
             align-items: center; 
-            gap: 10px; 
-            margin-bottom: 2px;
+            gap: 8px; 
+            margin-bottom: 4px; 
         }
         .dropdown-desc { 
             font-size: 12px; 
             color: var(--text-muted); 
-            margin-top: 2px; 
-            padding-left: 28px; /* Текст описания будет ровно под текстом заголовка */
+            margin-top: 0; 
+            padding-left: 26px; 
             line-height: 1.4;
         }
+
+        /* ПЛАВАЮЩИЕ КНОПКИ */
+        .floating-theme-btn, .floating-achievement-btn {
+            position: fixed; right: 30px; width: 56px; height: 56px;
+            border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center;
+            font-size: 24px; border: none; cursor: pointer; z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;
+        }
+        .floating-theme-btn { bottom: 30px; background-color: var(--primary); }
+        .floating-theme-btn:hover { transform: scale(1.1); background-color: var(--primary-hover); }
+        
+        .floating-achievement-btn { bottom: 100px; background-color: #D4AF37; }
+        .floating-achievement-btn:hover { transform: scale(1.1); background-color: #C59B27; }
 
         /* ЗАГОЛОВОК */
         .header-title {
@@ -946,6 +962,7 @@
 
     let currentUser = null;
     let syncTimeout = null;
+    let isCloudDataLoaded = false; // Флаг: загружены ли данные из облака
 
     auth.onAuthStateChanged(user => {
         currentUser = user;
@@ -955,20 +972,19 @@
         const userEmail = document.getElementById('user-email');
 
         if (user) {
-            // Пользователь вошел
             userInfo.style.display = 'flex';
             authBtn.style.display = 'none';
             syncIcon.style.display = 'inline-block';
             
             userEmail.textContent = user.email;
-            userEmail.title = user.email; // Показываем полный email при наведении
+            userEmail.title = user.email; 
             
             pullFromCloud(user.uid);
         } else {
-            // Пользователь вышел
             userInfo.style.display = 'none';
             authBtn.style.display = 'inline-flex';
             syncIcon.style.display = 'none';
+            isCloudDataLoaded = false; // Сбрасываем флаг при выходе
         }
     });
 
@@ -1025,7 +1041,9 @@
     function logout() { auth.signOut(); }
 
     function queueSync() {
-        if (!currentUser) return;
+        // Если не вошли или облако еще не скачалось - НЕ СОХРАНЯЕМ (чтобы не затереть пустотой)
+        if (!currentUser || !isCloudDataLoaded) return;
+        
         const syncIcon = document.getElementById('sync-icon');
         syncIcon.textContent = '☁️';
         syncIcon.className = 'sync-indicator sync-saving';
@@ -1064,13 +1082,18 @@
                         changed = true;
                     }
                 }
+                isCloudDataLoaded = true; // Данные получены, теперь можно сохранять!
                 if (changed) {
                     location.reload();
                 }
             } else {
+                isCloudDataLoaded = true; // Облако пустое, разрешаем залить локальные данные
                 queueSync();
             }
-        }).catch(err => console.error("Ошибка загрузки:", err));
+        }).catch(err => {
+            console.error("Ошибка загрузки:", err);
+            isCloudDataLoaded = true; // Снимаем блокировку, чтобы можно было работать оффлайн
+        });
     }
 
     // ==========================================
