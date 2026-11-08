@@ -1286,7 +1286,7 @@
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
         if(progressPercent > 100) progressPercent = 100; 
         
-        // ДЕЛЬТА (Сравнение с прошлой неделей)
+        // ДЕЛЬТА
         let prevPercent = 0;
         let history = safeParse('weeklyHistory', []);
         if (history.length > 0) {
@@ -1294,7 +1294,6 @@
             let lastChecks = lastWeek.skinChecks || lastWeek.checks || {};
             let lastTotalC = 0;
             for (let key in lastChecks) if(lastChecks[key]) lastTotalC++;
-            // Примерный расчет, так как мы не храним totalExpectedWeek прошлой недели, берем максимум
             let maxPossible = skinColumns.length * 7;
             prevPercent = maxPossible > 0 ? Math.round((lastTotalC / maxPossible) * 100) : 0;
         }
@@ -1391,6 +1390,10 @@
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
+        
+        // ИСПРАВЛЕНО: Добавлено объявление history
+        let history = safeParse('weeklyHistory', []); 
+        if (!Array.isArray(history)) history = [];
         let lineLabels = [], lineData = [];
         history.slice(-7).forEach((week) => { 
             let totalC = 0; let checks = week.skinChecks || week.checks || {};
@@ -1550,6 +1553,7 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
 
+        // ИСПРАВЛЕНО: Добавлено объявление history
         let history = safeParse('weeklyHistory', []); 
         if (!Array.isArray(history)) history = [];
         let lineLabels = [], lineData = [];
