@@ -240,7 +240,22 @@
         .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
         .form-input { padding: 12px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        .product-table { width: 100%; border-collapse: collapse; background: var(--bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); }
+        /* --- ИСПРАВЛЕНИЕ ТАБЛИЦЫ СРЕДСТВ --- */
+        .product-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 15px;
+        }
+        .product-table { 
+            width: 100%; 
+            min-width: 650px; /* Задаем минимальную ширину, чтобы кнопки не сплющивались */
+            border-collapse: collapse; 
+            background: var(--bg); 
+            border-radius: 16px; 
+            overflow: hidden; 
+            border: 1px solid var(--border-color); 
+        }
         .product-table th, .product-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .product-table th { background: var(--hover-bg); font-weight: 600; color: var(--text-muted); font-size: 13px; }
         .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
@@ -278,33 +293,10 @@
         .btn-del-manage { background: var(--red-bg); color: var(--red); border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         .add-form-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; align-items: flex-end; }
 
-        /* ЖЕСТКАЯ ФИКСАЦИЯ КОЛОНКИ СТРИК */
-        .streak-col { 
-            width: 80px !important; 
-            min-width: 80px !important; 
-            max-width: 80px !important;
-        }
-        .streak-cell { 
-            width: 80px !important; 
-            min-width: 80px !important; 
-            max-width: 80px !important;
-            text-align: center; 
-            vertical-align: middle; 
-            white-space: nowrap; 
-        }
-        .streak-badge {
-            display: inline-block;
-            color: #E29E60; 
-            font-weight: 800; 
-            font-size: 15px; 
-            background: var(--bg); 
-            padding: 4px 10px; 
-            border-radius: 8px;
-        }
-        .rest-icon {
-            display: inline-block;
-            font-size: 16px;
-        }
+        .streak-col { width: 80px !important; min-width: 80px !important; max-width: 80px !important; }
+        .streak-cell { width: 80px !important; min-width: 80px !important; max-width: 80px !important; text-align: center; vertical-align: middle; white-space: nowrap; }
+        .streak-badge { display: inline-block; color: #E29E60; font-weight: 800; font-size: 15px; background: var(--bg); padding: 4px 10px; border-radius: 8px; }
+        .rest-icon { display: inline-block; font-size: 16px; }
 
         @media (max-width: 900px) {
             body { padding: 15px 10px; }
@@ -1301,7 +1293,6 @@
         let procDetails = Array(habitColumns.length).fill().map(() => []);
         let dayDetails = Array(7).fill().map(() => []);
 
-        // Собираем невыполненные привычки для подсказки
         let pendingHabits = [];
 
         daysOfWeek.forEach((day, dayIndex) => {
@@ -1318,7 +1309,6 @@
                 
                 if (currentHabitSettings[col.id][dayIndex] === 1) { 
                     totalExp++; dayExpected++; 
-                    // Если это сегодня и не отмечено
                     if (dayIndex === todayIdx && !input.checked) {
                         pendingHabits.push(col.name);
                     }
@@ -1351,7 +1341,6 @@
         if(document.getElementById('habitsProgressBarFill')) document.getElementById('habitsProgressBarFill').style.width = `${progress}%`;
         if(document.getElementById('habitDailyStreak')) document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
 
-        // Передаем массив названий невыполненных привычек
         updateHabitsRecommendation(pendingHabits);
 
         updateHabitCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails);
@@ -1537,6 +1526,7 @@
         for (let c in groups) {
             let h = document.createElement('div'); h.className = 'category-header';
             h.innerHTML = `<span>📁 ${c}</span> <span>${groups[c].length} шт.</span>`; container.appendChild(h);
+            let wrapper = document.createElement('div'); wrapper.className = 'product-table-wrapper';
             let tbl = document.createElement('table'); tbl.className = 'product-table';
             tbl.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>Годен до</th><th>Ссылка</th><th style="text-align:center;">Действия</th></tr></thead>`;
             let tb = document.createElement('tbody');
@@ -1557,7 +1547,7 @@
                 tdAct.appendChild(bE); tdAct.appendChild(bD);
                 tr.appendChild(tdAct); tb.appendChild(tr);
             });
-            tbl.appendChild(tb); container.appendChild(tbl);
+            tbl.appendChild(tb); wrapper.appendChild(tbl); container.appendChild(wrapper);
         }
     }
 
