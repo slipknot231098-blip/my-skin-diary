@@ -35,6 +35,7 @@
             --shadow-hover: 0 16px 40px -10px rgba(0, 0, 0, 0.12);
             --hover-bg: #F7FAF8;
             --today-bg: #EBF4EF; 
+            --perfect-bg: rgba(124, 154, 136, 0.08); /* Фон для идеального дня */
             --today-text: #4A7C59; 
             --tooltip-bg: rgba(30, 41, 59, 0.95);
         }
@@ -48,6 +49,7 @@
             --hover-bg: #374151;
             --primary-light: #344C43;
             --today-bg: #263A33; 
+            --perfect-bg: rgba(129, 178, 154, 0.1); /* Фон для идеального дня в темной теме */
             --today-text: #81B29A; 
             --modal-bg: rgba(0, 0, 0, 0.6);
             --shadow: 0 8px 30px -10px rgba(0, 0, 0, 0.3);
@@ -147,6 +149,7 @@
         .week-dates-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
         .week-dates { display: inline-block; font-size: 15px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 12px 28px; border-radius: 30px; border: 1px solid transparent; box-shadow: var(--shadow); }
 
+        /* --- УЛУЧШЕНИЕ ТАБЛИЦЫ (Sticky + Идеальные дни) --- */
         .table-wrapper { width: 100%; margin-top: 5px; overflow-x: auto; overflow-y: auto; max-height: 70vh; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow); background: var(--card-bg); position: relative; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 950px; table-layout: auto; }
         th, td { padding: 14px 10px; text-align: center; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); box-sizing: border-box; vertical-align: middle; }
@@ -160,11 +163,26 @@
         th.fire { color: var(--red); }
         th.habit-col { color: var(--primary); }
 
+        /* Липкий первый столбец (Sticky Left) */
+        .table-wrapper th:first-child, .table-wrapper td.day-cell {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background-color: var(--card-bg);
+            box-shadow: 2px 0 5px -2px rgba(0,0,0,0.05);
+        }
+        .table-wrapper th:first-child { z-index: 11; } /* Заголовок поверх остальных */
+
         tbody tr:hover { background-color: var(--hover-bg); }
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.015); }
         body.dark-mode tbody tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
+        
         tr.today-row { background-color: var(--today-bg) !important; }
-        tr.today-row .day-cell { font-weight: 800; color: var(--today-text); box-shadow: inset 6px 0 0 0 var(--primary); }
+        tr.today-row .day-cell { font-weight: 800; color: var(--today-text); box-shadow: inset 6px 0 0 0 var(--primary), 2px 0 5px -2px rgba(0,0,0,0.05); background-color: var(--today-bg) !important; }
+        
+        /* Визуализация идеального дня */
+        tr.perfect-row { background-color: var(--perfect-bg) !important; }
+        tr.perfect-row .day-cell { background-color: var(--perfect-bg) !important; }
 
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 26px; height: 26px; }
         .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
@@ -217,6 +235,23 @@
         .settings-table td:first-child { text-align: left; font-weight: 600; padding-left: 12px; white-space: nowrap; }
         .settings-table input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
 
+        /* --- ПУСТЫЕ СОСТОЯНИЯ (Empty States) --- */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+            background: var(--bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 20px;
+            margin: 10px 0;
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 15px; opacity: 0.8; }
+        .empty-title { font-weight: 800; font-size: 18px; color: var(--text); margin-bottom: 8px; }
+        .empty-desc { font-size: 14px; color: var(--text-muted); max-width: 300px; line-height: 1.5; }
+
         .history-card { border: 1px solid var(--border-color); padding: 24px; border-radius: 20px; margin-bottom: 20px; background-color: var(--bg); }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .history-card h4 { margin: 0; color: var(--primary); font-size: 18px; }
@@ -236,12 +271,7 @@
         .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
         .form-input { padding: 12px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 14px; width: 100%; box-sizing: border-box; }
         
-        .product-table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 15px;
-        }
+        .product-table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; }
         .product-table { width: 100%; min-width: 650px; border-collapse: collapse; background: var(--bg); border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); }
         .product-table th, .product-table td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .product-table th { background: var(--hover-bg); font-weight: 600; color: var(--text-muted); font-size: 13px; }
@@ -296,11 +326,13 @@
             .auth-email-text { display: none; }
             .auth-info-pill { padding: 4px; border: none; background: transparent; }
             .btn-logout-icon { font-size: 20px; padding: 10px; background: var(--red-bg); border-radius: 50%; }
+            
+            /* Отключаем sticky на мобильных, так как таблица превращается в карточки */
             .table-wrapper { border: none; box-shadow: none; background: transparent; max-height: none; }
             table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
             tr { border: 1px solid var(--border-color); margin-bottom: 20px; border-radius: 24px; background: var(--card-bg); padding: 12px 20px; }
-            td { border: none; border-bottom: 1px solid var(--border-color); padding: 16px 0; display: flex; justify-content: space-between; align-items: center; text-align: right; border-right: none; width: auto !important; }
+            td { border: none; border-bottom: 1px solid var(--border-color); padding: 16px 0; display: flex; justify-content: space-between; align-items: center; text-align: right; border-right: none; width: auto !important; position: static !important; box-shadow: none !important; background: transparent !important; }
             td:last-child { border-bottom: none; }
             td::before { content: attr(data-label); font-weight: 600; text-align: left; flex: 1; padding-right: 15px; font-size: 14px; color: var(--text-muted); }
             td.day-cell { font-size: 22px; color: var(--primary); border-bottom: 2px solid var(--border-color); margin-bottom: 10px; display: block; text-align: left; padding: 10px 0; width: auto; }
@@ -1008,6 +1040,7 @@
 
         skinWeekSchedule.forEach((dayData, dayIndex) => {
             const tr = document.createElement('tr'); 
+            tr.id = `skin-row-${dayIndex}`;
             if (dayIndex === todayIndex) tr.classList.add('today-row');
             const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = dayData.day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
             
@@ -1147,20 +1180,25 @@
             });
             
             const streakCell = document.getElementById(`streak-${dayIndex}`);
+            const tr = document.getElementById(`skin-row-${dayIndex}`);
+            
             if(streakCell) {
                 if (dayExpected === 0) {
                     streakCell.innerHTML = `<span class="rest-icon">💤</span>`;
+                    if(tr) tr.classList.remove('perfect-row');
                 } else {
                     const isPerfect = (dayChecked >= dayExpected);
                     if (isPerfect) {
                         runningStreak++;
                         streakCell.innerHTML = `<span class="streak-badge">🔥 ${runningStreak}</span>`;
                         perfectDaysCount++;
+                        if(tr) tr.classList.add('perfect-row');
                         if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
                         previousPerfectDays.add(dayIndex);
                     } else { 
                         runningStreak = 0; 
                         streakCell.innerHTML = `<span style="display: inline-block; color: var(--text-muted); font-size: 14px; opacity: 0.4;">—</span>`;
+                        if(tr) tr.classList.remove('perfect-row');
                         previousPerfectDays.delete(dayIndex); 
                     }
                 }
@@ -1252,15 +1290,6 @@
         if(Array.isArray(history)) {
             history.slice(-7).forEach(w => { 
                 let c = 0; let chks = w.skinChecks || {};
-                skinColumns.forEach(col => { 
-                    if (Array.isArray(currentSkinSettings[col.id])) {
-                        let planned = currentSkinSettings[col.id].filter(v => v === 1).length; 
-                        let completed = 0;
-                        for (let d = 0; d < 7; d++) {
-                            if (currentSkinSettings[col.id][d] === 1 && chks[`check-${d}-${col.id}`]) completed++;
-                        }
-                    }
-                });
                 for (let k in chks) if(chks[k]) c++; 
                 labels.push(w.date); data.push(totalExp > 0 ? Math.round((c / totalExp) * 100) : 0); 
             });
@@ -1284,7 +1313,9 @@
         tbody.innerHTML = '';
         const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
         daysOfWeek.forEach((day, dayIndex) => {
-            const tr = document.createElement('tr'); if (dayIndex === todayIndex) tr.classList.add('today-row');
+            const tr = document.createElement('tr'); 
+            tr.id = `habit-row-${dayIndex}`;
+            if (dayIndex === todayIndex) tr.classList.add('today-row');
             const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
             habitColumns.forEach((col) => {
                 const td = document.createElement('td'); td.setAttribute('data-label', col.name);
@@ -1334,14 +1365,21 @@
                     }
                 }
             });
+            
+            const tr = document.getElementById(`habit-row-${dayIndex}`);
+            
             const isPerfect = (dayChecked >= dayExpected && dayExpected > 0);
             if (isPerfect) {
                 perfectDays++;
+                if(tr) tr.classList.add('perfect-row');
                 if (changedDayIndex === dayIndex) {
                     const was = localStorage.getItem(`habit_perfect_${dayIndex}`) === 'true';
                     if (!was) { triggerCelebration(dayIndex); localStorage.setItem(`habit_perfect_${dayIndex}`, 'true'); }
                 }
-            } else { localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); }
+            } else { 
+                if(tr) tr.classList.remove('perfect-row');
+                localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); 
+            }
         });
 
         for (let i = todayIdx; i >= 0; i--) {
@@ -1541,7 +1579,16 @@
         let sp = document.getElementById('monthlySpendDisplay'); 
         if(sp) sp.textContent = `Потрачено в этом месяце: ${spend} ₽`;
 
-        if (products.length === 0) { container.innerHTML = '<p style="text-align: center; padding: 20px;">Нет средств.</p>'; return; }
+        // Empty State для средств
+        if (products.length === 0) { 
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🛍️</div>
+                    <div class="empty-title">Пока пусто</div>
+                    <div class="empty-desc">Добавьте свои первые средства (кремы, пенки, СПФ), чтобы следить за их сроком годности и расходами.</div>
+                </div>`; 
+            return; 
+        }
 
         for (let c in groups) {
             let h = document.createElement('div'); h.className = 'category-header';
@@ -1694,7 +1741,16 @@
         const list = document.getElementById('historyList'); if(!list) return;
         list.innerHTML = '';
         let hist = safeParse('weeklyHistory', []);
-        if (hist.length === 0) list.innerHTML = '<p style="text-align:center;">Архив пуст.</p>'; 
+        
+        // Empty State для архива
+        if (hist.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📜</div>
+                    <div class="empty-title">Архив пуст</div>
+                    <div class="empty-desc">Когда вы нажмете «Новая неделя», ваши текущие результаты сохранятся здесь.</div>
+                </div>`; 
+        } 
         else {
             for (let i = hist.length - 1; i >= 0; i--) {
                 let w = hist[i];
