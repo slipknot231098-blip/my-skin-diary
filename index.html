@@ -269,7 +269,6 @@
         th:last-child, td:last-child { border-right: none; } 
         tr:last-child td { border-bottom: none; } 
         
-        /* Липкие заголовки таблицы */
         th { 
             background-color: var(--card-bg); color: var(--text-muted); font-weight: 700; font-size: 12px; 
             text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10;
@@ -285,7 +284,6 @@
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
         
-        /* Зебра для таблицы */
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.015); }
         body.dark-mode tbody tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
         body.dark-mode tbody tr:hover { background-color: var(--hover-bg); }
@@ -377,6 +375,12 @@
             background: var(--bg); border: 1px solid var(--border-color); padding: 10px 18px;
             border-radius: 14px; font-size: 15px; font-weight: 600; color: var(--text);
             display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: all 0.2s; cursor: help;
+        }
+        .tag-stat-pill:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(124,154,136,0.15);
         }
         .tag-stat-count {
             background: var(--primary); color: white; border-radius: 8px; padding: 2px 10px; font-size: 13px;
@@ -570,7 +574,6 @@
             body { background: #fff !important; color: #000 !important; padding: 0 !important; margin: 0 !important; }
             .container { max-width: 100% !important; margin: 0 !important; padding: 20px !important; }
             
-            /* Скрываем всё лишнее */
             .tabs, .topbar, .weather-widget, .tags-panel, .analytics-section, .floating-theme-btn, .floating-achievement-btn, .dropdown, .tab-btn, .chart-tabs { display: none !important; }
             
             .header-title { text-align: center; margin-bottom: 20px; page-break-after: avoid; }
@@ -595,27 +598,19 @@
             tr { display: table-row !important; page-break-inside: avoid; background: #fff !important; border: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
             th, td { display: table-cell !important; border: 1px solid #ccc !important; padding: 8px !important; color: black !important; font-size: 12px; text-align: center !important; background: #fff !important; }
             th { background: #f5f5f5 !important; font-weight: bold !important; color: black !important; position: static !important; }
-            th::before, td::before { display: none !important; } /* Удаляем мобильные подписи */
+            th::before, td::before { display: none !important; }
             
-            /* Красиво отображаем галочки */
             .checkbox-container { display: inline-block !important; width: 16px !important; height: 16px !important; border: 1px solid #666 !important; border-radius: 4px !important; }
             .checkbox-container input { display: none !important; }
             .checkmark { border: none !important; background: transparent !important; position: static !important; width: 100% !important; height: 100% !important; }
             .checkbox-container input:checked ~ .checkmark:after { 
-                content: "✔" !important; 
-                border: none !important; 
-                color: #000 !important; 
-                font-size: 14px !important; 
-                position: static !important; 
-                display: block !important;
-                transform: none !important;
-                line-height: 16px;
+                content: "✔" !important; border: none !important; color: #000 !important; 
+                font-size: 14px !important; position: static !important; display: block !important;
+                transform: none !important; line-height: 16px;
             }
             
-            /* Текст заметок */
             textarea.notes-input { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; overflow: visible !important; font-size: 12px !important; color: black !important; box-shadow: none !important; resize: none !important; }
             
-            /* Печатаем ОБЕ вкладки */
             .tab-content { display: block !important; page-break-after: always; }
             .tab-content:last-child { page-break-after: auto; }
         }
@@ -1451,29 +1446,46 @@
         if (!container) return;
         container.innerHTML = '';
 
-        let allNotesText = "";
+        let tagData = {}; // { tagName: { count: 0, days: [] } }
+
+        // Инициализируем
+        quickTags.forEach(tag => tagData[tag] = { count: 0, days: [] });
+
         for (let i = 0; i < 7; i++) {
             const noteEl = document.getElementById(`note-${i}`);
-            if (noteEl) allNotesText += noteEl.value + " ";
+            if (noteEl && noteEl.value) {
+                const noteText = noteEl.value;
+                quickTags.forEach(tag => {
+                    let regex = new RegExp(tag, "gi");
+                    let matches = noteText.match(regex);
+                    if (matches && matches.length > 0) {
+                        tagData[tag].count += matches.length;
+                        // Добавляем день, если его еще нет в списке
+                        if (!tagData[tag].days.includes(daysOfWeek[i])) {
+                            tagData[tag].days.push(daysOfWeek[i]);
+                        }
+                    }
+                });
+            }
         }
 
-        let tagCounts = [];
-        quickTags.forEach(tag => {
-            let regex = new RegExp(tag, "gi");
-            let matches = allNotesText.match(regex);
-            if (matches && matches.length > 0) {
-                tagCounts.push({ tag: tag, count: matches.length });
-            }
-        });
+        // Фильтруем нулевые и сортируем
+        let sortedTags = Object.keys(tagData)
+            .map(tag => ({ tag: tag, count: tagData[tag].count, days: tagData[tag].days }))
+            .filter(item => item.count > 0)
+            .sort((a, b) => b.count - a.count);
 
-        tagCounts.sort((a, b) => b.count - a.count);
-
-        if (tagCounts.length === 0) {
+        if (sortedTags.length === 0) {
             container.innerHTML = '<span style="color: var(--text-muted); font-size: 15px; padding: 20px;">На этой неделе теги в заметках не использовались.</span>';
         } else {
-            tagCounts.forEach(item => {
+            sortedTags.forEach(item => {
                 const pill = document.createElement('div');
                 pill.className = 'tag-stat-pill';
+                
+                // Добавляем подсказку с днями
+                let tooltipText = item.days.length > 0 ? `Дни: ${item.days.join(', ')}` : '';
+                pill.title = tooltipText; 
+                
                 pill.innerHTML = `${item.tag} <span class="tag-stat-count">${item.count}</span>`;
                 container.appendChild(pill);
             });
