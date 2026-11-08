@@ -133,7 +133,7 @@
         .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-hover)); border-radius: 10px; transition: width 0.8s; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: 700; font-size: 10px; }
 
         .recommendation-card { background: linear-gradient(135deg, rgba(124, 154, 136, 0.1), rgba(124, 154, 136, 0.05)); border: 1px solid var(--primary); border-radius: 24px; padding: 20px 24px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 4px 15px rgba(124, 154, 136, 0.1); }
-        .rec-icon { font-size: 36px; background: var(--card-bg); padding: 12px; border-radius: 50%; box-shadow: var(--shadow); display: flex; justify-content: center; align-items: center; }
+        .rec-icon { font-size: 36px; background: var(--card-bg); padding: 12px; border-radius: 50%; box-shadow: var(--shadow); display: flex; justify-content: center; align-items: center; min-width: 60px; height: 60px; box-sizing: border-box; }
         .rec-text { flex: 1; font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; }
         .rec-text b { color: var(--primary); font-weight: 800; }
 
@@ -263,16 +263,16 @@
         .btn-del-manage { background: var(--red-bg); color: var(--red); border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         .add-form-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; align-items: flex-end; }
 
-        /* ФИКСИРОВАННАЯ ШИРИНА ДЛЯ СТРИКА */
+        /* ЖЕСТКАЯ ФИКСАЦИЯ КОЛОНКИ СТРИК */
         .streak-col { 
-            width: 90px;
-            min-width: 90px;
-            max-width: 90px;
+            width: 80px !important; 
+            min-width: 80px !important; 
+            max-width: 80px !important;
         }
         .streak-cell { 
-            width: 90px;
-            min-width: 90px;
-            max-width: 90px;
+            width: 80px !important; 
+            min-width: 80px !important; 
+            max-width: 80px !important;
             text-align: center; 
             vertical-align: middle; 
             white-space: nowrap; 
@@ -288,7 +288,6 @@
         }
         .rest-icon {
             display: inline-block;
-            color: var(--text-muted); 
             font-size: 16px;
         }
 
@@ -894,21 +893,23 @@
         if(recIcon) recIcon.textContent = icon;
     }
 
-    function updateHabitsRecommendation(checked, expected) {
+    // ОБНОВЛЕННАЯ ПОДСКАЗКА ДЛЯ ПРИВЫЧЕК
+    function updateHabitsRecommendation(pendingNames) {
         const recText = document.getElementById('habits-rec-text');
         const recIcon = document.getElementById('habits-rec-icon');
         if (!recText) return;
         const hour = new Date().getHours();
         let msg = "", icon = "💡";
 
-        if (expected === 0) { msg = "На сегодня нет запланированных привычек. Отдыхайте! 😊"; icon = "🛋️"; }
-        else if (checked >= expected) { msg = "Все привычки на сегодня выполнены! Так держать! 🎉"; icon = "🏆"; }
-        else {
-            const remaining = expected - checked;
-            if (hour >= 6 && hour < 12) { icon = "🌅"; msg = `Доброе утро! По плану осталось выполнить привычек: <b>${remaining}</b>.`; }
-            else if (hour >= 12 && hour < 17) { icon = "☀️"; msg = `День в разгаре. Осталось привычек: <b>${remaining}</b>.`; }
-            else if (hour >= 17 && hour < 23) { icon = "🌙"; msg = `Вечер. По плану осталось выполнить привычек: <b>${remaining}</b>!`; }
-            else { icon = "😴"; msg = "Уже поздно. Если что-то не успели — перенесите на завтра."; }
+        if (pendingNames.length === 0) { 
+            msg = "Ура! Все привычки на сегодня выполнены. Так держать! 🎉"; 
+            icon = "🏆"; 
+        } else {
+            let listText = pendingNames.map(n => `<b>${n}</b>`).join(', ');
+            if (hour >= 6 && hour < 12) { icon = "🌅"; msg = `Доброе утро! По плану осталось выполнить: ${listText}.`; }
+            else if (hour >= 12 && hour < 17) { icon = "☀️"; msg = `День в разгаре. Не забудьте про: ${listText}.`; }
+            else if (hour >= 17 && hour < 23) { icon = "🌙"; msg = `Вечер. По плану осталось выполнить: ${listText}.`; }
+            else { icon = "😴"; msg = `Уже поздно. Если не успели: ${listText} — перенесите на завтра.`; }
         }
         recText.innerHTML = msg;
         if(recIcon) recIcon.textContent = icon;
@@ -1134,7 +1135,8 @@
             const streakCell = document.getElementById(`streak-${dayIndex}`);
             if(streakCell) {
                 if (dayExpected === 0) {
-                    streakCell.innerHTML = `<span class="rest-icon">🛋️</span>`;
+                    // ИКОНКА ДНЯ ОТДЫХА
+                    streakCell.innerHTML = `<span class="rest-icon">💤</span>`;
                 } else {
                     const isPerfect = (dayChecked >= dayExpected);
                     if (isPerfect) {
@@ -1286,6 +1288,9 @@
         let procDetails = Array(habitColumns.length).fill().map(() => []);
         let dayDetails = Array(7).fill().map(() => []);
 
+        // Собираем невыполненные привычки для подсказки
+        let pendingHabits = [];
+
         daysOfWeek.forEach((day, dayIndex) => {
             let dayChecked = 0, dayExpected = 0;
             habitColumns.forEach((col, colIndex) => {
@@ -1297,7 +1302,14 @@
                     dayDetails[dayIndex].push(col.name);
                 }
                 if(!Array.isArray(currentHabitSettings[col.id]) || currentHabitSettings[col.id].length !== 7) currentHabitSettings[col.id] = [1,1,1,1,1,1,1];
-                if (currentHabitSettings[col.id][dayIndex] === 1) { totalExp++; dayExpected++; }
+                
+                if (currentHabitSettings[col.id][dayIndex] === 1) { 
+                    totalExp++; dayExpected++; 
+                    // Если это сегодня и не отмечено
+                    if (dayIndex === todayIdx && !input.checked) {
+                        pendingHabits.push(col.name);
+                    }
+                }
             });
             const isPerfect = (dayChecked >= dayExpected && dayExpected > 0);
             if (isPerfect) {
@@ -1326,14 +1338,8 @@
         if(document.getElementById('habitsProgressBarFill')) document.getElementById('habitsProgressBarFill').style.width = `${progress}%`;
         if(document.getElementById('habitDailyStreak')) document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
 
-        let todayChecked = 0, todayExpected = 0;
-        habitColumns.forEach(col => {
-            const input = document.getElementById(`habit-${todayIdx}-${col.id}`);
-            if (input && input.checked) todayChecked++;
-            let arr = currentHabitSettings[col.id];
-            if (Array.isArray(arr) && arr[todayIdx] === 1) todayExpected++;
-        });
-        updateHabitsRecommendation(todayChecked, todayExpected);
+        // Передаем массив названий невыполненных привычек
+        updateHabitsRecommendation(pendingHabits);
 
         updateHabitCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails);
         renderHabitSparkline(dailyData);
