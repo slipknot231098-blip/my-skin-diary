@@ -595,13 +595,12 @@
         <div class="table-wrapper">
             <table>
                 <colgroup>
-                    <col style="width: 10%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
-                    <col style="width: 15%;">
+                    <col style="width: 12%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
+                    <col style="width: 17.6%;">
                 </colgroup>
                 <thead>
                     <tr>
@@ -611,7 +610,6 @@
                         <th class="habit-col">🏋️ Тренировка</th>
                         <th class="habit-col">🚫 Без сладкого</th>
                         <th class="habit-col">🧴 Утренняя рутина</th>
-                        <th class="habit-col">💊 Витамины</th>
                     </tr>
                 </thead>
                 <tbody id="habitsTableBody"></tbody>
@@ -931,12 +929,12 @@
     }
 
     // --- ЛОГИКА ПРИВЫЧЕК ---
-    const habitColumns = ["english", "reading", "workout", "no_sugar", "morning_routine", "vitamins"];
-    const habitNames = { english: "🇬🇧 Английский", reading: "📚 Чтение", workout: "🏋️ Тренировка", no_sugar: "🚫 Без сладкого", morning_routine: "🧴 Утренняя рутина", vitamins: "💊 Витамины" };
+    const habitColumns = ["english", "reading", "workout", "no_sugar", "morning_routine"];
+    const habitNames = { english: "🇬🇧 Английский", reading: "📚 Чтение", workout: "🏋️ Тренировка", no_sugar: "🚫 Без сладкого", morning_routine: "🧴 Утренняя рутина" };
     
     const defaultHabitSettings = {
         english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0],
-        no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1], vitamins: [1, 1, 1, 1, 1, 1, 1]
+        no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1]
     };
     let currentHabitSettings = JSON.parse(localStorage.getItem('userHabitSchedule')) || defaultHabitSettings;
 
