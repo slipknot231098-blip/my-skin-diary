@@ -6,6 +6,12 @@
     <title>Мой Дневник Ухода</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -98,6 +104,8 @@
         .btn-danger:hover { background: #FCA5A5; color: #7F1D1D; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); color: white; box-shadow: 0 4px 12px rgba(124, 154, 136, 0.3); }
+        .btn-auth { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
+        .btn-auth:hover { background: #0284C7; color: white; }
 
         /* ВЫПАДАЮЩЕЕ МЕНЮ */
         .dropdown { position: relative; display: inline-block; }
@@ -144,7 +152,7 @@
         .header-title h1:focus { border-bottom-color: var(--primary); }
         .header-title span { font-size: 36px; }
 
-        /* КАРТОЧКИ СТАТИСТИКИ */
+        /* СТАТИСТИКА */
         .dashboard { display: flex; gap: 16px; margin-bottom: 25px; flex-wrap: wrap; }
         .stat-card {
             background: var(--card-bg); padding: 24px 20px; border-radius: 20px; 
@@ -172,7 +180,7 @@
             padding-right: 10px; color: white; font-weight: 700; font-size: 10px;
         }
 
-        /* ПАНЕЛЬ ТЕГОВ */
+        /* ТЕГИ */
         .tags-panel {
             background: var(--card-bg); padding: 14px 20px; border-radius: 16px; 
             box-shadow: var(--shadow); border: 1px solid var(--border-color); 
@@ -185,7 +193,7 @@
         }
         .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
 
-        /* ДАТЫ НЕДЕЛИ */
+        /* ДАТЫ */
         .week-dates-container { text-align: center; margin-top: 10px; margin-bottom: 25px; }
         .week-dates {
             display: inline-block; font-size: 14px; font-weight: 700; color: var(--primary);
@@ -252,7 +260,7 @@
         }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
-        /* ПОЛЕ ЗАМЕТОК */
+        /* ЗАМЕТКИ */
         textarea.notes-input {
             display: block; width: 100%; min-height: 44px; padding: 10px; 
             border: 1px solid var(--border-color); border-radius: 8px;
@@ -264,13 +272,12 @@
             outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); 
         }
 
-        /* СТИЛЬНЫЕ ПОДСКАЗКИ */
+        /* ПОДСКАЗКИ */
         .th-title { 
             position: relative; cursor: help; border-bottom: 1px dashed var(--text-muted); 
             display: inline-block; padding-bottom: 2px; transition: color 0.2s, border-color 0.2s;
         }
         .th-title:hover { color: var(--primary); border-bottom-color: var(--primary); }
-
         .th-title::after {
             content: attr(data-tooltip); position: absolute; top: 150%; left: 50%;
             transform: translateX(-50%) translateY(-10px); background: var(--tooltip-bg);
@@ -281,7 +288,6 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
             pointer-events: none; text-transform: none; letter-spacing: normal;
         }
-
         .th-title::before {
             content: ""; position: absolute; top: 120%; left: 50%;
             transform: translateX(-50%) translateY(-10px); border-width: 6px;
@@ -289,7 +295,6 @@
             opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000; pointer-events: none;
         }
-
         .th-title:hover::after, .th-title:hover::before {
             opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
         }
@@ -336,7 +341,7 @@
         }
         .btn-delete-small:hover { background-color: var(--red-bg); }
 
-        /* СТИЛИ ДЛЯ ПОГОДЫ */
+        /* ПОГОДА */
         .weather-widget {
             text-align: center; margin-bottom: 25px; font-size: 14px; 
             display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -373,7 +378,7 @@
             to { box-shadow: inset 0 0 20px rgba(217, 115, 115, 0.3); background-color: var(--red-bg); color: var(--red); } 
         }
 
-        /* СТИЛИ ДЛЯ ПОЛОЧКИ ТОВАРОВ (МОДАЛКА) */
+        /* СРЕДСТВА */
         .product-form {
             background: var(--bg); padding: 20px; border-radius: 16px; 
             border: 1px solid var(--border-color); margin-bottom: 25px;
@@ -395,7 +400,6 @@
         .product-table tr:last-child td { border-bottom: none; }
         .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
         .product-table a:hover { text-decoration: underline; }
-        .product-price { font-weight: 800; color: var(--text); }
         
         .btn-action {
             border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; 
@@ -443,6 +447,19 @@
         .achievement-card .icon { font-size: 40px; margin-bottom: 10px; }
         .achievement-card .title { font-weight: 800; font-size: 14px; margin-bottom: 5px; }
         .achievement-card .desc { font-size: 12px; color: var(--text-muted); }
+
+        /* АВТОРИЗАЦИЯ */
+        .auth-form { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
+        .auth-form input { padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border-color); font-size: 14px; outline: none; background: var(--bg); color: var(--text); }
+        .auth-form input:focus { border-color: var(--primary); }
+        .auth-switch { text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+        .auth-switch span { color: var(--primary); font-weight: 600; }
+        .auth-error { color: var(--red); font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+        
+        .sync-indicator { font-size: 16px; margin-right: 5px; transition: 0.3s; }
+        .sync-saving { opacity: 0.5; animation: pulse 1s infinite; }
+        .sync-saved { color: var(--green); }
+        .sync-error { color: var(--red); }
 
         /* --- МОБИЛЬНАЯ ВЕРСИЯ --- */
         @media (max-width: 900px) {
@@ -520,6 +537,13 @@
         </div>
 
         <div class="nav-group right">
+            <!-- Блок авторизации -->
+            <div id="auth-status" style="display: flex; align-items: center; gap: 8px; margin-right: 10px;">
+                <span id="sync-icon" class="sync-indicator" style="display: none;" title="Синхронизировано">✅</span>
+                <span id="user-email" style="font-size: 13px; font-weight: 600; color: var(--text-muted); display: none;"></span>
+                <button id="auth-btn" class="btn btn-auth" onclick="openAuthModal()">🔑 Войти</button>
+            </div>
+
             <div class="dropdown">
                 <button class="btn" onclick="toggleDropdown(event)" title="Настройки и данные">
                     ⚙️ Меню ▾
@@ -686,6 +710,30 @@
     </div>
 </div>
 
+<!-- Модальное окно: АВТОРИЗАЦИЯ -->
+<div id="authModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <span class="close-btn" onclick="closeAuthModal()">&times;</span>
+        <h2 style="margin-top:0; text-align:center;" id="authTitle">🔑 Вход в аккаунт</h2>
+        
+        <div class="auth-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="authEmail" placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="authPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter') submitAuth()">
+            </div>
+            <button class="btn btn-primary" id="authSubmitBtn" style="padding: 12px; font-size: 15px;" onclick="submitAuth()">Войти</button>
+            <div class="auth-error" id="authError"></div>
+            <div class="auth-switch" onclick="toggleAuthMode()">
+                <span id="authSwitchText">Нет аккаунта? Зарегистрироваться</span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Модальное окно: МОИ СРЕДСТВА -->
 <div id="productsModal" class="modal">
     <div class="modal-content">
@@ -795,7 +843,172 @@
 <button class="floating-theme-btn" id="themeToggleBtn" onclick="toggleDarkMode()" title="Сменить тему">🌙</button>
 
 <script>
-    // --- УВЕДОМЛЕНИЯ О ДОСТИЖЕНИЯХ ---
+    // ==========================================
+    // FIREBASE INIT & AUTH LOGIC
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBjFpbb5dsgYaYK8OyBqJFITWSwlQLQOMc",
+        authDomain: "my-skin-diary.firebaseapp.com",
+        projectId: "my-skin-diary",
+        storageBucket: "my-skin-diary.firebasestorage.app",
+        messagingSenderId: "1058288662046",
+        appId: "1:1058288662046:web:2b95a7f1c290ad4ece600f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let syncTimeout = null;
+
+    // Обновление интерфейса при входе/выходе
+    auth.onAuthStateChanged(user => {
+        currentUser = user;
+        const authBtn = document.getElementById('auth-btn');
+        const userEmailSpan = document.getElementById('user-email');
+        const syncIcon = document.getElementById('sync-icon');
+
+        if (user) {
+            authBtn.textContent = 'Выйти';
+            authBtn.className = 'btn btn-danger';
+            authBtn.onclick = logout;
+            userEmailSpan.textContent = user.email;
+            userEmailSpan.style.display = 'inline-block';
+            syncIcon.style.display = 'inline-block';
+            
+            // Подтягиваем данные из облака при входе
+            pullFromCloud(user.uid);
+        } else {
+            authBtn.textContent = '🔑 Войти';
+            authBtn.className = 'btn btn-auth';
+            authBtn.onclick = openAuthModal;
+            userEmailSpan.style.display = 'none';
+            syncIcon.style.display = 'none';
+        }
+    });
+
+    // Авторизация
+    let isLoginMode = true;
+    function openAuthModal() { document.getElementById('authModal').style.display = 'block'; }
+    function closeAuthModal() { 
+        document.getElementById('authModal').style.display = 'none'; 
+        document.getElementById('authError').style.display = 'none';
+    }
+
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('authTitle').textContent = isLoginMode ? '🔑 Вход в аккаунт' : '📝 Регистрация';
+        document.getElementById('authSubmitBtn').textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+        document.getElementById('authSwitchText').textContent = isLoginMode ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
+        document.getElementById('authError').style.display = 'none';
+    }
+
+    function submitAuth() {
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        const errorEl = document.getElementById('authError');
+        
+        if (!email || !password) {
+            errorEl.textContent = "Заполните email и пароль!";
+            errorEl.style.display = 'block';
+            return;
+        }
+
+        const btn = document.getElementById('authSubmitBtn');
+        btn.textContent = 'Загрузка...';
+        btn.disabled = true;
+        errorEl.style.display = 'none';
+
+        const action = isLoginMode 
+            ? auth.signInWithEmailAndPassword(email, password)
+            : auth.createUserWithEmailAndPassword(email, password);
+
+        action.then(() => {
+            closeAuthModal();
+            btn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+            btn.disabled = false;
+            document.getElementById('authEmail').value = '';
+            document.getElementById('authPassword').value = '';
+        }).catch(error => {
+            btn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+            btn.disabled = false;
+            errorEl.style.display = 'block';
+            if (error.code === 'auth/email-already-in-use') errorEl.textContent = "Этот email уже зарегистрирован.";
+            else if (error.code === 'auth/wrong-password') errorEl.textContent = "Неверный пароль.";
+            else if (error.code === 'auth/user-not-found') errorEl.textContent = "Пользователь не найден.";
+            else if (error.code === 'auth/weak-password') errorEl.textContent = "Пароль должен быть не менее 6 символов.";
+            else errorEl.textContent = "Ошибка: " + error.message;
+        });
+    }
+
+    function logout() {
+        auth.signOut().then(() => {
+            // Опционально: очистить локальные данные при выходе
+            // localStorage.clear();
+            // location.reload();
+        });
+    }
+
+    // Синхронизация с облаком
+    function queueSync() {
+        if (!currentUser) return; // Если не вошли, ничего не делаем
+        
+        const syncIcon = document.getElementById('sync-icon');
+        syncIcon.textContent = '☁️';
+        syncIcon.className = 'sync-indicator sync-saving';
+
+        clearTimeout(syncTimeout);
+        syncTimeout = setTimeout(() => {
+            const data = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data[key] = localStorage.getItem(key);
+            }
+            
+            db.collection('users').doc(currentUser.uid).set({
+                diaryData: JSON.stringify(data),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                syncIcon.textContent = '✅';
+                syncIcon.className = 'sync-indicator sync-saved';
+                setTimeout(() => { syncIcon.textContent = '✅'; }, 2000);
+            }).catch(err => {
+                console.error("Ошибка синхронизации:", err);
+                syncIcon.textContent = '❌';
+                syncIcon.className = 'sync-indicator sync-error';
+                syncIcon.title = "Ошибка сохранения. Проверьте интернет.";
+            });
+        }, 2000); // Ждем 2 секунды тишины перед отправкой
+    }
+
+    function pullFromCloud(uid) {
+        db.collection('users').doc(uid).get().then(doc => {
+            if (doc.exists && doc.data().diaryData) {
+                // Если в облаке есть данные, загружаем их
+                const cloudData = JSON.parse(doc.data().diaryData);
+                let changed = false;
+                for (let key in cloudData) {
+                    if (localStorage.getItem(key) !== cloudData[key]) {
+                        localStorage.setItem(key, cloudData[key]);
+                        changed = true;
+                    }
+                }
+                // Если данные отличались от локальных, перезагружаем страницу, чтобы применить
+                if (changed) {
+                    location.reload();
+                }
+            } else {
+                // Если облако пустое (новый пользователь), загружаем туда текущие данные
+                queueSync();
+            }
+        }).catch(err => console.error("Ошибка загрузки:", err));
+    }
+
+    // ==========================================
+    // ОСТАЛЬНАЯ ЛОГИКА ПРИЛОЖЕНИЯ
+    // ==========================================
+
     function showAchievementToast(icon, title) {
         const toast = document.createElement('div');
         toast.className = 'achievement-toast';
@@ -808,7 +1021,6 @@
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.1 } });
     }
 
-    // --- ЛОГИКА ДОСТИЖЕНИЙ ---
     const allAchievements = [
         { id: 'first_check', icon: '🌱', title: 'Первые шаги', desc: 'Отметить первую процедуру' },
         { id: 'streak_7', icon: '🔥', title: 'Несгибаемый', desc: '7 идеальных дней подряд' },
@@ -828,6 +1040,7 @@
             const ach = allAchievements.find(a => a.id === id);
             if (ach) showAchievementToast(ach.icon, ach.title);
             if (document.getElementById('achievementsModal').style.display === 'block') renderAchievements();
+            queueSync();
         }
     }
 
@@ -855,13 +1068,11 @@
         });
     }
 
-    // --- АВТО-РАСТЯЖЕНИЕ ПОЛЯ ЗАМЕТОК ---
     function autoResize(textarea) {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
     }
 
-    // --- ВЫПАДАЮЩЕЕ МЕНЮ ---
     function toggleDropdown(event) {
         event.stopPropagation();
         document.getElementById('dataDropdown').classList.toggle('show');
@@ -877,7 +1088,6 @@
         }
     });
 
-    // --- ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ---
     function switchTab(tabName) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -888,7 +1098,6 @@
         if (productsBtn) productsBtn.style.display = (tabName === 'habits') ? 'none' : 'inline-flex';
     }
 
-    // --- ОБЩИЕ ФУНКЦИИ ---
     function updateWeekDates() {
         const today = new Date();
         const dayOfWeek = today.getDay(); 
@@ -905,6 +1114,7 @@
         const titleText = document.getElementById('mainTitle').innerText.trim();
         if (titleText) localStorage.setItem('customHeaderTitle', titleText);
         else { document.getElementById('mainTitle').innerText = 'Мой Дневник Ухода'; localStorage.removeItem('customHeaderTitle'); }
+        queueSync();
     }
 
     function playDing() {
@@ -935,6 +1145,7 @@
         document.getElementById('themeToggleBtn').textContent = isDark ? '☀️' : '🌙';
         if (document.getElementById('content-skin').classList.contains('active')) updateSkinStats();
         else updateHabitsStats();
+        queueSync();
     }
 
     // --- ПОГОДА ---
@@ -980,7 +1191,7 @@
     }
     function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
 
-    // --- ЛОГИКА УХОДА ЗА КОЖЕЙ ---
+    // --- УХОД ---
     const daysOfWeek = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
     const skinColumns = ["spf", "micellar", "cleanser", "efizel", "moisturizer", "bodyGel"];
     const skinColumnNames = { spf: "СПФ", micellar: "1. Мицеллярка", cleanser: "2. Пенка", efizel: "3. Эффезел", moisturizer: "4. Крем (лицо)", bodyGel: "🧴 Гель (тело)" };
@@ -1031,7 +1242,7 @@
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
             
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
-            noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); autoResize(e.target); });
+            noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); autoResize(e.target); queueSync(); });
             
             tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
             setTimeout(() => autoResize(noteInput), 0);
@@ -1050,6 +1261,7 @@
             lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
             localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
             lastFocusedNoteInput.focus(); autoResize(lastFocusedNoteInput);
+            queueSync();
         } else { alert("Сначала кликните в поле 'Заметки'!"); }
     }
 
@@ -1089,6 +1301,7 @@
         });
         document.getElementById('globalStreakValue').textContent = `${globalPerfectDays} 🏆`;
         updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek);
+        queueSync();
     }
 
     function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
@@ -1124,7 +1337,7 @@
         });
     }
 
-    // --- ЛОГИКА ПРИВЫЧЕК ---
+    // --- ПРИВЫЧКИ ---
     const habitColumns = ["english", "reading", "workout", "no_sugar", "morning_routine"];
     const habitNames = { english: "🇬🇧 Английский", reading: "📚 Чтение", workout: "🏋️ Тренировка", no_sugar: "🚫 Без сладкого", morning_routine: "🧴 Утренняя рутина" };
     const defaultHabitSettings = { english: [1, 1, 1, 1, 1, 1, 1], reading: [1, 1, 1, 1, 1, 1, 1], workout: [1, 0, 1, 0, 1, 0, 0], no_sugar: [1, 1, 1, 1, 1, 1, 1], morning_routine: [1, 1, 1, 1, 1, 1, 1] };
@@ -1180,7 +1393,6 @@
             } else { localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); }
         });
 
-        // Расчет Daily Streak
         for (let i = todayIdx; i >= 0; i--) {
             if (localStorage.getItem(`habit_perfect_${i}`) === 'true') currentStreak++;
             else break;
@@ -1196,6 +1408,7 @@
         document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
 
         updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek);
+        queueSync();
     }
 
     function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
@@ -1230,11 +1443,11 @@
         });
     }
 
-    // --- ЛОГИКА ПОЛОЧКИ ТОВАРОВ ---
+    // --- СРЕДСТВА ---
     let products = JSON.parse(localStorage.getItem('userProducts')) || [];
     let editingProductIndex = -1;
 
-    // Миграция старых данных (из ПАО в Срок годности)
+    // Миграция
     let needsMigration = false;
     products.forEach(p => {
         if (p.openDate && p.pao && !p.expDate) {
@@ -1248,7 +1461,7 @@
             needsMigration = true;
         }
     });
-    if (needsMigration) localStorage.setItem('userProducts', JSON.stringify(products));
+    if (needsMigration) { localStorage.setItem('userProducts', JSON.stringify(products)); }
 
     function openProductsModal() {
         document.getElementById('productsModal').style.display = "block";
@@ -1264,11 +1477,10 @@
 
     function calculateExpiration(expMonthStr) {
         if (!expMonthStr) return { status: '', text: '' };
-        let parts = expMonthStr.split('-'); // YYYY-MM
+        let parts = expMonthStr.split('-'); 
         let year = parseInt(parts[0]);
         let month = parseInt(parts[1]);
         
-        // Последний день указанного месяца
         let expDate = new Date(year, month, 0); 
         let today = new Date();
         today.setHours(0,0,0,0);
@@ -1392,19 +1604,15 @@
         if (!name) { alert("Введите название средства!"); return; }
 
         if (editingProductIndex >= 0) {
-            // Режим редактирования
             products[editingProductIndex] = { name, category, price, buyDate, link, expDate };
             localStorage.setItem('userProducts', JSON.stringify(products));
             cancelEditProduct();
             renderProducts();
         } else {
-            // Режим добавления
             products.push({ name, category, price, buyDate, link, expDate });
             localStorage.setItem('userProducts', JSON.stringify(products));
-            
             if (products.length >= 5) unlockAchievement('product_5');
 
-            // Очистка полей
             document.getElementById('prodName').value = '';
             document.getElementById('prodPrice').value = '';
             document.getElementById('prodLink').value = '';
@@ -1412,6 +1620,7 @@
             
             renderProducts();
         }
+        queueSync();
     }
 
     function editProduct(index) {
@@ -1431,8 +1640,6 @@
         btnSubmit.style.background = '#6B9B7A';
         
         document.getElementById('prodCancelBtn').style.display = 'inline-flex';
-        
-        // Прокрутка к форме
         document.getElementById('productsModal').scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1459,6 +1666,7 @@
             if (editingProductIndex === index) cancelEditProduct();
             else if (editingProductIndex > index) editingProductIndex--;
             renderProducts();
+            queueSync();
         }
     }
 
@@ -1486,6 +1694,7 @@
         habitColumns.forEach(col => { for (let i = 0; i < 7; i++) currentHabitSettings[col][i] = document.getElementById(`set-habit-${col}-${i}`).checked ? 1 : 0; });
         localStorage.setItem('userHabitSchedule', JSON.stringify(currentHabitSettings));
         closeSettings(); renderSkinTable(); updateSkinStats(); renderHabitsTable(); updateHabitsStats();
+        queueSync();
     }
     function closeSettings() { document.getElementById('settingsModal').style.display = "none"; }
 
@@ -1511,11 +1720,9 @@
         if(confirm("Сохранить текущую неделю в Архив и начать новую?")) {
             let weekData = { date: new Date().toLocaleDateString('ru-RU'), skinChecks: {}, notes: {}, habitChecks: {}, habitPercent: 0 };
 
-            // Сохраняем уход
             skinColumns.forEach(col => { skinWeekSchedule.forEach((_, day) => { weekData.skinChecks[`check-${day}-${col}`] = document.getElementById(`check-${day}-${col}`).checked; }); });
             skinWeekSchedule.forEach((_, day) => { weekData.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
 
-            // Сохраняем привычки
             let habitTotalC = 0, habitTotalExp = 0;
             habitColumns.forEach((colName) => {
                 daysOfWeek.forEach((_, dayIndex) => {
@@ -1529,12 +1736,10 @@
 
             if(weekData.habitPercent === 100) unlockAchievement('perfect_week');
 
-            // Записываем в единую историю
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
             history.push(weekData); 
             localStorage.setItem('weeklyHistory', JSON.stringify(history));
 
-            // Очищаем уход
             skinColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`check-${dayIndex}-${colName}`); const input = document.getElementById(`check-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
             daysOfWeek.forEach((_, dayIndex) => { 
                 localStorage.removeItem(`note-${dayIndex}`); 
@@ -1543,10 +1748,10 @@
                 noteEl.style.height = '44px';
             });
 
-            // Очищаем привычки
             habitColumns.forEach((colName) => { daysOfWeek.forEach((_, dayIndex) => { localStorage.removeItem(`habit-${dayIndex}-${colName}`); localStorage.removeItem(`habit_perfect_${dayIndex}`); const input = document.getElementById(`habit-${dayIndex}-${colName}`); if(input) input.checked = false; }); });
 
             updateSkinStats(); updateHabitsStats(); alert("Новая неделя начата! Все данные сохранены в Архив.");
+            queueSync();
         }
     }
 
@@ -1625,16 +1830,24 @@
             let history = JSON.parse(localStorage.getItem('weeklyHistory') || '[]'); 
             history.splice(index, 1); localStorage.setItem('weeklyHistory', JSON.stringify(history));
             openHistory(); updateSkinStats(); updateHabitsStats();
+            queueSync();
         }
     }
     function closeHistory() { document.getElementById('historyModal').style.display = "none"; }
-    function clearHistory() { if(confirm("Удалить ВЕСЬ архив?")) { localStorage.removeItem('weeklyHistory'); openHistory(); updateSkinStats(); updateHabitsStats(); } }
+    function clearHistory() { 
+        if(confirm("Удалить ВЕСЬ архив?")) { 
+            localStorage.removeItem('weeklyHistory'); 
+            openHistory(); updateSkinStats(); updateHabitsStats(); 
+            queueSync();
+        } 
+    }
     
     window.onclick = function(event) { 
         if (event.target == document.getElementById('historyModal')) closeHistory(); 
         if (event.target == document.getElementById('settingsModal')) closeSettings(); 
         if (event.target == document.getElementById('productsModal')) closeProductsModal(); 
         if (event.target == document.getElementById('achievementsModal')) closeAchievements();
+        if (event.target == document.getElementById('authModal')) closeAuthModal();
     }
 
     // --- ИНИЦИАЛИЗАЦИЯ ---
