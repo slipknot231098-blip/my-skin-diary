@@ -127,62 +127,26 @@
         /* ВЫПАДАЮЩЕЕ МЕНЮ */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-content {
-            display: none; 
-            position: absolute; 
-            right: 0; 
-            top: calc(100% + 10px); 
-            background-color: var(--card-bg); 
-            min-width: 260px; 
+            display: none; position: absolute; right: 0; top: calc(100% + 10px); 
+            background-color: var(--card-bg); min-width: 260px; 
             box-shadow: 0 10px 30px -5px rgba(0,0,0,0.15), 0 8px 16px -6px rgba(0,0,0,0.1); 
-            border-radius: 16px; 
-            border: 1px solid var(--border-color); 
-            z-index: 1000; 
-            padding: 8px;
+            border-radius: 16px; border: 1px solid var(--border-color); z-index: 1000; padding: 8px;
             transform-origin: top right;
         }
-        .dropdown-content.show { 
-            display: block; 
-            animation: dropIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-        }
-        @keyframes dropIn {
-            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
+        .dropdown-content.show { display: block; animation: dropIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes dropIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         
         .dropdown-item { 
-            padding: 12px 14px; 
-            display: flex; 
-            flex-direction: column; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            transition: background-color 0.2s, transform 0.1s; 
-            border: none; 
-            background: transparent; 
-            width: 100%; 
-            text-align: left; 
-            font-family: inherit;
-            margin-bottom: 2px;
+            padding: 12px 14px; display: flex; flex-direction: column; border-radius: 10px; 
+            cursor: pointer; transition: background-color 0.2s, transform 0.1s; border: none; 
+            background: transparent; width: 100%; text-align: left; font-family: inherit; margin-bottom: 2px;
         }
         .dropdown-item:last-child { margin-bottom: 0; }
         .dropdown-item:active { transform: scale(0.98); }
         .dropdown-item:hover { background-color: var(--hover-bg); }
         
-        .dropdown-title { 
-            font-weight: 700; 
-            font-size: 14px; 
-            color: var(--text); 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            margin-bottom: 4px; 
-        }
-        .dropdown-desc { 
-            font-size: 12px; 
-            color: var(--text-muted); 
-            margin-top: 0; 
-            padding-left: 26px; 
-            line-height: 1.4;
-        }
+        .dropdown-title { font-weight: 700; font-size: 14px; color: var(--text); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .dropdown-desc { font-size: 12px; color: var(--text-muted); margin-top: 0; padding-left: 26px; line-height: 1.4; }
 
         /* ПЛАВАЮЩИЕ КНОПКИ */
         .floating-theme-btn, .floating-achievement-btn {
@@ -193,7 +157,6 @@
         }
         .floating-theme-btn { bottom: 30px; background-color: var(--primary); }
         .floating-theme-btn:hover { transform: scale(1.1); background-color: var(--primary-hover); }
-        
         .floating-achievement-btn { bottom: 100px; background-color: #D4AF37; }
         .floating-achievement-btn:hover { transform: scale(1.1); background-color: #C59B27; }
 
@@ -204,39 +167,38 @@
         }
         .header-title h1 {
             font-size: 32px; font-weight: 800; margin: 0; letter-spacing: -0.5px;
-            color: var(--text);
-            outline: none; border-bottom: 2px dashed transparent; cursor: text; transition: border-color 0.2s;
+            color: var(--text); outline: none; border-bottom: 2px dashed transparent; cursor: text; transition: border-color 0.2s;
         }
-        .header-title h1:hover { border-bottom-color: var(--primary); }
-        .header-title h1:focus { border-bottom-color: var(--primary); }
+        .header-title h1:hover, .header-title h1:focus { border-bottom-color: var(--primary); }
         .header-title span { font-size: 36px; }
 
         /* СТАТИСТИКА */
         .dashboard { display: flex; gap: 16px; margin-bottom: 25px; flex-wrap: wrap; }
         .stat-card {
-            background: var(--card-bg); padding: 24px 20px; border-radius: 20px; 
+            background: var(--card-bg); padding: 20px 20px 15px 20px; border-radius: 20px; 
             box-shadow: var(--shadow); border: 1px solid var(--border-color); 
             flex: 1; min-width: 200px; text-align: center; transition: transform 0.3s;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
         .stat-card:hover { transform: translateY(-4px); }
         .stat-value { font-size: 36px; font-weight: 800; color: var(--primary); margin-top: 8px; letter-spacing: -1px;}
         .stat-value.fire { color: #E29E60; }
         .stat-value.gold { color: #D4AF37; }
 
+        /* СПАРКЛАЙНЫ */
+        .sparkline-container {
+            height: 35px; width: 100%; margin-top: 10px; position: relative;
+        }
+
         /* ПРОГРЕСС-БАР */
         .progress-container {
             background: var(--card-bg); padding: 20px 25px; border-radius: 20px; 
             box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 25px;
         }
-        .progress-bar-bg {
-            width: 100%; height: 12px; background-color: var(--border-color);
-            border-radius: 10px; overflow: hidden; margin-top: 12px;
-        }
+        .progress-bar-bg { width: 100%; height: 12px; background-color: var(--border-color); border-radius: 10px; overflow: hidden; margin-top: 12px; }
         .progress-bar-fill {
-            height: 100%; width: 0%; background: var(--primary);
-            border-radius: 10px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; align-items: center; justify-content: flex-end;
-            padding-right: 10px; color: white; font-weight: 700; font-size: 10px;
+            height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: 700; font-size: 10px;
         }
 
         /* ТЕГИ */
@@ -267,25 +229,15 @@
             box-shadow: var(--shadow); background: var(--card-bg);
             transform: translateZ(0); isolation: isolate; min-height: 100px;
         }
-        
-        table { 
-            width: 100%; border-collapse: separate; border-spacing: 0; 
-            min-width: 950px; table-layout: auto;
-        }
-        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 950px; table-layout: auto; }
         th, td { 
-            padding: 12px 8px; text-align: center; 
-            border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+            padding: 12px 8px; text-align: center; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
             box-sizing: border-box; vertical-align: middle;
         }
-        
         th:last-child, td:last-child { border-right: none; } 
         tr:last-child td { border-bottom: none; } 
+        th { background-color: var(--hover-bg); color: var(--text-muted); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        th { 
-            background-color: var(--hover-bg); color: var(--text-muted); 
-            font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
         th.morning { color: #C28B5E; }
         th.evening { color: #6A8FA6; }
         th.body-gel { color: #A67C8B; }
@@ -294,13 +246,9 @@
 
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
-        
         tr.today-row { background-color: var(--today-bg); }
         tr.today-row:hover { background-color: var(--today-bg); }
-        tr.today-row .day-cell { 
-            font-weight: 800; color: var(--today-text); 
-            box-shadow: inset 4px 0 0 0 var(--primary); 
-        }
+        tr.today-row .day-cell { font-weight: 800; color: var(--today-text); box-shadow: inset 4px 0 0 0 var(--primary); }
 
         /* ЧЕКБОКСЫ */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
@@ -314,8 +262,7 @@
         .checkbox-container input:checked ~ .checkmark { background-color: var(--primary); border-color: var(--primary); }
         .checkmark:after { 
             content: ""; position: absolute; display: none; left: 8px; top: 3px; 
-            width: 5px; height: 11px; border: solid white; border-width: 0 2px 2px 0; 
-            transform: rotate(45deg); 
+            width: 5px; height: 11px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); 
         }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
@@ -327,9 +274,7 @@
             font-size: 13px; line-height: 1.4; transition: 0.2s; resize: none;
             box-sizing: border-box; overflow: hidden; position: relative; z-index: 10; 
         }
-        textarea.notes-input:focus { 
-            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); 
-        }
+        textarea.notes-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
 
         /* ПОДСКАЗКИ */
         .th-title { 
@@ -338,25 +283,19 @@
         }
         .th-title:hover { color: var(--primary); border-bottom-color: var(--primary); }
         .th-title::after {
-            content: attr(data-tooltip); position: absolute; top: 150%; left: 50%;
-            transform: translateX(-50%) translateY(-10px); background: var(--tooltip-bg);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff;
-            padding: 10px 16px; border-radius: 10px; font-size: 12px; font-weight: 500;
-            white-space: nowrap; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255,255,255,0.1); opacity: 0; visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+            content: attr(data-tooltip); position: absolute; top: 150%; left: 50%; transform: translateX(-50%) translateY(-10px); 
+            background: var(--tooltip-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff;
+            padding: 10px 16px; border-radius: 10px; font-size: 12px; font-weight: 500; white-space: nowrap; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid rgba(255,255,255,0.1); 
+            opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
             pointer-events: none; text-transform: none; letter-spacing: normal;
         }
         .th-title::before {
-            content: ""; position: absolute; top: 120%; left: 50%;
-            transform: translateX(-50%) translateY(-10px); border-width: 6px;
-            border-style: solid; border-color: transparent transparent var(--tooltip-bg) transparent;
-            opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000; pointer-events: none;
+            content: ""; position: absolute; top: 120%; left: 50%; transform: translateX(-50%) translateY(-10px); 
+            border-width: 6px; border-style: solid; border-color: transparent transparent var(--tooltip-bg) transparent;
+            opacity: 0; visibility: hidden; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; pointer-events: none;
         }
-        .th-title:hover::after, .th-title:hover::before {
-            opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
-        }
+        .th-title:hover::after, .th-title:hover::before { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
         /* ГРАФИКИ */
         .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px; }
@@ -369,10 +308,7 @@
         .chart-box canvas { width: 100% !important; height: 100% !important; }
 
         /* МОДАЛЬНЫЕ ОКНА */
-        .modal { 
-            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
-            overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(4px);
-        }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(4px); }
         .modal-content { 
             background-color: var(--card-bg); margin: 5% auto; padding: 30px;
             border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -393,42 +329,29 @@
         .history-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .history-card h4 { margin: 0; color: var(--primary); font-size: 16px; }
-        .btn-delete-small { 
-            background-color: transparent; color: var(--red); border: 1px solid transparent;
-            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; 
-            transition: 0.2s; font-weight: 600;
-        }
+        .btn-delete-small { background-color: transparent; color: var(--red); border: 1px solid transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: 0.2s; font-weight: 600; }
         .btn-delete-small:hover { background-color: var(--red-bg); }
 
         /* ПОГОДА */
-        .weather-widget {
-            text-align: center; margin-bottom: 25px; font-size: 14px; 
-            display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap;
-        }
+        .weather-widget { text-align: center; margin-bottom: 25px; font-size: 14px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
         .city-input { 
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
             padding: 10px 16px; font-weight: 600; color: var(--text); outline: none;
-            font-family: inherit; font-size: 14px; text-align: center; width: 150px;
-            transition: 0.2s; box-shadow: var(--shadow); 
+            font-family: inherit; font-size: 14px; text-align: center; width: 150px; transition: 0.2s; box-shadow: var(--shadow); 
         }
         .city-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
         .city-btn { 
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
-            width: 42px; height: 42px; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; transition: 0.2s; color: var(--text); box-shadow: var(--shadow);
+            width: 42px; height: 42px; cursor: pointer; display: flex; align-items: center; justify-content: center; 
+            transition: 0.2s; color: var(--text); box-shadow: var(--shadow);
         }
         .city-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); }
-        .weather-widget span { 
-            background: var(--card-bg); padding: 10px 16px; border-radius: 12px;
-            border: 1px solid var(--border-color); font-weight: 600; box-shadow: var(--shadow);
-        }
+        .weather-widget span { background: var(--card-bg); padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border-color); font-weight: 600; box-shadow: var(--shadow); }
         .weather-widget .uv-high { color: var(--red); border-color: var(--red); background-color: var(--red-bg); }
 
         #uv-alert { 
-            display: none; background: var(--red); color: white; 
-            padding: 16px; border-radius: 16px; text-align: center; font-weight: 600; 
-            font-size: 15px; margin-bottom: 25px; box-shadow: 0 10px 25px -5px rgba(217, 115, 115, 0.5);
-            animation: pulse 2s infinite; 
+            display: none; background: var(--red); color: white; padding: 16px; border-radius: 16px; text-align: center; font-weight: 600; 
+            font-size: 15px; margin-bottom: 25px; box-shadow: 0 10px 25px -5px rgba(217, 115, 115, 0.5); animation: pulse 2s infinite; 
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.01); } 100% { transform: scale(1); } }
         .uv-danger { animation: uv-glow 1.5s infinite alternate; }
@@ -438,18 +361,10 @@
         }
 
         /* СРЕДСТВА */
-        .product-form {
-            background: var(--bg); padding: 20px; border-radius: 16px; 
-            border: 1px solid var(--border-color); margin-bottom: 25px;
-            display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;
-        }
+        .product-form { background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 25px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end; }
         .form-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 150px; }
         .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
-        .form-input {
-            padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 10px;
-            background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 14px;
-            transition: 0.2s; width: 100%; box-sizing: border-box;
-        }
+        .form-input { padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 14px; transition: 0.2s; width: 100%; box-sizing: border-box; }
         .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
         select.form-input { appearance: none; -webkit-appearance: none; cursor: pointer; }
 
@@ -460,31 +375,18 @@
         .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
         .product-table a:hover { text-decoration: underline; }
         
-        .btn-action {
-            border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; 
-            font-weight: bold; transition: 0.2s; font-family: inherit; margin: 0 2px;
-        }
+        .btn-action { border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit; margin: 0 2px; }
         .btn-delete-product { background: var(--red-bg); color: var(--red); }
         .btn-delete-product:hover { background: #FCA5A5; color: #7F1D1D; }
         .btn-edit-product { background: #E0F2FE; color: #0284C7; }
         .btn-edit-product:hover { background: #0284C7; color: white; }
         
-        .category-header {
-            background: var(--primary-light); color: var(--primary); font-weight: 800; 
-            padding: 10px 15px; border-radius: 8px; margin-top: 20px; margin-bottom: 10px;
-            font-size: 14px; display: flex; justify-content: space-between; align-items: center;
-        }
-        
+        .category-header { background: var(--primary-light); color: var(--primary); font-weight: 800; padding: 10px 15px; border-radius: 8px; margin-top: 20px; margin-bottom: 10px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
         .pao-badge { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
         .pao-ok { background: var(--green-bg); color: var(--green); }
         .pao-warn { background: #FEF3C7; color: #D97706; }
         .pao-danger { background: var(--red-bg); color: var(--red); }
-
-        .spend-badge {
-            background: var(--primary); color: white; padding: 10px 15px; 
-            border-radius: 12px; font-weight: 800; font-size: 15px;
-            display: inline-block; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(124,154,136,0.3);
-        }
+        .spend-badge { background: var(--primary); color: white; padding: 10px 15px; border-radius: 12px; font-weight: 800; font-size: 15px; display: inline-block; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(124,154,136,0.3); }
 
         /* ДОСТИЖЕНИЯ */
         .achievement-toast {
@@ -497,10 +399,7 @@
         .achievement-icon { font-size: 32px; }
         
         .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
-        .achievement-card {
-            background: var(--bg); border: 1px solid var(--border-color); border-radius: 16px;
-            padding: 20px; text-align: center; transition: 0.2s; position: relative; overflow: hidden;
-        }
+        .achievement-card { background: var(--bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; text-align: center; transition: 0.2s; position: relative; overflow: hidden; }
         .achievement-card.unlocked { border-color: var(--primary); background: var(--primary-light); }
         .achievement-card.locked { opacity: 0.5; filter: grayscale(1); }
         .achievement-card .icon { font-size: 40px; margin-bottom: 10px; }
@@ -514,7 +413,6 @@
         .auth-switch { text-align: center; margin-top: 15px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
         .auth-switch span { color: var(--primary); font-weight: 600; }
         .auth-error { color: var(--red); font-size: 13px; text-align: center; margin-top: 10px; display: none; }
-        
         .sync-indicator { font-size: 14px; margin-right: 2px; transition: 0.3s; }
         .sync-saving { opacity: 0.5; animation: pulse 1s infinite; }
         .sync-saved { color: var(--green); }
@@ -548,15 +446,8 @@
             .table-wrapper { border: none; box-shadow: none; background: transparent; }
             table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { 
-                border: 1px solid var(--border-color); margin-bottom: 16px; border-radius: 20px; 
-                background: var(--card-bg); box-shadow: var(--shadow); padding: 8px 16px; 
-            }
-            td { 
-                border: none; border-bottom: 1px solid var(--border-color); padding: 14px 0;
-                display: flex; justify-content: space-between; align-items: center; text-align: right; 
-                border-right: none;
-            }
+            tr { border: 1px solid var(--border-color); margin-bottom: 16px; border-radius: 20px; background: var(--card-bg); box-shadow: var(--shadow); padding: 8px 16px; }
+            td { border: none; border-bottom: 1px solid var(--border-color); padding: 14px 0; display: flex; justify-content: space-between; align-items: center; text-align: right; border-right: none; }
             td:last-child { border-bottom: none; }
             td::before { content: attr(data-label); font-weight: 600; text-align: left; flex: 1; padding-right: 15px; font-size: 14px; color: var(--text-muted); }
             td.day-cell { font-size: 20px; color: var(--primary); border-bottom: 2px solid var(--border-color); margin-bottom: 8px; display: block; text-align: left; padding: 10px 0; width: auto; }
@@ -611,18 +502,14 @@
         </div>
 
         <div class="nav-group right">
-            
-            <!-- Блок авторизации -->
             <div id="auth-status" style="display: flex; align-items: center; gap: 8px; margin-right: 5px;">
                 <span id="sync-icon" class="sync-indicator" style="display: none;" title="Синхронизировано">✅</span>
                 
-                <!-- Плашка для авторизованного пользователя -->
                 <div id="user-info" class="auth-info-pill" style="display: none;">
                     <span id="user-email" class="auth-email-text" title="">mail@example.com</span>
                     <button class="btn-logout-icon" onclick="logout()" title="Выйти">🚪</button>
                 </div>
 
-                <!-- Кнопка входа (показывается, если не авторизован) -->
                 <button id="auth-btn" class="btn btn-auth" onclick="openAuthModal()">🔑 Войти</button>
             </div>
 
@@ -671,7 +558,13 @@
         <div class="dashboard">
             <div class="stat-card">
                 <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Выполнение за неделю</div>
-                <div class="stat-value" id="progressValue">0%</div>
+                <div style="display:flex; justify-content:center; align-items:baseline; gap:6px;">
+                    <div class="stat-value" id="progressValue">0%</div>
+                    <div id="progressDelta" style="font-size:14px; font-weight:700; display:none;"></div>
+                </div>
+                <div class="sparkline-container">
+                    <canvas id="skinSparkline"></canvas>
+                </div>
             </div>
             <div class="stat-card">
                 <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Идеальных дней</div>
@@ -724,10 +617,17 @@
             <div class="stat-card">
                 <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Выполнение привычек</div>
                 <div class="stat-value" id="habitsProgressValue">0%</div>
+                <div class="sparkline-container">
+                    <canvas id="habitSparkline"></canvas>
+                </div>
             </div>
             <div class="stat-card" style="background: #FEF3C7; border-color: #FDE68A;">
                 <div style="color: #B45309; font-size: 13px; font-weight: 600; text-transform: uppercase;">Дней подряд (Streak)</div>
                 <div class="stat-value fire" id="habitDailyStreak" style="color: #D97706;">0 🔥</div>
+            </div>
+            <div class="stat-card" style="background: var(--primary-light); border-color: var(--primary);">
+                <div style="color: var(--primary); font-size: 13px; font-weight: 600; text-transform: uppercase;">Личный рекорд</div>
+                <div class="stat-value gold" id="habitBestStreak">0 🏅</div>
             </div>
         </div>
 
@@ -962,7 +862,7 @@
 
     let currentUser = null;
     let syncTimeout = null;
-    let isCloudDataLoaded = false; // Флаг: загружены ли данные из облака
+    let isCloudDataLoaded = false;
 
     auth.onAuthStateChanged(user => {
         currentUser = user;
@@ -984,7 +884,7 @@
             userInfo.style.display = 'none';
             authBtn.style.display = 'inline-flex';
             syncIcon.style.display = 'none';
-            isCloudDataLoaded = false; // Сбрасываем флаг при выходе
+            isCloudDataLoaded = false;
         }
     });
 
@@ -1041,7 +941,6 @@
     function logout() { auth.signOut(); }
 
     function queueSync() {
-        // Если не вошли или облако еще не скачалось - НЕ СОХРАНЯЕМ (чтобы не затереть пустотой)
         if (!currentUser || !isCloudDataLoaded) return;
         
         const syncIcon = document.getElementById('sync-icon');
@@ -1082,17 +981,17 @@
                         changed = true;
                     }
                 }
-                isCloudDataLoaded = true; // Данные получены, теперь можно сохранять!
+                isCloudDataLoaded = true;
                 if (changed) {
                     location.reload();
                 }
             } else {
-                isCloudDataLoaded = true; // Облако пустое, разрешаем залить локальные данные
+                isCloudDataLoaded = true;
                 queueSync();
             }
         }).catch(err => {
             console.error("Ошибка загрузки:", err);
-            isCloudDataLoaded = true; // Снимаем блокировку, чтобы можно было работать оффлайн
+            isCloudDataLoaded = true;
         });
     }
 
@@ -1253,8 +1152,12 @@
     if (typeof currentHabitSettings !== 'object' || currentHabitSettings === null || Array.isArray(currentHabitSettings)) currentHabitSettings = defaultHabitSettings;
 
     let skinWeekSchedule = [];
+    
+    // Переменные для графиков
     let barChartInstance = null, dailyChartInstance = null, lineChartInstance = null;
     let habitBarChartInstance = null, habitDailyChartInstance = null, habitLineChartInstance = null;
+    let skinSparkInstance = null, habitSparkInstance = null;
+
     let lastFocusedNoteInput = null, previousPerfectDays = new Set();
 
     function formatDays(arr) {
@@ -1382,13 +1285,33 @@
         
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
         if(progressPercent > 100) progressPercent = 100; 
+        
+        // ДЕЛЬТА (Сравнение с прошлой неделей)
+        let prevPercent = 0;
+        let history = safeParse('weeklyHistory', []);
+        if (history.length > 0) {
+            let lastWeek = history[history.length - 1];
+            let lastChecks = lastWeek.skinChecks || lastWeek.checks || {};
+            let lastTotalC = 0;
+            for (let key in lastChecks) if(lastChecks[key]) lastTotalC++;
+            // Примерный расчет, так как мы не храним totalExpectedWeek прошлой недели, берем максимум
+            let maxPossible = skinColumns.length * 7;
+            prevPercent = maxPossible > 0 ? Math.round((lastTotalC / maxPossible) * 100) : 0;
+        }
+        
+        let delta = progressPercent - prevPercent;
+        let deltaEl = document.getElementById('progressDelta');
+        deltaEl.style.display = 'inline-block';
+        if (delta > 0) deltaEl.innerHTML = `<span style="color:#6B9B7A;">↗ +${delta}%</span>`;
+        else if (delta < 0) deltaEl.innerHTML = `<span style="color:#D97373;">↘ ${delta}%</span>`;
+        else deltaEl.innerHTML = `<span style="color:var(--text-muted);">— 0%</span>`;
+
         document.getElementById('progressValue').textContent = `${progressPercent}%`; 
         document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
         document.getElementById('progressBarText').textContent = `${progressPercent}%`; 
         document.getElementById('progressBarFill').style.width = `${progressPercent}%`;
         
         let globalPerfectDays = perfectDaysCount;
-        let history = safeParse('weeklyHistory', []);
         if (Array.isArray(history)) {
             history.forEach(week => {
                 let checks = week.skinChecks || week.checks || {};
@@ -1403,8 +1326,42 @@
             });
         }
         document.getElementById('globalStreakValue').textContent = `${globalPerfectDays} 🏆`;
+        
         updateSkinCharts(barData, dailyData, progressPercent, totalExpectedWeek);
+        renderSkinSparkline(dailyData);
         queueSync();
+    }
+
+    // СПАРКЛАЙН ДЛЯ УХОДА
+    function renderSkinSparkline(dailyData) {
+        const ctx = document.getElementById('skinSparkline');
+        if (!ctx) return;
+        if (skinSparkInstance) skinSparkInstance.destroy();
+
+        const isDark = document.body.classList.contains('dark-mode');
+        const accentColor = isDark ? '#81B29A' : '#7C9A88';
+
+        skinSparkInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: daysOfWeek,
+                datasets: [{
+                    data: dailyData,
+                    borderColor: accentColor,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { x: { display: false }, y: { display: false, min: 0 } },
+                animation: { duration: 0 }
+            }
+        });
     }
 
     function updateSkinCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
@@ -1434,8 +1391,6 @@
             type: 'bar', data: { labels: daysOfWeek, datasets: [{ label: 'Сделано', data: dailyData, backgroundColor: accentColor, borderRadius: 6 }] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'АКТИВНОСТЬ ПО ДНЯМ', color: textColor, font: {size: 14, weight: 'bold', family: 'Inter'} }, legend: { display: false } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: textColor }, grid: { color: gridColor } }, x: { ticks: { color: textColor, font: {weight: '600'} }, grid: { display: false } } } }
         });
-        let history = safeParse('weeklyHistory', []); 
-        if (!Array.isArray(history)) history = [];
         let lineLabels = [], lineData = [];
         history.slice(-7).forEach((week) => { 
             let totalC = 0; let checks = week.skinChecks || week.checks || {};
@@ -1512,6 +1467,14 @@
             else break;
         }
 
+        // ЛИЧНЫЙ РЕКОРД
+        let bestStreak = parseInt(localStorage.getItem('bestStreak') || 0);
+        if (currentStreak > bestStreak) {
+            bestStreak = currentStreak;
+            localStorage.setItem('bestStreak', bestStreak);
+        }
+        document.getElementById('habitBestStreak').textContent = `${bestStreak} 🏅`;
+
         if (currentStreak >= 7) unlockAchievement('streak_7');
 
         let progressPercent = totalExpectedWeek > 0 ? Math.round((totalChecked / totalExpectedWeek) * 100) : 0;
@@ -1522,7 +1485,40 @@
         document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
 
         updateHabitCharts(habitBarData, habitDailyData, progressPercent, totalExpectedWeek);
+        renderHabitSparkline(habitDailyData);
         queueSync();
+    }
+
+    // СПАРКЛАЙН ДЛЯ ПРИВЫЧЕК
+    function renderHabitSparkline(dailyData) {
+        const ctx = document.getElementById('habitSparkline');
+        if (!ctx) return;
+        if (habitSparkInstance) habitSparkInstance.destroy();
+
+        const isDark = document.body.classList.contains('dark-mode');
+        const accentColor = isDark ? '#81B29A' : '#7C9A88';
+
+        habitSparkInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: daysOfWeek,
+                datasets: [{
+                    data: dailyData,
+                    borderColor: accentColor,
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { x: { display: false }, y: { display: false, min: 0 } },
+                animation: { duration: 0 }
+            }
+        });
     }
 
     function updateHabitCharts(barData, dailyData, currentProgress, totalExpectedWeek) {
@@ -1983,56 +1979,4 @@
     });
 
     // --- ПОГОДА ---
-    const cityCache = { 'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' }, 'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' }, 'санкт-петербург': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' }, 'спб': { lat: 59.93428, lon: 30.335099, name: 'Санкт-Петербург' } };
-    async function getWeatherData(lat, lon, cityName) {
-        const openMeteoUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&daily=uv_index_max&timezone=auto`;
-        try { const res = await fetch(openMeteoUrl); if (res.ok) return await res.json(); } catch (e) {}
-        try { const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(openMeteoUrl)}`); if (res.ok) return await res.json(); } catch (e) {}
-        try { const res = await fetch(`https://wttr.in/${encodeURIComponent(cityName)}?format=j1`); if (res.ok) {
-            const data = await res.json();
-            return { current: { temperature_2m: parseFloat(data.current_condition[0].temp_C) }, daily: { uv_index_max: [parseFloat(data.weather[0].uvIndex)] } };
-        }} catch (e) {}
-        throw new Error("Все способы не удались");
-    }
-    async function fetchWeatherByCity(city) {
-        const loading = document.getElementById('weather-loading'); const tempEl = document.getElementById('weather-temp'); const uvEl = document.getElementById('weather-uv');
-        if (!city) return; localStorage.setItem('userCity', city);
-        tempEl.style.display = 'none'; uvEl.style.display = 'none'; loading.style.display = 'inline-block'; loading.textContent = '⏳ Загрузка...';
-        const cityLower = city.toLowerCase().trim();
-        try {
-            let lat, lon, actualName;
-            if (cityCache[cityLower]) { lat = cityCache[cityLower].lat; lon = cityCache[cityLower].lon; actualName = cityCache[cityLower].name; document.getElementById('city-input').value = actualName; } 
-            else {
-                const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
-                let geoData; try { const geoRes = await fetch(geoUrl); geoData = await geoRes.json(); } catch(e) { const geoRes = await fetch(`https://corsproxy.io/?${encodeURIComponent(geoUrl)}`); geoData = await geoRes.json(); }
-                if (!geoData.results || geoData.results.length === 0) { loading.textContent = '❌ Город не найден'; return; }
-                lat = geoData.results[0].latitude; lon = geoData.results[0].longitude; actualName = geoData.results[0].name;
-                document.getElementById('city-input').value = actualName; localStorage.setItem('userCity', actualName);
-            }
-            const weatherData = await getWeatherData(lat, lon, actualName);
-            const temp = weatherData.current.temperature_2m; const uv = weatherData.daily.uv_index_max[0];
-            loading.style.display = 'none'; tempEl.style.display = 'inline-block'; uvEl.style.display = 'inline-block'; tempEl.textContent = `🌡️ ${temp}°C`;
-            if (uv >= 3) {
-                uvEl.innerHTML = `☀️ Макс. UV: <b style="color:var(--red);">${uv}</b> (Высокий!)`; uvEl.classList.add('uv-high');
-                const alertBox = document.getElementById('uv-alert'); alertBox.style.display = 'block';
-                alertBox.innerHTML = `⚠️ Внимание! В ${actualName} сегодня днем ожидается высокий UV-индекс (${uv}). Не забудьте нанести СПФ.`;
-                document.getElementById('th-spf-main')?.classList.add('uv-danger'); document.getElementById('th-spf')?.classList.add('uv-danger');
-            } else {
-                uvEl.textContent = `☀️ Макс. UV: ${uv}`; uvEl.classList.remove('uv-high'); document.getElementById('uv-alert').style.display = 'none';
-                document.getElementById('th-spf-main')?.classList.remove('uv-danger'); document.getElementById('th-spf')?.classList.remove('uv-danger');
-            }
-        } catch (e) { loading.textContent = '☁️ Ошибка сети'; }
-    }
-    function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
-    function addTag(text) {
-        if (lastFocusedNoteInput) {
-            const currentVal = lastFocusedNoteInput.value.trim(); 
-            lastFocusedNoteInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
-            localStorage.setItem(lastFocusedNoteInput.id, lastFocusedNoteInput.value); 
-            lastFocusedNoteInput.focus(); autoResize(lastFocusedNoteInput);
-            queueSync();
-        } else { alert("Сначала кликните в поле 'Заметки'!"); }
-    }
-</script>
-</body>
-</html>
+    const cityCache = { 'казань': { lat: 55.796127, lon: 49.106414, name: 'Казань' }, 'москва': { lat: 55.755826, lon: 37.6173, name: 'Москва' }, 'санкт-петер
