@@ -405,12 +405,17 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
             width: max-content;
-            max-width: 300px;
-            pointer-events: none;
+            max-width: 350px; /* Увеличили ширину */
+            max-height: 250px; /* Ограничили высоту */
+            overflow-y: auto; /* Добавили скролл, если текст длинный */
+            pointer-events: auto; /* Разрешаем скроллить */
             text-align: left;
             white-space: normal;
             border: 1px solid rgba(255,255,255,0.1);
         }
+        .tag-tooltip::-webkit-scrollbar { width: 6px; }
+        .tag-tooltip::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        
         .tag-tooltip::after {
             content: "";
             position: absolute;
@@ -421,9 +426,9 @@
             border-style: solid;
             border-color: var(--tooltip-bg) transparent transparent transparent;
         }
-        .tag-tooltip div { margin-bottom: 6px; }
+        .tag-tooltip div { margin-bottom: 8px; }
         .tag-tooltip div:last-child { margin-bottom: 0; }
-        .tag-tooltip b { color: var(--primary-light); }
+        .tag-tooltip b { color: var(--primary-light); display: block; margin-bottom: 4px; }
         
         .tag-stat-pill:hover .tag-tooltip {
             opacity: 1;
@@ -614,7 +619,7 @@
             .floating-theme-btn { bottom: 25px; right: 20px; width: 56px; height: 56px; font-size: 22px; }
             
             /* На мобильных тултип будет появляться по центру экрана сверху, чтобы не уходить за края */
-            .tag-tooltip { left: 0; transform: translateX(0); bottom: 120%; }
+            .tag-tooltip { left: 0; transform: translateX(0); bottom: 120%; max-width: 280px; }
             .tag-tooltip::after { left: 20px; transform: translateX(0); }
             .tag-stat-pill:hover .tag-tooltip { transform: translateX(0) translateY(0); }
         }
@@ -1501,20 +1506,21 @@
 
         for (let i = 0; i < 7; i++) {
             const noteEl = document.getElementById(`note-${i}`);
-            if (noteEl && noteEl.value) {
-                const lines = noteEl.value.split('\n');
-                quickTags.forEach(tag => {
-                    let matchedLines = [];
-                    lines.forEach(line => {
-                        if (line.toLowerCase().includes(tag.toLowerCase())) {
-                            matchedLines.push(line.trim());
-                        }
-                    });
+            if (noteEl && noteEl.value.trim() !== '') {
+                const fullNote = noteEl.value.trim();
+                
+                // Экранируем HTML и заменяем переносы строк на <br>
+                let safeNote = fullNote.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                safeNote = safeNote.replace(/\n/g, '<br>');
 
-                    if (matchedLines.length > 0) {
-                        tagData[tag].count += matchedLines.length;
-                        let uniqueLines = [...new Set(matchedLines)].join('; ');
-                        tagData[tag].details.push(`<div><b>${daysOfWeek[i]}:</b> ${uniqueLines}</div>`);
+                quickTags.forEach(tag => {
+                    let regex = new RegExp(tag, "gi");
+                    let matches = fullNote.match(regex);
+
+                    if (matches && matches.length > 0) {
+                        tagData[tag].count += matches.length;
+                        // Выводим весь текст заметки, если в ней есть этот тег
+                        tagData[tag].details.push(`<div><b>${daysOfWeek[i]}:</b><br>${safeNote}</div>`);
                     }
                 });
             }
@@ -1532,10 +1538,12 @@
                 const pill = document.createElement('div');
                 pill.className = 'tag-stat-pill';
                 
-                // Кастомный тултип
+                // Собираем все детали
+                let detailsHtml = item.details.join('');
+
                 pill.innerHTML = `
                     ${item.tag} <span class="tag-stat-count">${item.count}</span>
-                    <div class="tag-tooltip">${item.details.join('')}</div>
+                    <div class="tag-tooltip">${detailsHtml}</div>
                 `;
                 container.appendChild(pill);
             });
