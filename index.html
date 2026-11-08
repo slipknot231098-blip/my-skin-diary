@@ -269,6 +269,7 @@
         th:last-child, td:last-child { border-right: none; } 
         tr:last-child td { border-bottom: none; } 
         
+        /* Липкие заголовки таблицы */
         th { 
             background-color: var(--card-bg); color: var(--text-muted); font-weight: 700; font-size: 12px; 
             text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10;
@@ -284,6 +285,7 @@
         tbody tr { transition: background-color 0.2s; }
         tbody tr:hover { background-color: var(--hover-bg); }
         
+        /* Зебра для таблицы */
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.015); }
         body.dark-mode tbody tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
         body.dark-mode tbody tr:hover { background-color: var(--hover-bg); }
@@ -367,26 +369,17 @@
         .chart-box.active { display: block; animation: fadeIn 0.3s ease; }
         .chart-box canvas { width: 100% !important; height: 100% !important; }
 
-        /* МИНИ-АНАЛИТИКА ПО ТЕГАМ */
-        .tags-analytics-section {
-            background: var(--card-bg); padding: 20px 24px; border-radius: 24px;
-            box-shadow: var(--shadow); border: 1px solid var(--border-color);
-            margin-top: 30px;
-        }
-        .tags-analytics-title {
-            font-weight: 700; font-size: 15px; color: var(--text); margin-bottom: 16px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .tags-analytics-list {
-            display: flex; gap: 10px; flex-wrap: wrap;
+        /* МИНИ-АНАЛИТИКА ПО ТЕГАМ (внутри вкладки) */
+        .tags-analytics-container {
+            display: flex; gap: 10px; flex-wrap: wrap; padding: 20px 0;
         }
         .tag-stat-pill {
-            background: var(--bg); border: 1px solid var(--border-color); padding: 8px 16px;
-            border-radius: 12px; font-size: 14px; font-weight: 600; color: var(--text);
-            display: flex; align-items: center; gap: 8px;
+            background: var(--bg); border: 1px solid var(--border-color); padding: 10px 18px;
+            border-radius: 14px; font-size: 15px; font-weight: 600; color: var(--text);
+            display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
         .tag-stat-count {
-            background: var(--primary); color: white; border-radius: 6px; padding: 2px 8px; font-size: 12px;
+            background: var(--primary); color: white; border-radius: 8px; padding: 2px 10px; font-size: 13px;
         }
 
         /* МОДАЛЬНЫЕ ОКНА */
@@ -534,7 +527,6 @@
             .tab-btn { font-size: 13px; padding: 12px 5px; }
             .header-title h1 { font-size: 28px; }
 
-            /* Скрываем email на мобильных, оставляем только иконку выхода */
             .auth-email-text { display: none; }
             .auth-info-pill { padding: 4px; border: none; background: transparent; }
             .btn-logout-icon { font-size: 20px; padding: 10px; background: var(--red-bg); border-radius: 50%; }
@@ -575,35 +567,57 @@
 
         /* --- СТИЛИ ДЛЯ ПЕЧАТИ (ЭКСПОРТ В PDF) --- */
         @media print {
-            body { background: white !important; color: black !important; padding: 0; margin: 0; }
-            .container { max-width: 100%; margin: 0; padding: 20px; }
-            .tabs, .topbar, .tags-panel, .floating-theme-btn, .floating-achievement-btn, .dropdown, .chart-tabs, .analytics-section, .tags-analytics-section { display: none !important; }
-            .header-title { margin-bottom: 20px; text-align: center; }
+            body { background: #fff !important; color: #000 !important; padding: 0 !important; margin: 0 !important; }
+            .container { max-width: 100% !important; margin: 0 !important; padding: 20px !important; }
+            
+            /* Скрываем всё лишнее */
+            .tabs, .topbar, .weather-widget, .tags-panel, .analytics-section, .floating-theme-btn, .floating-achievement-btn, .dropdown, .tab-btn, .chart-tabs { display: none !important; }
+            
+            .header-title { text-align: center; margin-bottom: 20px; page-break-after: avoid; }
             .header-title span { display: none; }
-            .header-title h1 { border: none !important; font-size: 24px; }
-            .dashboard { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
-            .stat-card { box-shadow: none !important; border: 1px solid #ccc !important; background: #f9f9f9 !important; break-inside: avoid; padding: 15px; }
-            .stat-value { font-size: 28px !important; color: #000 !important; }
-            .progress-container { box-shadow: none !important; border: 1px solid #ccc !important; padding: 15px; margin-bottom: 20px; }
+            .header-title h1 { border: none !important; font-size: 24px; margin: 0; }
+            
+            .dashboard { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; page-break-inside: avoid; }
+            .stat-card { box-shadow: none !important; border: 1px solid #ccc !important; background: #fff !important; padding: 10px !important; }
+            .stat-value { font-size: 24px !important; color: #000 !important; }
+            
+            .progress-container { box-shadow: none !important; border: 1px solid #ccc !important; background: #fff !important; padding: 10px !important; margin-bottom: 20px; page-break-inside: avoid; }
+            .progress-bar-bg { border: 1px solid #ccc; }
             .progress-bar-fill { background: #555 !important; }
-            .week-dates-container { margin-bottom: 10px; }
-            .week-dates { background: transparent !important; border: none !important; box-shadow: none !important; font-size: 16px; color: black !important; }
-            .table-wrapper { border: 1px solid #ccc !important; box-shadow: none !important; max-height: none !important; overflow: visible !important; }
-            table { border-collapse: collapse !important; min-width: 100% !important; }
-            th, td { border: 1px solid #ccc !important; padding: 8px !important; color: black !important; font-size: 12px; }
-            th { background: #eee !important; color: black !important; }
-            .checkbox-container input[type="checkbox"] { display: none; }
-            .checkmark { 
-                background: transparent !important; border: 1px solid #ccc !important; transform: none !important; box-shadow: none !important;
-            }
-            .checkbox-container input:checked ~ .checkmark { background: transparent !important; }
+            
+            .week-dates-container { margin-bottom: 10px; page-break-after: avoid; }
+            .week-dates { background: transparent !important; border: none !important; box-shadow: none !important; font-size: 16px; color: black !important; padding: 0; }
+            
+            .table-wrapper { border: 1px solid #ccc !important; box-shadow: none !important; max-height: none !important; overflow: visible !important; page-break-inside: auto; }
+            table { border-collapse: collapse !important; min-width: 100% !important; width: 100% !important; display: table !important; table-layout: auto !important; }
+            thead { display: table-header-group !important; }
+            tbody { display: table-row-group !important; }
+            tr { display: table-row !important; page-break-inside: avoid; background: #fff !important; border: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
+            th, td { display: table-cell !important; border: 1px solid #ccc !important; padding: 8px !important; color: black !important; font-size: 12px; text-align: center !important; background: #fff !important; }
+            th { background: #f5f5f5 !important; font-weight: bold !important; color: black !important; position: static !important; }
+            th::before, td::before { display: none !important; } /* Удаляем мобильные подписи */
+            
+            /* Красиво отображаем галочки */
+            .checkbox-container { display: inline-block !important; width: 16px !important; height: 16px !important; border: 1px solid #666 !important; border-radius: 4px !important; }
+            .checkbox-container input { display: none !important; }
+            .checkmark { border: none !important; background: transparent !important; position: static !important; width: 100% !important; height: 100% !important; }
             .checkbox-container input:checked ~ .checkmark:after { 
-                border-color: #000 !important; transform: rotate(45deg) scale(1) !important; 
+                content: "✔" !important; 
+                border: none !important; 
+                color: #000 !important; 
+                font-size: 14px !important; 
+                position: static !important; 
+                display: block !important;
+                transform: none !important;
+                line-height: 16px;
             }
-            textarea.notes-input { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; overflow: visible !important; font-size: 12px; color: black !important; }
-            .tab-content { display: none !important; }
-            .tab-content.active { display: block !important; }
-            /* Скрываем вкладку привычек при печати ухода (или печатаем обе? Оставим только активную) */
+            
+            /* Текст заметок */
+            textarea.notes-input { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; overflow: visible !important; font-size: 12px !important; color: black !important; box-shadow: none !important; resize: none !important; }
+            
+            /* Печатаем ОБЕ вкладки */
+            .tab-content { display: block !important; page-break-after: always; }
+            .tab-content:last-child { page-break-after: auto; }
         }
     </style>
 </head>
@@ -741,20 +755,13 @@
             </table>
         </div>
 
-        <!-- НОВЫЙ БЛОК: МИНИ-АНАЛИТИКА ПО ТЕГАМ -->
-        <div class="tags-analytics-section" id="tags-analytics-container">
-            <div class="tags-analytics-title">🏷️ Частые темы (за неделю)</div>
-            <div class="tags-analytics-list" id="tags-analytics-list">
-                <!-- Сюда будут рендериться пилюли с тегами -->
-            </div>
-        </div>
-
         <!-- НОВЫЙ БЛОК АНАЛИТИКИ (С ВКЛАДКАМИ) -->
         <div class="analytics-section">
             <div class="chart-tabs">
                 <button class="chart-tab-btn active" id="btn-chart-skin-fact" onclick="switchChartTab('skin', 'fact')">📊 Факт</button>
                 <button class="chart-tab-btn" id="btn-chart-skin-days" onclick="switchChartTab('skin', 'days')">📅 По дням</button>
                 <button class="chart-tab-btn" id="btn-chart-skin-trends" onclick="switchChartTab('skin', 'trends')">📈 Динамика</button>
+                <button class="chart-tab-btn" id="btn-chart-skin-tags" onclick="switchChartTab('skin', 'tags')">🏷️ Теги</button>
             </div>
             
             <div class="chart-box active" id="chart-skin-fact">
@@ -765,6 +772,11 @@
             </div>
             <div class="chart-box" id="chart-skin-trends">
                 <canvas id="lineChart"></canvas>
+            </div>
+            <div class="chart-box" id="chart-skin-tags">
+                <div class="tags-analytics-container" id="tags-analytics-list">
+                    <!-- Сюда будут рендериться пилюли с тегами -->
+                </div>
             </div>
         </div>
     </div>
@@ -1266,6 +1278,11 @@
         document.getElementById(`chart-${type}-days`).classList.remove('active');
         document.getElementById(`chart-${type}-trends`).classList.remove('active');
 
+        if (type === 'skin' && document.getElementById(`btn-chart-${type}-tags`)) {
+            document.getElementById(`btn-chart-${type}-tags`).classList.remove('active');
+            document.getElementById(`chart-${type}-tags`).classList.remove('active');
+        }
+
         document.getElementById(`btn-chart-${type}-${chart}`).classList.add('active');
         document.getElementById(`chart-${type}-${chart}`).classList.add('active');
 
@@ -1336,7 +1353,6 @@
     // ==========================================
     function exportToPDF() {
         closeDropdownAndOpen(() => {});
-        // Небольшая задержка, чтобы меню закрылось перед печатью
         setTimeout(() => {
             window.print();
         }, 300);
@@ -1453,7 +1469,7 @@
         tagCounts.sort((a, b) => b.count - a.count);
 
         if (tagCounts.length === 0) {
-            container.innerHTML = '<span style="color: var(--text-muted); font-size: 13px;">На этой неделе теги в заметках не использовались.</span>';
+            container.innerHTML = '<span style="color: var(--text-muted); font-size: 15px; padding: 20px;">На этой неделе теги в заметках не использовались.</span>';
         } else {
             tagCounts.forEach(item => {
                 const pill = document.createElement('div');
@@ -1759,10 +1775,7 @@
         if (barChartInstance) barChartInstance.destroy();
         barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar', 
-            data: { 
-                labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), 
-                datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] 
-            },
+            data: { labels: skinColumns.map((col, i) => `${col.name} (${goals[i]})`), datasets: [{ label: 'Выполнено', data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
             options: { 
                 indexAxis: 'y', responsive: true, maintainAspectRatio: false, 
                 plugins: { 
