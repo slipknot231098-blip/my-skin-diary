@@ -117,15 +117,18 @@
         .dropdown-title { font-weight: 700; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 6px;}
         .dropdown-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-        /* ПЛАВАЮЩАЯ КНОПКА ТЕМЫ */
-        .floating-theme-btn {
-            position: fixed; bottom: 30px; right: 30px; width: 56px; height: 56px;
-            border-radius: 50%; background-color: var(--primary); color: white;
-            display: flex; justify-content: center; align-items: center;
+        /* ПЛАВАЮЩИЕ КНОПКИ */
+        .floating-theme-btn, .floating-achievement-btn {
+            position: fixed; right: 30px; width: 56px; height: 56px;
+            border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center;
             font-size: 24px; border: none; cursor: pointer; z-index: 9999;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;
         }
+        .floating-theme-btn { bottom: 30px; background-color: var(--primary); }
         .floating-theme-btn:hover { transform: scale(1.1); background-color: var(--primary-hover); }
+        
+        .floating-achievement-btn { bottom: 100px; background-color: #D4AF37; }
+        .floating-achievement-btn:hover { transform: scale(1.1); background-color: #C59B27; }
 
         /* ЗАГОЛОВОК */
         .header-title {
@@ -393,11 +396,15 @@
         .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
         .product-table a:hover { text-decoration: underline; }
         .product-price { font-weight: 800; color: var(--text); }
-        .btn-delete-product {
-            background: var(--red-bg); color: var(--red); border: none; padding: 6px 12px;
-            border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit;
+        
+        .btn-action {
+            border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; 
+            font-weight: bold; transition: 0.2s; font-family: inherit; margin: 0 2px;
         }
+        .btn-delete-product { background: var(--red-bg); color: var(--red); }
         .btn-delete-product:hover { background: #FCA5A5; color: #7F1D1D; }
+        .btn-edit-product { background: var(--primary-light); color: var(--primary); }
+        .btn-edit-product:hover { background: var(--primary); color: white; }
         
         .category-header {
             background: var(--primary-light); color: var(--primary); font-weight: 800; 
@@ -480,6 +487,9 @@
             .product-table td { display: flex; justify-content: space-between; border: none; border-bottom: 1px solid var(--border-color); }
             .product-table td:last-child { border-bottom: none; }
             .product-table td::before { content: attr(data-label); font-weight: bold; color: var(--text-muted); margin-right: 10px; }
+            
+            .floating-achievement-btn { bottom: 90px; right: 20px; width: 50px; height: 50px; font-size: 20px; }
+            .floating-theme-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 20px; }
         }
     </style>
 </head>
@@ -515,10 +525,6 @@
                     ⚙️ Меню ▾
                 </button>
                 <div class="dropdown-content" id="dataDropdown">
-                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openAchievements)" title="Посмотреть достижения">
-                        <span class="dropdown-title">🏆 Достижения</span>
-                        <span class="dropdown-desc">Ваши награды и успехи</span>
-                    </button>
                     <button class="dropdown-item" onclick="closeDropdownAndOpen(openSettings)" title="Настройки расписания">
                         <span class="dropdown-title">⚙️ Настройки</span>
                         <span class="dropdown-desc">Расписание процедур и привычек</span>
@@ -634,7 +640,7 @@
                 <div style="color: var(--text-muted); font-size: 13px; font-weight: 600; text-transform: uppercase;">Выполнение привычек</div>
                 <div class="stat-value" id="habitsProgressValue">0%</div>
             </div>
-            <div class="stat-card" style="background: #FEF3C7; border-color: #FDE68A; dark-mode: background: #4A3A1A;">
+            <div class="stat-card" style="background: #FEF3C7; border-color: #FDE68A;">
                 <div style="color: #B45309; font-size: 13px; font-weight: 600; text-transform: uppercase;">Дней подряд (Streak)</div>
                 <div class="stat-value fire" id="habitDailyStreak" style="color: #D97706;">0 🔥</div>
             </div>
@@ -727,7 +733,8 @@
                 <label>Срок (ПАО, мес)</label>
                 <input type="number" id="prodPao" class="form-input" placeholder="6 или 12" title="Сколько месяцев можно использовать после вскрытия">
             </div>
-            <button class="btn btn-primary" style="height: 42px; flex: 1; justify-content: center;" onclick="addProduct()">➕ Добавить</button>
+            <button id="prodSubmitBtn" class="btn btn-primary" style="height: 42px; flex: 1; justify-content: center;" onclick="addProduct()">➕ Добавить</button>
+            <button id="prodCancelBtn" class="btn btn-danger" style="height: 42px; display: none;" onclick="cancelEditProduct()">Отмена</button>
         </div>
 
         <div class="table-wrapper" style="background: transparent; border: none; box-shadow: none;">
@@ -787,7 +794,8 @@
     </div>
 </div>
 
-<!-- ПЛАВАЮЩАЯ КНОПКА ТЕМЫ -->
+<!-- ПЛАВАЮЩИЕ КНОПКИ -->
+<button class="floating-achievement-btn" onclick="openAchievements()" title="Мои достижения">🏆</button>
 <button class="floating-theme-btn" id="themeToggleBtn" onclick="toggleDarkMode()" title="Сменить тему">🌙</button>
 
 <script>
@@ -1228,16 +1236,19 @@
 
     // --- ЛОГИКА ПОЛОЧКИ ТОВАРОВ ---
     let products = JSON.parse(localStorage.getItem('userProducts')) || [];
+    let editingProductIndex = -1;
 
     function openProductsModal() {
         document.getElementById('productsModal').style.display = "block";
-        // Установка текущей даты по умолчанию
         if(!document.getElementById('prodBuyDate').value) {
             document.getElementById('prodBuyDate').valueAsDate = new Date();
         }
         renderProducts();
     }
-    function closeProductsModal() { document.getElementById('productsModal').style.display = "none"; }
+    function closeProductsModal() { 
+        document.getElementById('productsModal').style.display = "none"; 
+        cancelEditProduct();
+    }
 
     function calculatePAO(openDate, paoMonths) {
         if (!openDate || !paoMonths) return { status: '', text: '' };
@@ -1256,13 +1267,11 @@
         const container = document.getElementById('productsContainer');
         container.innerHTML = '';
         
-        // Считаем расходы за месяц
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         let monthlySpend = 0;
-
-        // Группируем по категориям
         let grouped = {};
+
         products.forEach((p, index) => {
             if (p.buyDate) {
                 let d = new Date(p.buyDate);
@@ -1290,7 +1299,7 @@
 
             let table = document.createElement('table');
             table.className = 'product-table';
-            table.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>ПАО</th><th>Ссылка</th><th></th></tr></thead>`;
+            table.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>ПАО</th><th>Ссылка</th><th style="text-align:center;">Действия</th></tr></thead>`;
             let tbody = document.createElement('tbody');
 
             grouped[cat].forEach(product => {
@@ -1317,17 +1326,28 @@
                 } else { tdLink.textContent = '—'; }
 
                 let tdAction = document.createElement('td');
+                tdAction.style.textAlign = 'center';
+                
+                let btnEdit = document.createElement('button');
+                btnEdit.className = 'btn-action btn-edit-product';
+                btnEdit.textContent = '✏️';
+                btnEdit.title = 'Редактировать';
+                btnEdit.onclick = () => editProduct(product.originalIndex);
+                
                 let btnDel = document.createElement('button');
-                btnDel.className = 'btn-delete-product';
+                btnDel.className = 'btn-action btn-delete-product';
                 btnDel.textContent = '✕';
+                btnDel.title = 'Удалить';
                 btnDel.onclick = () => deleteProduct(product.originalIndex);
+                
+                tdAction.appendChild(btnEdit);
                 tdAction.appendChild(btnDel);
 
                 tdName.setAttribute('data-label', 'Средство');
                 tdPrice.setAttribute('data-label', 'Цена');
                 tdPao.setAttribute('data-label', 'ПАО');
                 tdLink.setAttribute('data-label', 'Ссылка');
-                tdAction.setAttribute('data-label', 'Удалить');
+                tdAction.setAttribute('data-label', 'Действия');
 
                 tr.appendChild(tdName); tr.appendChild(tdPrice); tr.appendChild(tdPao); tr.appendChild(tdLink); tr.appendChild(tdAction);
                 tbody.appendChild(tr);
@@ -1353,25 +1373,76 @@
         
         if (!name) { alert("Введите название средства!"); return; }
 
-        products.push({ name, category, price, buyDate, link, openDate, pao });
-        localStorage.setItem('userProducts', JSON.stringify(products));
-        
-        if (products.length >= 5) unlockAchievement('product_5');
+        if (editingProductIndex >= 0) {
+            // Режим редактирования
+            products[editingProductIndex] = { name, category, price, buyDate, link, openDate, pao };
+            localStorage.setItem('userProducts', JSON.stringify(products));
+            cancelEditProduct();
+            renderProducts();
+        } else {
+            // Режим добавления
+            products.push({ name, category, price, buyDate, link, openDate, pao });
+            localStorage.setItem('userProducts', JSON.stringify(products));
+            
+            if (products.length >= 5) unlockAchievement('product_5');
 
-        // Очистка полей
+            // Очистка полей
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodLink').value = '';
+            document.getElementById('prodOpenDate').value = '';
+            document.getElementById('prodPao').value = '';
+            
+            renderProducts();
+        }
+    }
+
+    function editProduct(index) {
+        let p = products[index];
+        document.getElementById('prodName').value = p.name;
+        document.getElementById('prodCategory').value = p.category || 'Другое';
+        document.getElementById('prodPrice').value = p.price || '';
+        document.getElementById('prodBuyDate').value = p.buyDate || '';
+        document.getElementById('prodLink').value = p.link || '';
+        document.getElementById('prodOpenDate').value = p.openDate || '';
+        document.getElementById('prodPao').value = p.pao || '';
+        
+        editingProductIndex = index;
+        
+        let btnSubmit = document.getElementById('prodSubmitBtn');
+        btnSubmit.textContent = '💾 Сохранить';
+        btnSubmit.classList.remove('btn-primary');
+        btnSubmit.style.background = '#6B9B7A';
+        
+        document.getElementById('prodCancelBtn').style.display = 'inline-flex';
+        
+        // Прокрутка к форме
+        document.querySelector('.product-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelEditProduct() {
+        editingProductIndex = -1;
         document.getElementById('prodName').value = '';
         document.getElementById('prodPrice').value = '';
         document.getElementById('prodLink').value = '';
         document.getElementById('prodOpenDate').value = '';
         document.getElementById('prodPao').value = '';
+        document.getElementById('prodBuyDate').valueAsDate = new Date();
         
-        renderProducts();
+        let btnSubmit = document.getElementById('prodSubmitBtn');
+        btnSubmit.textContent = '➕ Добавить';
+        btnSubmit.classList.add('btn-primary');
+        btnSubmit.style.background = '';
+        
+        document.getElementById('prodCancelBtn').style.display = 'none';
     }
 
     function deleteProduct(index) {
         if (confirm("Удалить это средство из списка?")) {
             products.splice(index, 1);
             localStorage.setItem('userProducts', JSON.stringify(products));
+            if (editingProductIndex === index) cancelEditProduct();
+            else if (editingProductIndex > index) editingProductIndex--;
             renderProducts();
         }
     }
