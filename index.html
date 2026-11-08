@@ -263,8 +263,9 @@
         .btn-del-manage { background: var(--red-bg); color: var(--red); border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         .add-form-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; align-items: flex-end; }
 
-        .streak-cell { text-align: center; vertical-align: middle; }
-        .streak-col { min-width: 80px; }
+        /* СТИЛИ ДЛЯ КОЛОНКИ СТРИК (ИСПРАВЛЕНО) */
+        .streak-cell { text-align: center; vertical-align: middle; min-width: 85px; white-space: nowrap; }
+        .streak-col { min-width: 85px; }
 
         @media (max-width: 900px) {
             body { padding: 15px 10px; }
@@ -875,14 +876,14 @@
         const hour = new Date().getHours();
         let msg = "", icon = "💡";
 
-        if (expected === 0) { msg = "Нет привычек на сегодня. Отдыхайте! 😊"; icon = "🛋️"; }
-        else if (checked >= expected) { msg = "Все привычки выполнены! 🎉"; icon = "🏆"; }
+        if (expected === 0) { msg = "На сегодня нет запланированных привычек. Отдыхайте! 😊"; icon = "🛋️"; }
+        else if (checked >= expected) { msg = "Все привычки на сегодня выполнены! Так держать! 🎉"; icon = "🏆"; }
         else {
             const remaining = expected - checked;
-            if (hour >= 6 && hour < 12) { icon = "🌅"; msg = `Доброе утро! Осталось: <b>${remaining}</b>.`; }
-            else if (hour >= 12 && hour < 17) { icon = "☀️"; msg = `Осталось: <b>${remaining}</b>.`; }
-            else if (hour >= 17 && hour < 23) { icon = "🌙"; msg = `Вечер. Осталось: <b>${remaining}</b>!`; }
-            else { icon = "😴"; msg = "Поздно. Перенесите на завтра."; }
+            if (hour >= 6 && hour < 12) { icon = "🌅"; msg = `Доброе утро! По плану осталось выполнить привычек: <b>${remaining}</b>.`; }
+            else if (hour >= 12 && hour < 17) { icon = "☀️"; msg = `День в разгаре. Осталось привычек: <b>${remaining}</b>.`; }
+            else if (hour >= 17 && hour < 23) { icon = "🌙"; msg = `Вечер. По плану осталось выполнить привычек: <b>${remaining}</b>!`; }
+            else { icon = "😴"; msg = "Уже поздно. Если что-то не успели — перенесите на завтра."; }
         }
         recText.innerHTML = msg;
         if(recIcon) recIcon.textContent = icon;
@@ -946,7 +947,7 @@
             if (mCols.length > 0) html += `<th class="morning" colspan="${mCols.length}">УТРО</th>`;
             if (eCols.length > 0) html += `<th class="evening" colspan="${eCols.length}">ВЕЧЕР</th>`;
             if (bCols.length > 0) html += `<th class="body-gel" colspan="${bCols.length}">ТЕЛО</th>`;
-            html += `<th class="fire" rowspan="2">Стрик</th><th rowspan="2">Заметки</th></tr><tr>`;
+            html += `<th class="fire streak-col" rowspan="2">Стрик</th><th rowspan="2">Заметки</th></tr><tr>`;
             
             [...mCols, ...eCols, ...bCols].forEach(col => {
                 let cls = col.type === 'morning' ? 'morning' : (col.type === 'evening' ? 'evening' : 'body-gel');
@@ -1113,7 +1114,8 @@
                     const isPerfect = (dayChecked >= dayExpected);
                     if (isPerfect) {
                         runningStreak++;
-                        streakCell.innerHTML = `<span style="color: #E29E60; font-weight: 800; font-size: 15px; background: var(--bg); padding: 4px 8px; border-radius: 8px; display: inline-block; min-width: 40px;">🔥 ${runningStreak}</span>`;
+                        // Выводим красивую плашку, теперь она не будет сплющиваться благодаря CSS
+                        streakCell.innerHTML = `<span style="color: #E29E60; font-weight: 800; font-size: 15px; background: var(--bg); padding: 4px 8px; border-radius: 8px; display: inline-block;">🔥 ${runningStreak}</span>`;
                         perfectDaysCount++;
                         if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
                         previousPerfectDays.add(dayIndex);
