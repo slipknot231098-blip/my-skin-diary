@@ -132,7 +132,7 @@
         .header-title { text-align: center; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 12px; }
         .header-title h1 { font-size: 36px; font-weight: 800; margin: 0; letter-spacing: -1px; color: var(--text); outline: none; border-bottom: 2px dashed transparent; cursor: text; }
         .header-title h1:hover { border-bottom-color: var(--primary); }
-        
+
         .dashboard { display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
         .stat-card { background: var(--card-bg); padding: 24px 20px 20px 20px; border-radius: 24px; box-shadow: var(--shadow); border: 1px solid var(--border-color); flex: 1; min-width: 180px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
         .stat-card:hover { transform: translateY(-5px); }
@@ -211,7 +211,7 @@
 
         .th-title { position: relative; cursor: help; border-bottom: 1px dashed var(--text-muted); display: inline-block; padding-bottom: 2px; }
         .th-title:hover { color: var(--primary); border-bottom-color: var(--primary); }
-        .th-title::after { content: attr(data-tooltip); position: absolute; top: 150%; left: 50%; transform: translateX(-50%); background: var(--tooltip-bg); color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 12px; white-space: nowrap; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 1000; pointer-events: none; text-transform: none; }
+        .th-title::after { content: attr(data-tooltip); position: absolute; top: 150%; left: 50%; transform: translateX(-50%); background: var(--tooltip-bg); color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 12px; white-space: pre-wrap; text-align: center; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 1000; pointer-events: none; text-transform: none; line-height: 1.4; }
         .th-title:hover::after { opacity: 1; visibility: visible; }
 
         /* --- Таймер --- */
@@ -260,64 +260,15 @@
         .tag-stat-pill:hover .tag-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
         /* --- Еженедельный отчет --- */
-        .report-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: var(--shadow);
-        }
-        .report-score {
-            font-size: 64px;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 10px;
-            line-height: 1;
-            text-shadow: 0 4px 10px rgba(124,154,136,0.2);
-        }
-        .report-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 5px;
-        }
-        .report-subtitle {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-        }
-        .report-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-        .report-item {
-            background: var(--bg);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-        }
-        .report-item-icon {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .report-item-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-        .report-item-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-            line-height: 1.4;
-        }
+        .report-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px; padding: 30px; text-align: center; box-shadow: var(--shadow); }
+        .report-score { font-size: 64px; font-weight: 800; color: var(--primary); margin-bottom: 10px; line-height: 1; text-shadow: 0 4px 10px rgba(124,154,136,0.2); }
+        .report-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 5px; }
+        .report-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 30px; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; text-align: left; }
+        .report-item { background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); }
+        .report-item-icon { font-size: 24px; margin-bottom: 10px; }
+        .report-item-title { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .report-item-value { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.4; }
         .report-item-value b { color: var(--primary); }
 
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(8px); }
@@ -677,7 +628,7 @@
                 // Всплывашка
                 const toast = document.createElement('div');
                 toast.className = 'achievement-toast';
-                toast.innerHTML = `<div class="achievement-icon">⏰</div><div><div style="font-weight:800; font-size:18px;">Время вышло!</div><div style="font-size:15px; color: #A0AEC0;">Прошло больше часа. Пора наносить крем!</div></div>`;
+                toast.innerHTML = `<div class="achievement-icon">⏰</div><div><div style="font-weight:800; font-size:18px;">Время вышло!</div><div style="font-size:15px; color: #A0AEC0;">Прошло больше часа. Кожа высохла, можно продолжать уход!</div></div>`;
                 document.body.appendChild(toast);
                 setTimeout(() => toast.classList.add('show'), 100);
                 setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 500); }, 6000);
@@ -1234,15 +1185,18 @@
             [...mCols, ...eCols, ...bCols].forEach(col => {
                 let cls = col.type === 'morning' ? 'morning' : (col.type === 'evening' ? 'evening' : 'body-gel');
                 let name = col.name;
-                if (currentSkinSettings[col.id]) name += ` (${formatDays(currentSkinSettings[col.id])})`;
+                
+                // Дни недели теперь только во всплывающей подсказке!
+                let tooltipText = col.tooltip || '';
+                if (currentSkinSettings[col.id]) tooltipText += `\nДни: ${formatDays(currentSkinSettings[col.id])}`;
                 
                 let timerBtn = '';
-                // Добавляем таймер к Эффезелу
-                if (col.id === 'efizel') {
-                    timerBtn = `<button id="global-timer-btn" class="timer-btn" onclick="toggleTimer()">⏱️ Таймер</button>`;
+                // Добавляем таймер к Мицеллярке
+                if (col.id === 'micellar') {
+                    timerBtn = `<br><button id="global-timer-btn" class="timer-btn" onclick="toggleTimer()">⏱️ Таймер</button>`;
                 }
                 
-                html += `<th class="${cls}"><div class="th-title" data-tooltip="${col.tooltip || ''}">${name}</div>${timerBtn}</th>`;
+                html += `<th class="${cls}"><div class="th-title" data-tooltip="${tooltipText}">${name}</div>${timerBtn}</th>`;
             });
             html += `</tr>`;
             theadSkin.innerHTML = html;
@@ -1950,7 +1904,6 @@
     let pendingWeekData = null;
 
     function showWeeklyReport() {
-        // Собираем статистику
         let totalPlanned = 0, totalCompleted = 0;
         let procStats = [];
 
@@ -1982,12 +1935,10 @@
         
         document.getElementById('weeklyReportModal').style.display = 'block';
         
-        // Праздничный салют
         if(typeof confetti === 'function') {
             confetti({ particleCount: 200, spread: 120, origin: { y: 0.3 }, colors: ['#7C9A88', '#A3B18A', '#F2CC8F', '#E07A5F'] });
         }
 
-        // Сохраняем данные для сброса
         pendingWeekData = { date: new Date().toLocaleDateString('ru-RU'), skinChecks: {}, notes: {}, habitChecks: {}, habitPercent: 0 };
         skinColumns.forEach(col => { daysOfWeek.forEach((_, day) => { pendingWeekData.skinChecks[`check-${day}-${col.id}`] = document.getElementById(`check-${day}-${col.id}`).checked; }); });
         daysOfWeek.forEach((_, day) => { pendingWeekData.notes[`note-${day}`] = document.getElementById(`note-${day}`).value; });
@@ -2082,7 +2033,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         try {
-            
             const isDark = localStorage.getItem('darkMode') === 'true';
             if (isDark) { document.body.classList.add('dark-mode'); } 
             document.getElementById('themeToggleBtn').textContent = isDark ? '☀️' : '🌙';
