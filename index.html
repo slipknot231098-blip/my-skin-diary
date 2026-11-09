@@ -124,8 +124,6 @@
         .floating-theme-btn:hover, .floating-achievement-btn:hover { transform: scale(1.1) translateY(-5px); }
 
         /* --- НОВЫЙ ДИЗАЙН ВЕРХНЕГО БЛОКА (UX/UI) --- */
-        
-        /* 1. Объединенный блок: Погода + Совет + Задачи на сегодня */
         .hero-widget {
             background: linear-gradient(135deg, rgba(124, 154, 136, 0.1), rgba(124, 154, 136, 0.02));
             border: 1px solid var(--primary-light);
@@ -312,7 +310,7 @@
         .tag-tooltip-text { white-space: pre-wrap; opacity: 0.9; }
         .tag-stat-pill:hover .tag-tooltip { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
-        /* Модалки и остальное */
+        /* Модалки */
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(8px); }
         .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 30px; border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); }
         .close-btn { color: var(--text-muted); float: right; font-size: 28px; cursor: pointer; line-height: 1; margin-top: -10px; }
@@ -1601,7 +1599,17 @@
             dailyChartInstance = new Chart(dc, {
                 type: 'bar', 
                 data: { labels: daysOfWeek, datasets: [{ data: dailyData, backgroundColor: accC, borderRadius: 8 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => dayDetails[c.dataIndex].length ? dayDetails[c.dataIndex] : 'Нет процедур' } } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, x: { ticks: { color: txtC }, grid: { display: false } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { enabled: false } // <--- ОТКЛЮЧИЛИ ТУЛТИП
+                    }, 
+                    scales: { 
+                        y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
+                        x: { ticks: { color: txtC }, grid: { display: false } } 
+                    } 
+                }
             });
         }
         
@@ -1765,7 +1773,17 @@
             habitDailyChartInstance = new Chart(hdc, {
                 type: 'bar', 
                 data: { labels: daysOfWeek, datasets: [{ data: dailyData, backgroundColor: accC, borderRadius: 8 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => dayDetails[c.dataIndex].length ? dayDetails[c.dataIndex] : 'Нет привычек' } } }, scales: { y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, x: { ticks: { color: txtC }, grid: { display: false } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { enabled: false } // <--- ОТКЛЮЧИЛИ ТУЛТИП
+                    }, 
+                    scales: { 
+                        y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
+                        x: { ticks: { color: txtC }, grid: { display: false } } 
+                    } 
+                }
             });
         }
 
