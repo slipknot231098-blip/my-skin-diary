@@ -40,7 +40,6 @@
             --today-text: #4A7C59; 
             --tooltip-bg: rgba(30, 41, 59, 0.95);
             
-            /* Новые переменные для чекбоксов */
             --checkbox-bg: #F1F5F9;
             --checkbox-border: #CBD5E1;
         }
@@ -53,7 +52,7 @@
             --border-color: #4A5568;
             --hover-bg: #374151;
             --primary-light: #344C43;
-            --today-bg: rgba(129, 178, 154, 0.08); /* Мягкий фон для сегодня */
+            --today-bg: rgba(129, 178, 154, 0.08); 
             --perfect-bg: rgba(129, 178, 154, 0.05);
             --today-text: #81B29A; 
             --modal-bg: rgba(0, 0, 0, 0.7);
@@ -63,7 +62,6 @@
             --primary-hover: #9FC2AD;
             --tooltip-bg: rgba(15, 23, 42, 0.95);
             
-            /* Чекбоксы в темной теме */
             --checkbox-bg: #374151;
             --checkbox-border: #718096;
         }
@@ -131,48 +129,66 @@
         .floating-achievement-btn { bottom: 100px; background: linear-gradient(135deg, #F2C94C, #F2994A); }
         .floating-theme-btn:hover, .floating-achievement-btn:hover { transform: scale(1.1) translateY(-5px); }
 
-        /* --- НОВЫЙ ДИЗАЙН ВЕРХНЕГО БЛОКА (UX/UI) --- */
+        /* --- ПОГОДА СВЕРХУ --- */
+        .weather-top-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .weather-pill { background: var(--card-bg); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow); }
+        .weather-pill.uv-high { color: var(--red); border-color: var(--red); background-color: var(--red-bg); }
+        .weather-pill input { background: transparent; border: none; font-family: inherit; font-weight: 700; color: inherit; outline: none; width: 80px; text-align: center; font-size: 13px; }
+
+        /* --- ОБНОВЛЕННАЯ КАРТОЧКА РЕКОМЕНДАЦИЙ (ЦЕНТРИРОВАННАЯ) --- */
         .hero-widget {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 20px;
+            padding: 24px;
             margin-bottom: 20px;
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
             box-shadow: var(--shadow);
-            flex-wrap: wrap;
+            gap: 20px;
         }
         .hero-tip-area {
-            flex: 2;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
+            justify-content: center;
             gap: 16px;
-            min-width: 300px;
+            width: 100%;
+            flex-wrap: wrap;
         }
-        .rec-icon { font-size: 32px; background: var(--bg); padding: 10px; border-radius: 50%; display: flex; justify-content: center; align-items: center; min-width: 52px; height: 52px; box-sizing: border-box; }
-        .rec-content { flex: 1; }
-        .rec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px; }
-        .rec-text { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.5; margin: 0; }
-        .rec-text b { color: var(--primary); font-weight: 800; }
-        
-        .weather-compact { display: flex; gap: 8px; flex-wrap: wrap; }
-        .weather-pill { background: var(--bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-        .weather-pill.uv-high { color: var(--red); border-color: var(--red); background-color: var(--red-bg); }
-        .weather-pill input { background: transparent; border: none; font-family: inherit; font-weight: 700; color: inherit; outline: none; width: 70px; text-align: center; font-size: 12px; }
-
-        .hero-today-area {
-            flex: 1;
-            border-left: 1px solid var(--border-color);
-            padding-left: 20px;
-            min-width: 250px;
+        .rec-icon { 
+            font-size: 32px; background: var(--bg); padding: 12px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            min-width: 56px; height: 56px; box-sizing: border-box; 
+        }
+        .rec-content { 
+            max-width: 800px; 
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            align-items: center;
+        }
+        .rec-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; margin: 0; }
+        .rec-text b { color: var(--primary); font-weight: 800; }
+
+        .hero-today-area {
+            width: 100%;
+            border-top: 2px dashed var(--border-color);
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .rec-today-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-        .rec-today-list { display: flex; flex-wrap: wrap; gap: 6px; }
-        .rec-today-item { background: var(--bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--text); transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+        .rec-today-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .rec-today-item { background: var(--bg); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text); transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
         .rec-today-item.done { text-decoration: line-through; opacity: 0.5; background: transparent; border-style: dashed; }
 
         /* 2. Новый блок статистики и прогресса */
@@ -302,7 +318,7 @@
         .th-title::after { content: attr(data-tooltip); position: absolute; top: 150%; left: 50%; transform: translateX(-50%); background: var(--tooltip-bg); color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 11px; white-space: pre-wrap; text-align: center; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 1000; pointer-events: none; text-transform: none; line-height: 1.4; }
         .th-title:hover::after { opacity: 1; visibility: visible; }
 
-        /* Таймер (теперь не ломает таблицу) */
+        /* Таймер */
         .timer-btn { 
             background: var(--bg); border: 1px solid var(--border-color); border-radius: 6px; 
             padding: 2px 6px; font-size: 9px; font-weight: 700; color: var(--text-muted); 
@@ -431,10 +447,13 @@
             .tabs { flex-direction: row; padding: 4px; }
             .tab-btn { font-size: 12px; padding: 10px 5px; }
             
-            .hero-widget { flex-direction: column; gap: 12px; padding: 15px; }
-            .hero-tip-area { flex-direction: column; gap: 10px; align-items: center; text-align: center; }
-            .rec-header { flex-direction: column; align-items: center; }
-            .hero-today-area { border-left: none; border-top: 1px solid var(--border-color); padding-left: 0; padding-top: 12px; width: 100%; align-items: center; }
+            .weather-top-bar { flex-direction: column; gap: 8px; width: 100%; }
+            .weather-pill { width: 100%; justify-content: center; }
+
+            .hero-widget { padding: 15px; gap: 15px; }
+            .hero-tip-area { flex-direction: column; text-align: center; gap: 10px; }
+            .rec-icon { margin: 0 auto; }
+            .hero-today-area { padding-top: 12px; }
             .rec-today-list { justify-content: center; }
             
             .stats-grid { grid-template-columns: 1fr; gap: 12px; }
@@ -520,23 +539,23 @@
     </div>
 
     <div id="content-skin" class="tab-content active">
-        <!-- НОВЫЙ ОБЪЕДИНЕННЫЙ БЛОК (Совет + Погода + На сегодня) -->
+        <!-- ПОГОДА СВЕРХУ -->
+        <div class="weather-top-bar">
+            <div class="weather-pill">
+                <input type="text" id="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" onblur="setCity()">
+                <span style="cursor:pointer; opacity:0.5;" onclick="setCity()">🔄</span>
+            </div>
+            <div class="weather-pill" id="weather-temp" style="display:none;">🌡️ --°C</div>
+            <div class="weather-pill" id="weather-uv" style="display:none;">☀️ UV: --</div>
+            <div class="weather-pill" id="weather-loading" style="display:inline-flex;">⏳ Загрузка...</div>
+        </div>
+
+        <!-- ОБНОВЛЕННЫЙ БЛОК РЕКОМЕНДАЦИЙ -->
         <div class="hero-widget" id="recommendation-card">
             <div class="hero-tip-area">
                 <div class="rec-icon" id="rec-icon">💡</div>
                 <div class="rec-content">
-                    <div class="rec-header">
-                        <div class="rec-text" id="rec-text">Анализируем ваши данные...</div>
-                        <div class="weather-compact">
-                            <div class="weather-pill">
-                                <input type="text" id="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" onblur="setCity()">
-                                <span style="cursor:pointer; opacity:0.5;" onclick="setCity()">🔄</span>
-                            </div>
-                            <div class="weather-pill" id="weather-temp" style="display:none;">🌡️ --°C</div>
-                            <div class="weather-pill" id="weather-uv" style="display:none;">☀️ UV: --</div>
-                            <div class="weather-pill" id="weather-loading" style="display:inline-flex;">⏳ Загрузка...</div>
-                        </div>
-                    </div>
+                    <div class="rec-text" id="rec-text">Анализируем ваши данные...</div>
                 </div>
             </div>
             <div class="hero-today-area">
@@ -617,8 +636,8 @@
 
     <div id="content-habits" class="tab-content">
         <!-- Аналогичный блок для привычек (упрощенный, без погоды) -->
-        <div class="hero-widget" id="habits-recommendation-card" style="padding: 15px 20px;">
-            <div class="hero-tip-area" style="align-items: center;">
+        <div class="hero-widget" id="habits-recommendation-card">
+            <div class="hero-tip-area">
                 <div class="rec-icon" id="habits-rec-icon">💡</div>
                 <div class="rec-content">
                     <div class="rec-text" id="habits-rec-text">Анализируем ваши привычки...</div>
@@ -900,14 +919,12 @@
             if (doc.exists && doc.data().diaryData) {
                 const cloudData = JSON.parse(doc.data().diaryData);
                 
-                // ИСПРАВЛЕНИЕ: Проверяем, есть ли уже данные в браузере
                 let hasLocalData = false;
                 for (let i = 0; i < 7; i++) {
                     if (localStorage.getItem(`check-${i}-spf`) !== null) hasLocalData = true;
                 }
 
                 if (!hasLocalData) {
-                    // Если браузер чистый (новое устройство) — загружаем из облака
                     let changed = false;
                     for (let key in cloudData) {
                         localStorage.setItem(key, cloudData[key]);
@@ -916,9 +933,8 @@
                     isCloudDataLoaded = true;
                     if (changed) location.reload();
                 } else {
-                    // Если данные уже есть локально, НЕ перезаписываем их из облака (чтобы не сбросить галочки)
                     isCloudDataLoaded = true;
-                    queueSync(); // Отправляем локальные данные в облако
+                    queueSync();
                 }
             } else {
                 isCloudDataLoaded = true;
