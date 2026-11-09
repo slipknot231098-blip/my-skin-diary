@@ -480,10 +480,6 @@
         </div>
     </div>
 
-    <div class="header-title">
-        <h1 id="mainTitle" contenteditable="true" onblur="saveTitle()">Мой Дневник Ухода</h1>
-    </div>
-
     <div id="content-skin" class="tab-content active">
         <div class="weather-widget">
             <input type="text" id="city-input" class="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()">
@@ -1920,8 +1916,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         try {
-            const savedTitle = localStorage.getItem('customHeaderTitle'); 
-            if (savedTitle) document.getElementById('mainTitle').innerText = savedTitle;
             
             const isDark = localStorage.getItem('darkMode') === 'true';
             if (isDark) { document.body.classList.add('dark-mode'); } 
