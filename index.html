@@ -254,7 +254,7 @@
         /* 3. Обновленная панель инструментов (Теги + Даты) */
         .toolbar-panel { display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 20px; gap: 16px; box-shadow: var(--shadow); }
         
-        .week-display-banner { background: var(--primary-light); color: var(--primary-hover); padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 800; text-align: center; letter-spacing: 0.5px; border: 1px dashed var(--primary); }
+        .week-display-banner { background: var(--primary-light); color: var(--primary-hover); padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 800; text-align: center; letter-spacing: 0.5px; border: 1px dashed var(--primary);  box-sizing: border-box; width: 100%;}
         body.dark-mode .week-display-banner { color: var(--primary); background: rgba(129, 178, 154, 0.1); border-color: var(--primary); }
 
         .tags-row { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
@@ -703,7 +703,7 @@
         </div>
 
         <div class="toolbar-panel">
-            <div class="week-display-banner" id="habitsWeekDatesDisplay" style="width: 100%;">📅 Загрузка...</div>
+           <div class="week-display-banner" id="habitsWeekDatesDisplay">📅 Загрузка...</div>
         </div>
 
         <div class="table-wrapper">
