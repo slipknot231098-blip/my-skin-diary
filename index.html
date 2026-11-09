@@ -39,6 +39,10 @@
             --perfect-bg: rgba(124, 154, 136, 0.08);
             --today-text: #4A7C59; 
             --tooltip-bg: rgba(30, 41, 59, 0.95);
+            
+            /* Новые переменные для чекбоксов */
+            --checkbox-bg: #F1F5F9;
+            --checkbox-border: #CBD5E1;
         }
 
         body.dark-mode {
@@ -46,18 +50,22 @@
             --text: #E2E8F0;
             --text-muted: #A0AEC0;
             --card-bg: #2D3748;
-            --border-color: #3A475A;
+            --border-color: #4A5568;
             --hover-bg: #374151;
             --primary-light: #344C43;
-            --today-bg: #263A33; 
-            --perfect-bg: rgba(129, 178, 154, 0.1);
+            --today-bg: rgba(129, 178, 154, 0.08); /* Мягкий фон для сегодня */
+            --perfect-bg: rgba(129, 178, 154, 0.05);
             --today-text: #81B29A; 
-            --modal-bg: rgba(0, 0, 0, 0.6);
-            --shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.2);
-            --shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --modal-bg: rgba(0, 0, 0, 0.7);
+            --shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
             --primary: #81B29A; 
             --primary-hover: #9FC2AD;
             --tooltip-bg: rgba(15, 23, 42, 0.95);
+            
+            /* Чекбоксы в темной теме */
+            --checkbox-bg: #374151;
+            --checkbox-border: #718096;
         }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -79,7 +87,7 @@
         
         /* Ripple Effect */
         .btn { position: relative; overflow: hidden; }
-        .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: rippleAnim 0.6s linear; background-color: rgba(255, 255, 255, 0.4); pointer-events: none; }
+        .ripple { position: absolute; border-radius: 50%; transform: scale(0); animation: rippleAnim 0.6s linear; background-color: rgba(255, 255, 255, 0.2); pointer-events: none; }
         @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
 
         .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: var(--card-bg); padding: 6px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
@@ -110,7 +118,7 @@
         .btn-logout-icon:hover { background: var(--red-bg); }
 
         .dropdown { position: relative; display: inline-block; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: calc(100% + 10px); background-color: var(--card-bg); min-width: 260px; box-shadow: 0 15px 40px -10px rgba(0,0,0,0.2); border-radius: 16px; border: 1px solid var(--border-color); z-index: 1000; padding: 8px; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: calc(100% + 10px); background-color: var(--card-bg); min-width: 260px; box-shadow: 0 15px 40px -10px rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border-color); z-index: 1000; padding: 8px; }
         .dropdown-content.show { display: block; animation: dropIn 0.25s; }
         @keyframes dropIn { from { opacity: 0; transform: scale(0.95) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         .dropdown-item { padding: 10px 12px; display: flex; flex-direction: column; border-radius: 10px; cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; font-family: inherit; }
@@ -118,15 +126,15 @@
         .dropdown-title { font-weight: 700; font-size: 13px; color: var(--text); display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
         .dropdown-desc { font-size: 11px; color: var(--text-muted); padding-left: 24px; }
 
-        .floating-theme-btn, .floating-achievement-btn { position: fixed; right: 30px; width: 56px; height: 56px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 22px; border: none; cursor: pointer; z-index: 9999; box-shadow: 0 8px 25px rgba(0,0,0,0.2); transition: all 0.3s; }
+        .floating-theme-btn, .floating-achievement-btn { position: fixed; right: 30px; width: 56px; height: 56px; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 22px; border: none; cursor: pointer; z-index: 9999; box-shadow: 0 8px 25px rgba(0,0,0,0.3); transition: all 0.3s; }
         .floating-theme-btn { bottom: 30px; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); }
         .floating-achievement-btn { bottom: 100px; background: linear-gradient(135deg, #F2C94C, #F2994A); }
         .floating-theme-btn:hover, .floating-achievement-btn:hover { transform: scale(1.1) translateY(-5px); }
 
         /* --- НОВЫЙ ДИЗАЙН ВЕРХНЕГО БЛОКА (UX/UI) --- */
         .hero-widget {
-            background: linear-gradient(135deg, rgba(124, 154, 136, 0.1), rgba(124, 154, 136, 0.02));
-            border: 1px solid var(--primary-light);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
@@ -142,20 +150,20 @@
             gap: 16px;
             min-width: 300px;
         }
-        .rec-icon { font-size: 32px; background: var(--card-bg); padding: 10px; border-radius: 50%; box-shadow: var(--shadow); display: flex; justify-content: center; align-items: center; min-width: 52px; height: 52px; box-sizing: border-box; }
+        .rec-icon { font-size: 32px; background: var(--bg); padding: 10px; border-radius: 50%; display: flex; justify-content: center; align-items: center; min-width: 52px; height: 52px; box-sizing: border-box; }
         .rec-content { flex: 1; }
         .rec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px; }
         .rec-text { font-size: 14px; font-weight: 500; color: var(--text); line-height: 1.5; margin: 0; }
         .rec-text b { color: var(--primary); font-weight: 800; }
         
         .weather-compact { display: flex; gap: 8px; flex-wrap: wrap; }
-        .weather-pill { background: var(--card-bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .weather-pill { background: var(--bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
         .weather-pill.uv-high { color: var(--red); border-color: var(--red); background-color: var(--red-bg); }
         .weather-pill input { background: transparent; border: none; font-family: inherit; font-weight: 700; color: inherit; outline: none; width: 70px; text-align: center; font-size: 12px; }
 
         .hero-today-area {
             flex: 1;
-            border-left: 2px dashed var(--border-color);
+            border-left: 1px solid var(--border-color);
             padding-left: 20px;
             min-width: 250px;
             display: flex;
@@ -164,7 +172,7 @@
         }
         .rec-today-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
         .rec-today-list { display: flex; flex-wrap: wrap; gap: 6px; }
-        .rec-today-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--text); transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+        .rec-today-item { background: var(--bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--text); transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
         .rec-today-item.done { text-decoration: line-through; opacity: 0.5; background: transparent; border-style: dashed; }
 
         /* 2. Новый блок статистики и прогресса */
@@ -190,7 +198,7 @@
         .stat-main-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
         .stat-value-large { font-size: 48px; font-weight: 800; color: var(--primary); line-height: 1; letter-spacing: -1px; }
         .stat-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .progress-bar-bg { width: 100%; height: 8px; background-color: var(--border-color); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+        .progress-bar-bg { width: 100%; height: 6px; background-color: var(--border-color); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
         .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-hover)); border-radius: 10px; transition: width 0.8s; }
         .sparkline-wrapper { height: 40px; width: 100%; margin-top: auto; position: relative; }
 
@@ -203,7 +211,7 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 20px 15px;
+            padding: 15px;
             box-shadow: var(--shadow);
             text-align: center;
             display: flex;
@@ -246,33 +254,44 @@
         th:last-child, td:last-child { border-right: none; } 
         tr:last-child td { border-bottom: none; } 
         
-        th { background-color: var(--card-bg); color: var(--text-muted); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 0 var(--border-color); }
+        th { background-color: var(--card-bg); color: var(--text-muted); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 0 var(--border-color); padding: 10px 8px; }
         th.morning { color: #C28B5E; }
         th.evening { color: #6A8FA6; }
         th.body-gel { color: #A67C8B; }
         th.fire { color: var(--red); }
         th.habit-col { color: var(--primary); }
 
-        .table-wrapper th:first-child, .table-wrapper td.day-cell { position: sticky; left: 0; z-index: 5; background-color: var(--card-bg); box-shadow: 2px 0 5px -2px rgba(0,0,0,0.05); }
+        .table-wrapper th:first-child, .table-wrapper td.day-cell { position: sticky; left: 0; z-index: 5; background-color: var(--card-bg); box-shadow: 2px 0 5px -2px rgba(0,0,0,0.1); }
         .table-wrapper th:first-child { z-index: 11; } 
 
         tbody tr:hover { background-color: var(--hover-bg); }
-        tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.015); }
-        body.dark-mode tbody tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
         
+        /* Подсветка сегодняшнего дня */
         tr.today-row { background-color: var(--today-bg) !important; }
-        tr.today-row .day-cell { font-weight: 800; color: var(--today-text); box-shadow: inset 4px 0 0 0 var(--primary), 2px 0 5px -2px rgba(0,0,0,0.05); background-color: var(--today-bg) !important; }
+        tr.today-row .day-cell { font-weight: 800; color: var(--today-text); box-shadow: inset 4px 0 0 0 var(--primary), 2px 0 5px -2px rgba(0,0,0,0.1); background-color: var(--today-bg) !important; }
         
         tr.perfect-row { background-color: var(--perfect-bg) !important; }
         tr.perfect-row .day-cell { background-color: var(--perfect-bg) !important; }
 
+        /* Обновленные чекбоксы */
         .checkbox-container { display: inline-block; position: relative; cursor: pointer; width: 24px; height: 24px; }
         .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-        .checkmark { position: absolute; top: 0; left: 0; height: 24px; width: 24px; background-color: var(--bg); border: 2px solid var(--border-color); border-radius: 6px; transition: all 0.2s; }
+        .checkmark { 
+            position: absolute; top: 0; left: 0; height: 24px; width: 24px; 
+            background-color: var(--checkbox-bg); 
+            border: 2px solid var(--checkbox-border); 
+            border-radius: 6px; 
+            transition: all 0.2s; 
+            box-sizing: border-box;
+        }
         .checkbox-container:hover input ~ .checkmark { border-color: var(--primary); background-color: var(--primary-light); }
-        .checkbox-container input:checked ~ .checkmark { background-color: var(--primary); border-color: var(--primary); animation: bounceCheck 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .checkbox-container input:checked ~ .checkmark { 
+            background-color: var(--primary); 
+            border-color: var(--primary); 
+            animation: bounceCheck 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
         @keyframes bounceCheck { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1.05); } }
-        .checkmark:after { content: ""; position: absolute; display: none; left: 8px; top: 4px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        .checkmark:after { content: ""; position: absolute; display: none; left: 7px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
         .checkbox-container input:checked ~ .checkmark:after { display: block; }
 
         textarea.notes-input { display: block; width: 100%; min-width: 150px; min-height: 40px; padding: 10px; border: 1px solid var(--border-color); border-radius: 10px; background-color: var(--bg); color: var(--text); font-family: inherit; font-size: 12px; transition: 0.2s; resize: none; box-sizing: border-box; overflow: hidden; position: relative; z-index: 10; }
@@ -283,7 +302,13 @@
         .th-title::after { content: attr(data-tooltip); position: absolute; top: 150%; left: 50%; transform: translateX(-50%); background: var(--tooltip-bg); color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 11px; white-space: pre-wrap; text-align: center; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 1000; pointer-events: none; text-transform: none; line-height: 1.4; }
         .th-title:hover::after { opacity: 1; visibility: visible; }
 
-        .timer-btn { background: var(--bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 2px 6px; font-size: 10px; font-weight: 700; color: var(--text-muted); cursor: pointer; display: inline-flex; align-items: center; gap: 3px; margin-left: 4px; transition: all 0.2s; vertical-align: middle; text-transform: none; letter-spacing: normal; }
+        /* Таймер (теперь не ломает таблицу) */
+        .timer-btn { 
+            background: var(--bg); border: 1px solid var(--border-color); border-radius: 6px; 
+            padding: 2px 6px; font-size: 9px; font-weight: 700; color: var(--text-muted); 
+            cursor: pointer; display: inline-flex; align-items: center; gap: 2px; 
+            margin-top: 4px; transition: all 0.2s; text-transform: none; letter-spacing: normal;
+        }
         .timer-btn:hover { background: var(--hover-bg); color: var(--text); }
         .timer-btn.active { background: var(--primary-light); color: var(--primary); border-color: var(--primary); animation: pulse 2s infinite; }
 
@@ -312,7 +337,7 @@
 
         /* Модалки */
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(8px); }
-        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 30px; border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); }
+        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 30px; border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color); }
         .close-btn { color: var(--text-muted); float: right; font-size: 28px; cursor: pointer; line-height: 1; margin-top: -10px; }
         .close-btn:hover { color: var(--red); }
 
@@ -355,7 +380,7 @@
         .pao-danger { background: var(--red-bg); color: var(--red); }
         .spend-badge { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; padding: 10px 16px; border-radius: 10px; font-weight: 800; font-size: 14px; display: inline-block; margin-bottom: 20px; }
 
-        .achievement-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: linear-gradient(135deg, #2D3748, #1A202C); color: white; padding: 16px 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 10000; display: flex; align-items: center; gap: 16px; transition: transform 0.5s; border: 1px solid rgba(255,255,255,0.1); }
+        .achievement-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: linear-gradient(135deg, #2D3748, #1A202C); color: white; padding: 16px 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; gap: 16px; transition: transform 0.5s; border: 1px solid rgba(255,255,255,0.1); }
         .achievement-toast.show { transform: translateX(-50%) translateY(0); }
         .achievement-icon { font-size: 32px; }
         .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
@@ -409,7 +434,7 @@
             .hero-widget { flex-direction: column; gap: 12px; padding: 15px; }
             .hero-tip-area { flex-direction: column; gap: 10px; align-items: center; text-align: center; }
             .rec-header { flex-direction: column; align-items: center; }
-            .hero-today-area { border-left: none; border-top: 2px dashed var(--border-color); padding-left: 0; padding-top: 12px; width: 100%; align-items: center; }
+            .hero-today-area { border-left: none; border-top: 1px solid var(--border-color); padding-left: 0; padding-top: 12px; width: 100%; align-items: center; }
             .rec-today-list { justify-content: center; }
             
             .stats-grid { grid-template-columns: 1fr; gap: 12px; }
