@@ -53,7 +53,7 @@
             --hover-bg: #374151;
             --primary-light: #344C43;
             --today-bg: rgba(129, 178, 154, 0.08); 
-            --perfect-bg: rgba(129, 178, 154, 0.05);
+            --perfect-bg: rgba(129, 178, 154, 0.15);
             --today-text: #81B29A; 
             --modal-bg: rgba(0, 0, 0, 0.7);
             --shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.3);
@@ -96,9 +96,11 @@
         .tab-content.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* --- ОБНОВЛЕННЫЙ TOPBAR --- */
         .topbar { display: flex; justify-content: space-between; align-items: center; background-color: var(--card-bg); padding: 10px 16px; border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 20px; gap: 10px; }
         .nav-group { display: flex; gap: 8px; align-items: center; }
         .nav-group.left { flex: 1; justify-content: flex-start; }
+        .nav-group.center { flex: 1; justify-content: center; }
         .nav-group.right { flex: 1; justify-content: flex-end; }
 
         .btn { padding: 8px 16px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; background-color: transparent; color: var(--text-muted); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-family: inherit; }
@@ -109,6 +111,12 @@
         .btn-primary:hover { box-shadow: 0 4px 12px rgba(124, 154, 136, 0.4); }
         .btn-auth { background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD; }
         .btn-auth:hover { background: #0284C7; color: white; }
+
+        /* --- ВИДЖЕТ ПОГОДЫ В ШАПКЕ --- */
+        .weather-widget { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: center; }
+        .weather-pill { background: var(--bg); border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; box-shadow: var(--shadow); height: 32px; box-sizing: border-box; }
+        .weather-pill.uv-high { color: var(--red); border-color: var(--red); background-color: var(--red-bg); }
+        .weather-pill input { background: transparent; border: none; font-family: inherit; font-weight: 700; color: inherit; outline: none; width: 70px; text-align: center; font-size: 12px; padding: 0; }
 
         .auth-info-pill { display: flex; align-items: center; gap: 8px; background: var(--hover-bg); border: 1px solid var(--border-color); padding: 4px 6px 4px 12px; border-radius: 12px; }
         .auth-email-text { font-size: 12px; font-weight: 600; color: var(--text-muted); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -129,20 +137,27 @@
         .floating-achievement-btn { bottom: 100px; background: linear-gradient(135deg, #F2C94C, #F2994A); }
         .floating-theme-btn:hover, .floating-achievement-btn:hover { transform: scale(1.1) translateY(-5px); }
 
-        /* --- ПОГОДА СВЕРХУ --- */
-        .weather-top-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 15px;
-            gap: 10px;
-            flex-wrap: wrap;
+        /* --- АНИМАЦИЯ СИНХРОНИЗАЦИИ --- */
+        @keyframes pulseSync {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
         }
-        .weather-pill { background: var(--card-bg); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; box-shadow: var(--shadow); }
-        .weather-pill.uv-high { color: var(--red); border-color: var(--red); background-color: var(--red-bg); }
-        .weather-pill input { background: transparent; border: none; font-family: inherit; font-weight: 700; color: inherit; outline: none; width: 80px; text-align: center; font-size: 13px; }
+        .sync-indicator.syncing { animation: pulseSync 1.5s infinite; }
 
-        /* --- ОБНОВЛЕННАЯ КАРТОЧКА РЕКОМЕНДАЦИЙ (ЦЕНТРИРОВАННАЯ) --- */
+        /* --- АНИМАЦИЯ UV (ПУЛЬСАЦИЯ СПФ) --- */
+        @keyframes pulseAlert {
+            0% { box-shadow: 0 0 0 0 rgba(217, 115, 115, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(217, 115, 115, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 115, 115, 0); }
+        }
+        .pulse-alert {
+            animation: pulseAlert 2s infinite;
+            background-color: var(--red-bg) !important;
+            color: var(--red) !important;
+        }
+
+        /* --- ОБНОВЛЕННАЯ КАРТОЧКА РЕКОМЕНДАЦИЙ --- */
         .hero-widget {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -167,14 +182,9 @@
         .rec-icon { 
             font-size: 32px; background: var(--bg); padding: 12px; border-radius: 50%; 
             display: flex; justify-content: center; align-items: center; 
-            min-width: 56px; height: 56px; box-sizing: border-box; 
+            min-width: 56px; height: 56px; box-sizing: border-box; transition: all 0.3s ease;
         }
-        .rec-content { 
-            max-width: 800px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .rec-content { max-width: 800px; display: flex; flex-direction: column; align-items: center; }
         .rec-text { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; margin: 0; }
         .rec-text b { color: var(--primary); font-weight: 800; }
 
@@ -241,27 +251,20 @@
         .stat-mini-value.fire { color: #E29E60; }
         .stat-mini-value.gold { color: #D4AF37; }
         
-        /* 3. Панель инструментов (Теги + Даты) */
-        .toolbar-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 10px 16px;
-            margin-bottom: 20px;
-            gap: 15px;
-            flex-wrap: wrap;
-            box-shadow: var(--shadow);
-        }
-        .tags-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .tags-row span { font-weight: 700; color: var(--text-muted); font-size: 12px; }
-        .tag-btn { background: var(--bg); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 10px; cursor: pointer; font-size: 12px; color: var(--text); font-weight: 600; font-family: inherit; transition: 0.2s; }
-        .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
-        .btn-manage-tags { background: transparent; color: var(--text-muted); border: 1px dashed var(--border-color); padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .btn-manage-tags:hover { border-color: var(--primary); color: var(--primary); }
-        .week-dates { font-size: 13px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 8px 16px; border-radius: 10px; white-space: nowrap; }
+        /* 3. Обновленная панель инструментов (Теги + Даты) */
+        .toolbar-panel { display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; margin-bottom: 20px; gap: 16px; box-shadow: var(--shadow); }
+        
+        .week-display-banner { background: var(--primary-light); color: var(--primary-hover); padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 800; text-align: center; letter-spacing: 0.5px; border: 1px dashed var(--primary); }
+        body.dark-mode .week-display-banner { color: var(--primary); background: rgba(129, 178, 154, 0.1); border-color: var(--primary); }
+
+        .tags-row { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+        .tags-label { font-weight: 800; color: var(--text-muted); font-size: 13px; padding-top: 6px; }
+        .tags-list { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+        
+        .tag-btn { background: var(--bg); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; color: var(--text); font-weight: 600; font-family: inherit; transition: all 0.2s; }
+        .tag-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-1px); }
+        .btn-manage-tags { background: transparent; color: var(--text-muted); border: 1px dashed var(--border-color); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-manage-tags:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
         /* --- ТАБЛИЦА --- */
         .table-wrapper { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 70vh; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: var(--shadow); background: var(--card-bg); position: relative; }
@@ -341,11 +344,32 @@
         .tags-analytics-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
         .tags-analytics-title span { font-size: 11px; font-weight: 500; color: var(--text-muted); background: var(--bg); padding: 2px 8px; border-radius: 6px; }
         .tags-analytics-container { display: flex; gap: 10px; flex-wrap: wrap; }
-        .tag-stat-pill { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s; }
-        .tag-stat-pill:hover { border-color: var(--primary); transform: translateY(-2px); }
-        .tag-stat-days { font-size: 11px; font-weight: 600; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 6px; display: inline-block; }
-        .tag-stat-count { background: var(--primary); color: white; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 800; }
-        .tag-tooltip { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(5px); background: var(--tooltip-bg); color: white; padding: 12px; border-radius: 12px; font-size: 12px; line-height: 1.4; opacity: 0; visibility: hidden; z-index: 1000; width: 250px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); pointer-events: none; text-align: left; transition: all 0.2s; }
+        
+        .tag-stat-pill { padding: 8px 14px; border-radius: 12px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s; border: 1px solid transparent; }
+        .tag-stat-pill:hover { transform: translateY(-2px); filter: brightness(0.95); }
+        
+        /* Цветовые темы для тегов (Светлая / Темная) */
+        .tag-dry { background: #E0F2FE; color: #0284C7; border-color: #BAE6FD; }
+        .tag-red { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }
+        .tag-rash { background: #FFEDD5; color: #C2410C; border-color: #FDBA74; }
+        .tag-oil { background: #FEF9C3; color: #A16207; border-color: #FDE047; }
+        .tag-calm { background: #DCFCE7; color: #15803D; border-color: #86EFAC; }
+        .tag-default { background: var(--card-bg); color: var(--text); border-color: var(--border-color); }
+        
+        body.dark-mode .tag-dry { background: rgba(2, 132, 199, 0.15); color: #7DD3FC; border-color: #0369A1; }
+        body.dark-mode .tag-red { background: rgba(185, 28, 28, 0.15); color: #FCA5A5; border-color: #7F1D1D; }
+        body.dark-mode .tag-rash { background: rgba(194, 65, 12, 0.15); color: #FDBA74; border-color: #7C2D12; }
+        body.dark-mode .tag-oil { background: rgba(161, 98, 7, 0.15); color: #FDE047; border-color: #713F12; }
+        body.dark-mode .tag-calm { background: rgba(21, 128, 61, 0.15); color: #86EFAC; border-color: #14532D; }
+        body.dark-mode .tag-default { background: var(--hover-bg); color: var(--text); border-color: var(--border-color); }
+
+        .tag-stat-days { font-size: 11px; font-weight: 600; opacity: 0.8; padding: 2px 8px; border-radius: 6px; display: inline-block; background: rgba(255,255,255,0.4); }
+        body.dark-mode .tag-stat-days { background: rgba(0,0,0,0.2); }
+        
+        .tag-stat-count { background: rgba(0,0,0,0.1); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 800; }
+        body.dark-mode .tag-stat-count { background: rgba(255,255,255,0.1); }
+
+        .tag-tooltip { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(5px); background: var(--tooltip-bg); color: white; padding: 12px; border-radius: 12px; font-size: 12px; line-height: 1.4; opacity: 0; visibility: hidden; z-index: 1000; width: 250px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); pointer-events: none; text-align: left; transition: all 0.2s; font-weight: 400; }
         .tag-tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 6px; border-style: solid; border-color: var(--tooltip-bg) transparent transparent transparent; }
         .tag-tooltip-date { font-weight: 800; color: var(--primary-light); margin-bottom: 4px; display: block; }
         .tag-tooltip-text { white-space: pre-wrap; opacity: 0.9; }
@@ -353,7 +377,7 @@
 
         /* Модалки */
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(8px); }
-        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 30px; border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color); }
+        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 30px; border-radius: 24px; width: 90%; max-width: 800px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; }
         .close-btn { color: var(--text-muted); float: right; font-size: 28px; cursor: pointer; line-height: 1; margin-top: -10px; }
         .close-btn:hover { color: var(--red); }
 
@@ -441,14 +465,15 @@
         /* Мобильная адаптация */
         @media (max-width: 900px) {
             body { padding: 10px; }
-            .topbar { flex-wrap: wrap; justify-content: center; padding: 10px; }
-            .nav-group { flex: auto; justify-content: center; width: 100%; }
-            .nav-group.left { margin-bottom: 10px; }
+            .topbar { flex-direction: column; padding: 15px; gap: 15px; }
+            .nav-group { width: 100%; justify-content: center; flex-wrap: wrap; }
+            .nav-group.left { margin-bottom: 0; }
+            .nav-group.center { order: -1; } /* Погода наверх на мобилках */
             .tabs { flex-direction: row; padding: 4px; }
             .tab-btn { font-size: 12px; padding: 10px 5px; }
             
-            .weather-top-bar { flex-direction: column; gap: 8px; width: 100%; }
-            .weather-pill { width: 100%; justify-content: center; }
+            .weather-widget { width: 100%; justify-content: center; }
+            .weather-pill { flex: 1; justify-content: center; }
 
             .hero-widget { padding: 15px; gap: 15px; }
             .hero-tip-area { flex-direction: column; text-align: center; gap: 10px; }
@@ -464,8 +489,9 @@
             .stat-mini-value { font-size: 22px; }
             .stat-label { font-size: 10px; }
             
-            .toolbar-panel { flex-direction: column; align-items: flex-start; padding: 12px; }
-            .week-dates { width: 100%; text-align: center; }
+            .toolbar-panel { padding: 12px; }
+            .tags-row { flex-direction: column; align-items: stretch; }
+            .tags-label { padding-top: 0; margin-bottom: 4px; }
 
             .table-wrapper { border: none; box-shadow: none; background: transparent; max-height: none; }
             table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
@@ -512,9 +538,21 @@
 
     <div class="topbar">
         <div class="nav-group left">
-            <button class="btn btn-danger" onclick="showWeeklyReport()">🔄 Новая неделя</button>
             <button class="btn btn-primary" id="productsBtn" onclick="openProductsModal()">🛍️ Мои средства</button>
         </div>
+        
+        <div class="nav-group center">
+            <div class="weather-widget">
+                <div class="weather-pill">
+                    <input type="text" id="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" onblur="setCity()">
+                    <span style="cursor:pointer; opacity:0.5; padding: 0 4px;" onclick="setCity()">🔄</span>
+                </div>
+                <div class="weather-pill" id="weather-temp" style="display:none;">🌡️ --°C</div>
+                <div class="weather-pill" id="weather-uv" style="display:none;">☀️ UV: --</div>
+                <div class="weather-pill" id="weather-loading" style="display:inline-flex;">⏳ ...</div>
+            </div>
+        </div>
+
         <div class="nav-group right">
             <div id="auth-status" style="display: flex; align-items: center; gap: 8px; margin-right: 5px;">
                 <span id="sync-icon" class="sync-indicator" style="display: none;">✅</span>
@@ -527,6 +565,7 @@
             <div class="dropdown">
                 <button class="btn" onclick="toggleDropdown(event)">⚙️ Меню ▾</button>
                 <div class="dropdown-content" id="dataDropdown">
+                    <button class="dropdown-item" onclick="closeDropdownAndOpen(showWeeklyReport)"><span class="dropdown-title">🔄 Новая неделя</span><span class="dropdown-desc">Завершить и начать заново</span></button>
                     <button class="dropdown-item" onclick="closeDropdownAndOpen(openSettings)"><span class="dropdown-title">⚙️ Настройки</span><span class="dropdown-desc">Расписание</span></button>
                     <button class="dropdown-item" onclick="closeDropdownAndOpen(openHistory)"><span class="dropdown-title">📜 Архив</span><span class="dropdown-desc">Прошлые недели</span></button>
                     <button class="dropdown-item" onclick="exportToPDF()"><span class="dropdown-title">📄 PDF</span><span class="dropdown-desc">Скачать отчет</span></button>
@@ -539,17 +578,6 @@
     </div>
 
     <div id="content-skin" class="tab-content active">
-        <!-- ПОГОДА СВЕРХУ -->
-        <div class="weather-top-bar">
-            <div class="weather-pill">
-                <input type="text" id="city-input" value="Казань" onkeydown="if(event.key === 'Enter') setCity()" onblur="setCity()">
-                <span style="cursor:pointer; opacity:0.5;" onclick="setCity()">🔄</span>
-            </div>
-            <div class="weather-pill" id="weather-temp" style="display:none;">🌡️ --°C</div>
-            <div class="weather-pill" id="weather-uv" style="display:none;">☀️ UV: --</div>
-            <div class="weather-pill" id="weather-loading" style="display:inline-flex;">⏳ Загрузка...</div>
-        </div>
-
         <!-- ОБНОВЛЕННЫЙ БЛОК РЕКОМЕНДАЦИЙ -->
         <div class="hero-widget" id="recommendation-card">
             <div class="hero-tip-area">
@@ -598,13 +626,18 @@
             </div>
         </div>
 
-        <!-- ПАНЕЛЬ ИНСТРУМЕНТОВ (Теги и Даты) -->
+        <!-- ПЕРЕРАБОТАННАЯ ПАНЕЛЬ ИНСТРУМЕНТОВ -->
         <div class="toolbar-panel">
-            <div class="tags-row" id="tags-panel-container">
-                <span>👉 Теги:</span>
+            <div class="week-display-banner">
+                <span id="weekDatesDisplay">📅 Загрузка...</span>
+            </div>
+            <div class="tags-row">
+                <div class="tags-label">🏷️ Теги:</div>
+                <div class="tags-list" id="tags-panel-container">
+                    <!-- Сюда рендерятся теги -->
+                </div>
                 <button class="btn-manage-tags" onclick="openTagsModal()">⚙️ Настроить</button>
             </div>
-            <div class="week-dates" id="weekDatesDisplay">📅 Загрузка...</div>
         </div>
 
         <!-- ТАБЛИЦА -->
@@ -670,7 +703,7 @@
         </div>
 
         <div class="toolbar-panel">
-            <div class="week-dates" id="habitsWeekDatesDisplay" style="width: 100%; text-align: center;">📅 Загрузка...</div>
+            <div class="week-display-banner" id="habitsWeekDatesDisplay" style="width: 100%;">📅 Загрузка...</div>
         </div>
 
         <div class="table-wrapper">
@@ -893,7 +926,10 @@
     function queueSync() {
         if (!currentUser || !isCloudDataLoaded || !db) return;
         const syncIcon = document.getElementById('sync-icon');
-        if(syncIcon) syncIcon.textContent = '☁️';
+        if(syncIcon) {
+            syncIcon.textContent = '☁️';
+            syncIcon.classList.add('syncing');
+        }
 
         clearTimeout(syncTimeout);
         syncTimeout = setTimeout(() => {
@@ -906,9 +942,15 @@
                 diaryData: JSON.stringify(data),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                if(syncIcon) syncIcon.textContent = '✅';
+                if(syncIcon) {
+                    syncIcon.textContent = '✅';
+                    syncIcon.classList.remove('syncing');
+                }
             }).catch(err => {
-                if(syncIcon) syncIcon.textContent = '❌';
+                if(syncIcon) {
+                    syncIcon.textContent = '❌';
+                    syncIcon.classList.remove('syncing');
+                }
             });
         }, 2000);
     }
@@ -1080,8 +1122,8 @@
     function renderQuickTags() {
         const container = document.getElementById('tags-panel-container');
         if(!container) return;
-        const manageBtn = container.querySelector('.btn-manage-tags');
-        container.innerHTML = '<span>👉 Теги:</span>';
+        
+        container.innerHTML = ''; 
         if(Array.isArray(quickTags)) {
             quickTags.forEach(tag => {
                 const btn = document.createElement('button');
@@ -1092,7 +1134,6 @@
                 container.appendChild(btn);
             });
         }
-        if(manageBtn) container.appendChild(manageBtn);
     }
 
     function openTagsModal() { document.getElementById('tagsModal').style.display = 'block'; renderManageTagsList(); }
@@ -1135,8 +1176,22 @@
             targetInput = document.getElementById(`note-${todayIdx}`);
         }
         if (targetInput) {
-            const currentVal = targetInput.value.trim(); 
-            targetInput.value = currentVal ? currentVal + '\n• ' + text : '• ' + text;
+            const startPos = targetInput.selectionStart;
+            const endPos = targetInput.selectionEnd;
+            const textVal = targetInput.value;
+            
+            let prefix = '';
+            if (startPos > 0 && textVal[startPos - 1] !== '\n') {
+                prefix = '\n';
+            }
+            
+            const insertText = prefix + '• ' + text + ' ';
+            targetInput.value = textVal.substring(0, startPos) + insertText + textVal.substring(endPos);
+            
+            const newCursorPos = startPos + insertText.length;
+            targetInput.selectionStart = newCursorPos;
+            targetInput.selectionEnd = newCursorPos;
+            
             localStorage.setItem(targetInput.id, targetInput.value); 
             targetInput.focus(); 
             autoResize(targetInput);
@@ -1194,6 +1249,15 @@
                 const pill = document.createElement('div');
                 pill.className = 'tag-stat-pill';
                 
+                // Цветовое кодирование
+                const tLower = item.tag.toLowerCase();
+                if (tLower.includes('сух')) pill.classList.add('tag-dry');
+                else if (tLower.includes('красн')) pill.classList.add('tag-red');
+                else if (tLower.includes('высып') || tLower.includes('акне')) pill.classList.add('tag-rash');
+                else if (tLower.includes('жирн')) pill.classList.add('tag-oil');
+                else if (tLower.includes('споко') || tLower.includes('хорош')) pill.classList.add('tag-calm');
+                else pill.classList.add('tag-default');
+
                 let tooltipHtml = item.details.map(d => 
                     `<div style="margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;">
                         <span class="tag-tooltip-date">${d.day}</span>
@@ -1257,9 +1321,11 @@
         const moisturizerChecked = moiEl ? moiEl.checked : false;
 
         let msg = "", icon = "💡";
+        let isUvAlert = false;
 
         if (currentUv >= 3 && !spfChecked && hour >= 6 && hour < 12) {
             icon = "☀️"; msg = `Высокий UV (<b>${currentUv}</b>). Нанесите <b>СПФ</b>!`;
+            isUvAlert = true;
         } else if (hour >= 6 && hour < 12) {
             icon = "🌅";
             msg = spfChecked ? "СПФ нанесен. Доброе утро! ☕" : "Начните день с <b>СПФ</b>.";
@@ -1276,7 +1342,11 @@
             else { icon = "✨"; msg = "Обновляйте СПФ, если вы на улице."; }
         }
         recText.innerHTML = msg;
-        if(recIcon) recIcon.textContent = icon;
+        if(recIcon) {
+            recIcon.textContent = icon;
+            if (isUvAlert) recIcon.classList.add('pulse-alert');
+            else recIcon.classList.remove('pulse-alert');
+        }
         
         renderTodayRecommendations();
     }
@@ -2336,7 +2406,7 @@
         const tempEl = document.getElementById('weather-temp'); 
         const uvEl = document.getElementById('weather-uv');
         if (!city) return; localStorage.setItem('userCity', city);
-        tempEl.style.display = 'none'; uvEl.style.display = 'none'; loading.style.display = 'inline-flex'; loading.textContent = '⏳ Загрузка...';
+        tempEl.style.display = 'none'; uvEl.style.display = 'none'; loading.style.display = 'inline-flex'; loading.textContent = '⏳ ...';
         const cl = city.toLowerCase().trim();
         try {
             let lat, lon, n;
@@ -2344,7 +2414,7 @@
             else {
                 const g = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ru&format=json`;
                 let gd; try { const r = await fetch(g); gd = await r.json(); } catch(e) { const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(g)}`); gd = await r.json(); }
-                if (!gd.results || gd.results.length === 0) { loading.textContent = '❌ Город не найден'; return; }
+                if (!gd.results || gd.results.length === 0) { loading.textContent = '❌ Не найден'; return; }
                 lat = gd.results[0].latitude; lon = gd.results[0].longitude; n = gd.results[0].name;
                 document.getElementById('city-input').value = n; localStorage.setItem('userCity', n);
             }
@@ -2362,7 +2432,7 @@
                 uvEl.textContent = `☀️ UV: ${uv}`; uvEl.classList.remove('uv-high'); document.getElementById('uv-alert').style.display = 'none';
             }
             updateRecommendation(); 
-        } catch (e) { loading.textContent = '☁️ Ошибка сети'; }
+        } catch (e) { loading.textContent = '☁️ Ошибка'; }
     }
     function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
 </script>
