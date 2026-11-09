@@ -1269,6 +1269,8 @@
 
     let skinColumns = safeParse('customSkinColumns_v2', defaultSkinColumns);
     if (!Array.isArray(skinColumns) || skinColumns.length === 0) skinColumns = defaultSkinColumns;
+    // ВАЖНО: Защита от старых данных без типа
+    skinColumns.forEach(c => { if(!c.type || ['morning', 'evening', 'body'].indexOf(c.type) === -1) c.type = 'evening'; });
 
     let habitColumns = safeParse('customHabitColumns_v2', defaultHabitColumns);
     if (!Array.isArray(habitColumns) || habitColumns.length === 0) habitColumns = defaultHabitColumns;
@@ -1278,6 +1280,12 @@
 
     let currentSkinSettings = safeParse('userSchedule', defaultSkinSettings);
     if (typeof currentSkinSettings !== 'object' || currentSkinSettings === null) currentSkinSettings = defaultSkinSettings;
+    // ВАЖНО: Защита от пустых массивов
+    skinColumns.forEach(c => {
+        if (!Array.isArray(currentSkinSettings[c.id]) || currentSkinSettings[c.id].length !== 7) {
+            currentSkinSettings[c.id] = [1,1,1,1,1,1,1];
+        }
+    });
 
     let currentHabitSettings = safeParse('userHabitSchedule', defaultHabitSettings);
     if (typeof currentHabitSettings !== 'object' || currentHabitSettings === null) currentHabitSettings = defaultHabitSettings;
@@ -1368,6 +1376,7 @@
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `check-${dayIndex}-${col.id}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
                 input.addEventListener('change', () => { 
+                    localStorage.setItem(input.id, input.checked); // Мгновенное сохранение
                     if(input.checked) unlockAchievement('first_check');
                     updateSkinStats(dayIndex); 
                 });
@@ -1487,8 +1496,7 @@
                 const input = document.getElementById(`check-${dayIndex}-${col.id}`); 
                 if(!input) return;
                 
-                // ВАЖНО: Сохраняем состояние в память!
-                localStorage.setItem(input.id, input.checked);
+                localStorage.setItem(input.id, input.checked); // Дополнительная страховка
 
                 if (input.checked) { 
                     totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
@@ -1607,7 +1615,7 @@
                     responsive: true, maintainAspectRatio: false, 
                     plugins: { 
                         legend: { display: false }, 
-                        tooltip: { enabled: false } // Отключено
+                        tooltip: { enabled: false } 
                     }, 
                     scales: { 
                         y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
@@ -1655,6 +1663,7 @@
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `habit-${dayIndex}-${col.id}`;
                 if (localStorage.getItem(input.id) === 'true') input.checked = true;
                 input.addEventListener('change', () => { 
+                    localStorage.setItem(input.id, input.checked); // Мгновенное сохранение
                     if(input.checked) unlockAchievement('first_check');
                     updateHabitsStats(dayIndex); 
                 });
@@ -1683,8 +1692,7 @@
                 const input = document.getElementById(`habit-${dayIndex}-${col.id}`); 
                 if (!input) return;
                 
-                // ВАЖНО: Сохраняем состояние в память!
-                localStorage.setItem(input.id, input.checked);
+                localStorage.setItem(input.id, input.checked); // Дополнительная страховка
 
                 if (input.checked) { 
                     totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
@@ -1785,7 +1793,7 @@
                     responsive: true, maintainAspectRatio: false, 
                     plugins: { 
                         legend: { display: false }, 
-                        tooltip: { enabled: false } // Отключено
+                        tooltip: { enabled: false } 
                     }, 
                     scales: { 
                         y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
