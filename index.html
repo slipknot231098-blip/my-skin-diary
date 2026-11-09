@@ -1486,6 +1486,10 @@
             skinColumns.forEach((col, colIndex) => {
                 const input = document.getElementById(`check-${dayIndex}-${col.id}`); 
                 if(!input) return;
+                
+                // ВАЖНО: Сохраняем состояние в память!
+                localStorage.setItem(input.id, input.checked);
+
                 if (input.checked) { 
                     totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
                     procDetails[colIndex].push(daysOfWeek[dayIndex]);
@@ -1603,7 +1607,7 @@
                     responsive: true, maintainAspectRatio: false, 
                     plugins: { 
                         legend: { display: false }, 
-                        tooltip: { enabled: false } // <--- ОТКЛЮЧИЛИ ТУЛТИП
+                        tooltip: { enabled: false } // Отключено
                     }, 
                     scales: { 
                         y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
@@ -1678,6 +1682,10 @@
             habitColumns.forEach((col, colIndex) => {
                 const input = document.getElementById(`habit-${dayIndex}-${col.id}`); 
                 if (!input) return;
+                
+                // ВАЖНО: Сохраняем состояние в память!
+                localStorage.setItem(input.id, input.checked);
+
                 if (input.checked) { 
                     totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
                     procDetails[colIndex].push(daysOfWeek[dayIndex]);
@@ -1777,7 +1785,7 @@
                     responsive: true, maintainAspectRatio: false, 
                     plugins: { 
                         legend: { display: false }, 
-                        tooltip: { enabled: false } // <--- ОТКЛЮЧИЛИ ТУЛТИП
+                        tooltip: { enabled: false } // Отключено
                     }, 
                     scales: { 
                         y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
