@@ -874,15 +874,27 @@
         db.collection('users').doc(uid).get().then(doc => {
             if (doc.exists && doc.data().diaryData) {
                 const cloudData = JSON.parse(doc.data().diaryData);
-                let changed = false;
-                for (let key in cloudData) {
-                    if (localStorage.getItem(key) !== cloudData[key]) {
+                
+                // ИСПРАВЛЕНИЕ: Проверяем, есть ли уже данные в браузере
+                let hasLocalData = false;
+                for (let i = 0; i < 7; i++) {
+                    if (localStorage.getItem(`check-${i}-spf`) !== null) hasLocalData = true;
+                }
+
+                if (!hasLocalData) {
+                    // Если браузер чистый (новое устройство) — загружаем из облака
+                    let changed = false;
+                    for (let key in cloudData) {
                         localStorage.setItem(key, cloudData[key]);
                         changed = true;
                     }
+                    isCloudDataLoaded = true;
+                    if (changed) location.reload();
+                } else {
+                    // Если данные уже есть локально, НЕ перезаписываем их из облака (чтобы не сбросить галочки)
+                    isCloudDataLoaded = true;
+                    queueSync(); // Отправляем локальные данные в облако
                 }
-                isCloudDataLoaded = true;
-                if (changed) location.reload();
             } else {
                 isCloudDataLoaded = true;
                 queueSync();
@@ -1373,12 +1385,11 @@
                 const label = document.createElement('label'); label.className = 'checkbox-container';
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `check-${dayIndex}-${col.id}`;
                 
-                // Восстановление из памяти
                 const saved = localStorage.getItem(input.id);
                 if (saved === 'true' || saved === true) input.checked = true;
 
                 input.addEventListener('change', () => { 
-                    localStorage.setItem(input.id, input.checked); // Мгновенное сохранение
+                    localStorage.setItem(input.id, input.checked); 
                     if(input.checked) unlockAchievement('first_check');
                     updateSkinStats(dayIndex); 
                 });
@@ -1497,8 +1508,6 @@
             skinColumns.forEach((col, colIndex) => {
                 const input = document.getElementById(`check-${dayIndex}-${col.id}`); 
                 if(!input) return;
-                
-                // УБРАНО принудительное сохранение, чтобы не перезаписывать память при загрузке
 
                 if (input.checked) { 
                     totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
@@ -1664,12 +1673,11 @@
                 const label = document.createElement('label'); label.className = 'checkbox-container';
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `habit-${dayIndex}-${col.id}`;
                 
-                // Восстановление из памяти
                 const saved = localStorage.getItem(input.id);
                 if (saved === 'true' || saved === true) input.checked = true;
 
                 input.addEventListener('change', () => { 
-                    localStorage.setItem(input.id, input.checked); // Мгновенное сохранение
+                    localStorage.setItem(input.id, input.checked); 
                     if(input.checked) unlockAchievement('first_check');
                     updateHabitsStats(dayIndex); 
                 });
@@ -1697,8 +1705,6 @@
             habitColumns.forEach((col, colIndex) => {
                 const input = document.getElementById(`habit-${dayIndex}-${col.id}`); 
                 if (!input) return;
-                
-                // УБРАНО принудительное сохранение
 
                 if (input.checked) { 
                     totalChecked++; barData[colIndex]++; dailyData[dayIndex]++; 
