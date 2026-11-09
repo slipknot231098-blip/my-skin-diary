@@ -35,7 +35,7 @@
             --shadow-hover: 0 16px 40px -10px rgba(0, 0, 0, 0.12);
             --hover-bg: #F7FAF8;
             --today-bg: #EBF4EF; 
-            --perfect-bg: rgba(124, 154, 136, 0.08); /* Фон для идеального дня */
+            --perfect-bg: rgba(124, 154, 136, 0.08);
             --today-text: #4A7C59; 
             --tooltip-bg: rgba(30, 41, 59, 0.95);
         }
@@ -49,7 +49,7 @@
             --hover-bg: #374151;
             --primary-light: #344C43;
             --today-bg: #263A33; 
-            --perfect-bg: rgba(129, 178, 154, 0.1); /* Фон для идеального дня в темной теме */
+            --perfect-bg: rgba(129, 178, 154, 0.1);
             --today-text: #81B29A; 
             --modal-bg: rgba(0, 0, 0, 0.6);
             --shadow: 0 8px 30px -10px rgba(0, 0, 0, 0.3);
@@ -149,7 +149,6 @@
         .week-dates-container { text-align: center; margin-top: 10px; margin-bottom: 30px; }
         .week-dates { display: inline-block; font-size: 15px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 12px 28px; border-radius: 30px; border: 1px solid transparent; box-shadow: var(--shadow); }
 
-        /* --- УЛУЧШЕНИЕ ТАБЛИЦЫ (Sticky + Идеальные дни) --- */
         .table-wrapper { width: 100%; margin-top: 5px; overflow-x: auto; overflow-y: auto; max-height: 70vh; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow); background: var(--card-bg); position: relative; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 950px; table-layout: auto; }
         th, td { padding: 14px 10px; text-align: center; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); box-sizing: border-box; vertical-align: middle; }
@@ -163,15 +162,8 @@
         th.fire { color: var(--red); }
         th.habit-col { color: var(--primary); }
 
-        /* Липкий первый столбец (Sticky Left) */
-        .table-wrapper th:first-child, .table-wrapper td.day-cell {
-            position: sticky;
-            left: 0;
-            z-index: 5;
-            background-color: var(--card-bg);
-            box-shadow: 2px 0 5px -2px rgba(0,0,0,0.05);
-        }
-        .table-wrapper th:first-child { z-index: 11; } /* Заголовок поверх остальных */
+        .table-wrapper th:first-child, .table-wrapper td.day-cell { position: sticky; left: 0; z-index: 5; background-color: var(--card-bg); box-shadow: 2px 0 5px -2px rgba(0,0,0,0.05); }
+        .table-wrapper th:first-child { z-index: 11; } 
 
         tbody tr:hover { background-color: var(--hover-bg); }
         tbody tr:nth-child(even) { background-color: rgba(0,0,0,0.015); }
@@ -180,7 +172,6 @@
         tr.today-row { background-color: var(--today-bg) !important; }
         tr.today-row .day-cell { font-weight: 800; color: var(--today-text); box-shadow: inset 6px 0 0 0 var(--primary), 2px 0 5px -2px rgba(0,0,0,0.05); background-color: var(--today-bg) !important; }
         
-        /* Визуализация идеального дня */
         tr.perfect-row { background-color: var(--perfect-bg) !important; }
         tr.perfect-row .day-cell { background-color: var(--perfect-bg) !important; }
 
@@ -209,25 +200,117 @@
         .chart-box.active { display: block; }
         .chart-box canvas { width: 100% !important; height: 100% !important; }
 
-        .tags-analytics-container { display: flex; gap: 10px; flex-wrap: wrap; padding: 20px 0; }
-        .tag-stat-pill { background: var(--bg); border: 1px solid var(--border-color); padding: 10px 18px; border-radius: 14px; font-size: 15px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 10px; cursor: help; position: relative; }
-        .tag-stat-count { background: var(--primary); color: white; border-radius: 8px; padding: 2px 10px; font-size: 13px; }
-        .tag-tooltip { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: var(--tooltip-bg); color: white; padding: 12px 16px; border-radius: 12px; font-size: 13px; line-height: 1.5; opacity: 0; visibility: hidden; z-index: 1000; width: max-content; max-width: 350px; max-height: 250px; overflow-y: auto; pointer-events: auto; text-align: left; }
-        .tag-stat-pill:hover .tag-tooltip { opacity: 1; visibility: visible; }
+        /* --- УЛУЧШЕННЫЙ БЛОК ТЕГОВ --- */
+        .tags-analytics-wrapper {
+            padding: 10px 0;
+        }
+        .tags-analytics-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tags-analytics-title span {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--bg);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+        .tags-analytics-container { 
+            display: flex; 
+            gap: 15px; 
+            flex-wrap: wrap; 
+        }
+        .tag-stat-pill { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            padding: 12px 20px; 
+            border-radius: 16px; 
+            font-size: 15px; 
+            font-weight: 700; 
+            color: var(--text); 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            cursor: pointer; 
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+        }
+        .tag-stat-pill:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(124,154,136,0.15);
+        }
+        .tag-stat-days {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .tag-stat-count { 
+            background: var(--primary); 
+            color: white; 
+            border-radius: 8px; 
+            padding: 4px 10px; 
+            font-size: 13px; 
+            font-weight: 800;
+        }
+        .tag-tooltip { 
+            position: absolute; 
+            bottom: calc(100% + 15px); 
+            left: 50%; 
+            transform: translateX(-50%) translateY(10px); 
+            background: var(--tooltip-bg); 
+            color: white; 
+            padding: 16px; 
+            border-radius: 16px; 
+            font-size: 13px; 
+            line-height: 1.5; 
+            opacity: 0; 
+            visibility: hidden; 
+            z-index: 1000; 
+            width: 280px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            pointer-events: none; 
+            text-align: left; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tag-tooltip::after {
+            content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border-width: 8px; border-style: solid; border-color: var(--tooltip-bg) transparent transparent transparent;
+        }
+        .tag-tooltip-date {
+            font-weight: 800;
+            color: var(--primary-light);
+            margin-bottom: 6px;
+            display: block;
+            font-size: 14px;
+        }
+        .tag-tooltip-text {
+            white-space: pre-wrap;
+            opacity: 0.9;
+        }
+        .tag-stat-pill:hover .tag-tooltip { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateX(-50%) translateY(0);
+        }
 
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--modal-bg); backdrop-filter: blur(8px); }
         .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 35px; border-radius: 28px; width: 90%; max-width: 800px; box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); }
         .close-btn { color: var(--text-muted); float: right; font-size: 32px; cursor: pointer; line-height: 1; margin-top: -10px; }
         .close-btn:hover { color: var(--red); }
 
-        .settings-table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 15px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
+        .settings-table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
         .settings-table { width: 100%; min-width: 500px; border-collapse: collapse; }
         .settings-table th, .settings-table td { padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
         .settings-table th:last-child, .settings-table td:last-child { border-right: none; }
@@ -235,7 +318,6 @@
         .settings-table td:first-child { text-align: left; font-weight: 600; padding-left: 12px; white-space: nowrap; }
         .settings-table input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); }
 
-        /* --- ПУСТЫЕ СОСТОЯНИЯ (Empty States) --- */
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -327,7 +409,6 @@
             .auth-info-pill { padding: 4px; border: none; background: transparent; }
             .btn-logout-icon { font-size: 20px; padding: 10px; background: var(--red-bg); border-radius: 50%; }
             
-            /* Отключаем sticky на мобильных, так как таблица превращается в карточки */
             .table-wrapper { border: none; box-shadow: none; background: transparent; max-height: none; }
             table, thead, tbody, th, td, tr { display: block; width: 100% !important; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
@@ -355,6 +436,9 @@
             .floating-theme-btn { bottom: 25px; right: 20px; width: 56px; height: 56px; font-size: 22px; }
             .tag-tooltip { left: 0; transform: translateX(0); bottom: 120%; max-width: 280px; }
             .recommendation-card { flex-direction: column; text-align: center; gap: 12px; }
+            
+            .tag-stat-pill { width: 100%; justify-content: space-between; }
+            .tag-tooltip { width: 100%; left: 0; transform: translateX(0); }
         }
     </style>
 </head>
@@ -448,7 +532,17 @@
             <div class="chart-box active" id="chart-skin-fact"><canvas id="barChart"></canvas></div>
             <div class="chart-box" id="chart-skin-days"><canvas id="dailyChart"></canvas></div>
             <div class="chart-box" id="chart-skin-trends"><canvas id="lineChart"></canvas></div>
-            <div class="chart-box" id="chart-skin-tags"><div class="tags-analytics-container" id="tags-analytics-list"></div></div>
+            <div class="chart-box" id="chart-skin-tags">
+                <!-- НОВЫЙ БЛОК ТЕГОВ -->
+                <div class="tags-analytics-wrapper">
+                    <div class="tags-analytics-title">
+                        Статистика тегов <span>Текущая неделя</span>
+                    </div>
+                    <div class="tags-analytics-container" id="tags-analytics-list">
+                        <!-- Сюда рендерятся теги -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -842,36 +936,72 @@
         }
     }
 
+    // ПЕРЕРАБОТАННАЯ АНАЛИТИКА ТЕГОВ
     function renderTagsAnalytics() {
         const container = document.getElementById('tags-analytics-list');
         if (!container) return;
         container.innerHTML = '';
+        
         let tagData = {}; 
-        quickTags.forEach(tag => tagData[tag] = { count: 0, details: [] });
+        quickTags.forEach(tag => tagData[tag] = { count: 0, days: new Set(), details: [] });
 
         for (let i = 0; i < 7; i++) {
             const noteEl = document.getElementById(`note-${i}`);
             if (noteEl && noteEl.value.trim() !== '') {
                 const fullNote = noteEl.value.trim();
-                let safeNote = fullNote.replace(/\n/g, '<br>');
                 quickTags.forEach(tag => {
                     let regex = new RegExp(tag, "gi");
                     let matches = fullNote.match(regex);
                     if (matches && matches.length > 0) {
                         tagData[tag].count += matches.length;
-                        tagData[tag].details.push(`<div><b>${daysOfWeek[i]}:</b><br>${safeNote}</div>`);
+                        tagData[tag].days.add(daysOfWeek[i]);
+                        tagData[tag].details.push({
+                            day: daysOfWeek[i],
+                            text: fullNote
+                        });
                     }
                 });
             }
         }
-        let sortedTags = Object.keys(tagData).map(tag => ({ tag, count: tagData[tag].count, details: tagData[tag].details })).filter(item => item.count > 0).sort((a, b) => b.count - a.count);
+
+        let sortedTags = Object.keys(tagData)
+            .map(tag => ({ 
+                tag: tag, 
+                count: tagData[tag].count, 
+                days: Array.from(tagData[tag].days), 
+                details: tagData[tag].details 
+            }))
+            .filter(item => item.count > 0)
+            .sort((a, b) => b.count - a.count);
+
         if (sortedTags.length === 0) {
-            container.innerHTML = '<span style="color: var(--text-muted); font-size: 15px; padding: 20px;">Теги не использовались.</span>';
+            container.innerHTML = `
+                <div class="empty-state" style="width: 100%; margin-top: 10px;">
+                    <div class="empty-icon">🏷️</div>
+                    <div class="empty-title">Тегов пока нет</div>
+                    <div class="empty-desc">Используйте быстрые теги при заполнении заметок, чтобы отслеживать состояние кожи.</div>
+                </div>`;
         } else {
             sortedTags.forEach(item => {
                 const pill = document.createElement('div');
                 pill.className = 'tag-stat-pill';
-                pill.innerHTML = `${item.tag} <span class="tag-stat-count">${item.count}</span><div class="tag-tooltip">${item.details.join('')}</div>`;
+                
+                // Формируем тултип
+                let tooltipHtml = item.details.map(d => 
+                    `<div style="margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span class="tag-tooltip-date">${d.day}</span>
+                        <span class="tag-tooltip-text">${d.text.replace(/\n/g, '<br>')}</span>
+                    </div>`
+                ).join('');
+
+                pill.innerHTML = `
+                    <div>
+                        ${item.tag} 
+                        <div class="tag-stat-days">${item.days.join(', ')}</div>
+                    </div>
+                    <span class="tag-stat-count">${item.count}</span>
+                    <div class="tag-tooltip">${tooltipHtml}</div>
+                `;
                 container.appendChild(pill);
             });
         }
@@ -1175,7 +1305,7 @@
                 }
                 if (dayData.expected[colIndex] === 1) {
                     dayExpected++;
-                    if (input.checked) dayChecked++; // ФИКС: считаем только запланированные и выполненные
+                    if (input.checked) dayChecked++; 
                 }
             });
             
@@ -1359,7 +1489,7 @@
                 
                 if (currentHabitSettings[col.id][dayIndex] === 1) { 
                     totalExp++; dayExpected++; 
-                    if (input.checked) dayChecked++; // ФИКС
+                    if (input.checked) dayChecked++; 
                     if (dayIndex === todayIdx && !input.checked) {
                         pendingHabits.push(col.name);
                     }
@@ -1579,7 +1709,6 @@
         let sp = document.getElementById('monthlySpendDisplay'); 
         if(sp) sp.textContent = `Потрачено в этом месяце: ${spend} ₽`;
 
-        // Empty State для средств
         if (products.length === 0) { 
             container.innerHTML = `
                 <div class="empty-state">
@@ -1742,7 +1871,6 @@
         list.innerHTML = '';
         let hist = safeParse('weeklyHistory', []);
         
-        // Empty State для архива
         if (hist.length === 0) {
             list.innerHTML = `
                 <div class="empty-state">
