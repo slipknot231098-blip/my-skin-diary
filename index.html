@@ -1730,18 +1730,73 @@
         const gridC = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
         const accC = isDark ? '#81B29A' : '#7C9A88';
         
-        let goals = []; 
+let goals = []; 
         skinColumns.forEach(c => { let arr = currentSkinSettings[c.id] || [0,0,0,0,0,0,0]; goals.push(arr.reduce((a,b)=>a+b, 0)); }); 
-        const maxGoal = Math.max(...goals, 1);
-        const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
         
+        let chartLabels = [];
+        let chartData = [];
+        let chartColors = [];
+        
+        const bgColors = ['#7C9A88', '#8FA99A', '#A3B18A', '#D97373', '#E2A76F', '#C69C9C', '#9CA3AF', '#60A5FA', '#F472B6'];
+
+        skinColumns.forEach((c, i) => {
+            if (goals[i] > 0) {
+                // Убираем цифры в начале названия (например, "1. СПФ" -> "СПФ")
+                let cleanName = c.name.replace(/^\d+\.\s*/, '');
+                // Формат: "СПФ (Сделано из Плана)"
+                chartLabels.push(`${cleanName} (${barData[i]} из ${goals[i]})`);
+                chartData.push(barData[i]);
+                chartColors.push(bgColors[i % bgColors.length]);
+            }
+        });
+
+        const maxGoal = Math.max(...goals, 1);
+
         if (barChartInstance) barChartInstance.destroy();
         const bc = document.getElementById('barChart');
         if(bc) {
             barChartInstance = new Chart(bc, {
                 type: 'bar', 
-                data: { labels: skinColumns.map((c, i) => `${c.name} (${goals[i]})`), datasets: [{ data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `Сделано: ${c.raw}. Дни: ${procDetails[c.dataIndex].join(', ')}` } } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, y: { ticks: { color: txtC }, grid: { display: false } } } }
+                data: { 
+                    labels: chartLabels, 
+                    datasets: [{ 
+                        data: chartData, 
+                        backgroundColor: chartColors, 
+                        borderRadius: 8 
+                    }] 
+                },
+                options: { 
+                    indexAxis: 'y', 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { 
+                            callbacks: { 
+                                label: (context) => {
+                                    let done = context.raw;
+                                    // Ищем оригинальный индекс процедуры, чтобы правильно показать инфо
+                                    let originalIndex = skinColumns.findIndex(col => col.name.replace(/^\d+\.\s*/, '') === context.label.split(' (')[0]);
+                                    let total = goals[originalIndex];
+                                    let days = procDetails[originalIndex] ? procDetails[originalIndex].join(', ') : 'Нет';
+                                    return `Сделано: ${done} из ${total}. Дни: ${days}`;
+                                }
+                            } 
+                        } 
+                    }, 
+                    scales: { 
+                        x: { 
+                            beginAtZero: true, 
+                            max: maxGoal, 
+                            ticks: { stepSize: 1, color: txtC }, 
+                            grid: { color: gridC } 
+                        }, 
+                        y: { 
+                            ticks: { color: txtC, font: { size: 13, family: 'Inter' } }, 
+                            grid: { display: false } 
+                        } 
+                    } 
+                }
             });
         }
 
