@@ -1303,7 +1303,7 @@
         }
     }
 
-        function updateRecommendation() {
+    function updateRecommendation() {
         const recText = document.getElementById('rec-text');
         const recIcon = document.getElementById('rec-icon');
         if (!recText) return;
@@ -1320,7 +1320,6 @@
         const efizelChecked = efiEl ? efiEl.checked : false;
         const moisturizerChecked = moiEl ? moiEl.checked : false;
 
-        // Проверяем, что вообще запланировано на сегодня
         const isSpfScheduled = currentSkinSettings['spf'] && currentSkinSettings['spf'][todayIdx] === 1;
         const isCleanserScheduled = currentSkinSettings['cleanser'] && currentSkinSettings['cleanser'][todayIdx] === 1;
         const isEfizelScheduled = currentSkinSettings['efizel'] && currentSkinSettings['efizel'][todayIdx] === 1;
@@ -1329,7 +1328,7 @@
         let msg = "", icon = "💡";
         let isUvAlert = false;
 
-        if (hour >= 6 && hour < 12) {
+        if (hour >= 6 && hour < 10) {
             if (isSpfScheduled) {
                 if (currentUv >= 3 && !spfChecked) {
                     icon = "☀️"; msg = `Высокий UV (<b>${currentUv}</b>). Нанесите <b>СПФ</b>!`;
@@ -1671,7 +1670,15 @@
         let progress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
         if(progress > 100) progress = 100; 
 
-        if(document.getElementById('progressValue')) document.getElementById('progressValue').textContent = `${progress}%`;
+                if(document.getElementById('progressValue')) {
+            if (totalExp === 0) {
+                document.getElementById('progressValue').textContent = `Отдых`;
+                document.getElementById('progressValue').style.fontSize = '32px';
+            } else {
+                document.getElementById('progressValue').textContent = `${progress}%`;
+                document.getElementById('progressValue').style.fontSize = '48px';
+            }
+        }
         if(document.getElementById('streakValue')) document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
         if(document.getElementById('progressBarText')) document.getElementById('progressBarText').textContent = `${progress}%`; 
         if(document.getElementById('progressBarFill')) document.getElementById('progressBarFill').style.width = `${progress}%`;
