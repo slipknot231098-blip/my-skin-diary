@@ -1309,48 +1309,75 @@
         if (!recText) return;
         const hour = new Date().getHours();
         const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
-        
-        const spfEl = document.getElementById(`check-${todayIdx}-spf`);
-        const cleEl = document.getElementById(`check-${todayIdx}-cleanser`);
-        const efiEl = document.getElementById(`check-${todayIdx}-efizel`);
-        const moiEl = document.getElementById(`check-${todayIdx}-moisturizer`);
-
-        const spfChecked = spfEl ? spfEl.checked : false;
-        const cleanserChecked = cleEl ? cleEl.checked : false;
-        const efizelChecked = efiEl ? efiEl.checked : false;
-        const moisturizerChecked = moiEl ? moiEl.checked : false;
-
-        const isSpfScheduled = currentSkinSettings['spf'] && currentSkinSettings['spf'][todayIdx] === 1;
-        const isCleanserScheduled = currentSkinSettings['cleanser'] && currentSkinSettings['cleanser'][todayIdx] === 1;
-        const isEfizelScheduled = currentSkinSettings['efizel'] && currentSkinSettings['efizel'][todayIdx] === 1;
-        const isMoisturizerScheduled = currentSkinSettings['moisturizer'] && currentSkinSettings['moisturizer'][todayIdx] === 1;
 
         let msg = "", icon = "💡";
         let isUvAlert = false;
 
+        // Функция для очистки названий (убирает "1. " в начале)
+        const cleanName = (name) => name.replace(/^\d+\.\s*/, '');
+
+        // УТРО (с 6 до 10)
         if (hour >= 6 && hour < 10) {
-            if (isSpfScheduled) {
-                if (currentUv >= 3 && !spfChecked) {
-                    icon = "☀️"; msg = `Высокий UV (<b>${currentUv}</b>). Нанесите <b>СПФ</b>!`;
+            let pendingMorning = [];
+            let totalMorning = 0;
+            
+            // Ищем все утренние процедуры, запланированные на сегодня
+            skinColumns.forEach(col => {
+                if (col.type === 'morning' && currentSkinSettings[col.id] && currentSkinSettings[col.id][todayIdx] === 1) {
+                    totalMorning++;
+                    const el = document.getElementById(`check-${todayIdx}-${col.id}`);
+                    if (el && !el.checked) pendingMorning.push(cleanName(col.name));
+                }
+            });
+
+            if (totalMorning === 0) {
+                icon = "🌅"; msg = "Доброе утро! На сегодня утренний уход не запланирован.";
+            } else if (pendingMorning.length === 0) {
+                icon = "☀️"; msg = "Утренний уход выполнен. Отличный старт дня! ☕";
+            } else {
+                // Если UV высокий и среди задач есть СПФ
+                if (currentUv >= 3 && pendingMorning.some(n => n.toLowerCase().includes('спф'))) {
+                    icon = "☀️"; msg = `Высокий UV (<b>${currentUv}</b>). Не забудь нанести <b>СПФ</b>!`;
                     isUvAlert = true;
                 } else {
-                    icon = "🌅"; msg = spfChecked ? "СПФ нанесен. Доброе утро! ☕" : "Начните день с <b>СПФ</b>.";
+                    icon = "🌅"; msg = `Доброе утро! Осталось сделать: <b>${pendingMorning.join(', ')}</b>.`;
                 }
-            } else {
-                icon = "🌅"; msg = "Доброе утро! Ознакомьтесь с планом на сегодня.";
             }
-        } else if (hour >= 17 && hour < 23) {
+        } 
+        // ВЕЧЕР (с 17 до 23)
+        else if (hour >= 17 && hour < 23) {
             icon = "🌙";
-            if (isEfizelScheduled && isMoisturizerScheduled && efizelChecked && moisturizerChecked) msg = "Рутина выполнена! ✨";
-            else if (isCleanserScheduled && isEfizelScheduled && cleanserChecked && !efizelChecked) msg = "Нанесите <b>Эффезел</b>, через 20 мин — крем.";
-            else msg = "Время вечерней рутины. Смойте СПФ и нанесите <b>крем</b>.";
-        } else if (hour >= 23 || hour < 6) {
+            let pendingEvening = [];
+            let totalEvening = 0;
+            
+            // Ищем все вечерние процедуры, запланированные на сегодня
+            skinColumns.forEach(col => {
+                if (col.type === 'evening' && currentSkinSettings[col.id] && currentSkinSettings[col.id][todayIdx] === 1) {
+                    totalEvening++;
+                    const el = document.getElementById(`check-${todayIdx}-${col.id}`);
+                    if (el && !el.checked) pendingEvening.push(cleanName(col.name));
+                }
+            });
+
+            if (totalEvening === 0) {
+                msg = "На сегодня вечерний уход не запланирован. Отдыхайте! 🛋️";
+            } else if (pendingEvening.length === 0) {
+                msg = "Вечерняя рутина полностью выполнена! ✨";
+            } else {
+                msg = `Время вечерней рутины. Осталось сделать: <b>${pendingEvening.join(', ')}</b>.`;
+            }
+        } 
+        // НОЧЬ
+        else if (hour >= 23 || hour < 6) {
             icon = "😴"; msg = "Ложитесь спать. Сон — лучший уход.";
-        } else {
+        } 
+        // ДЕНЬ (с 10 до 17)
+        else {
             if (currentTemp !== null && currentTemp < 0) { icon = "❄️"; msg = `На улице <b>${currentTemp}°C</b>. Добавьте плотный крем.`; }
             else if (currentTemp !== null && currentTemp > 25) { icon = "🥵"; msg = `Жарко (<b>${currentTemp}°C</b>). Пейте воду.`; }
             else { icon = "✨"; msg = "Обновляйте СПФ, если вы на улице."; }
         }
+
         recText.innerHTML = msg;
         if(recIcon) {
             recIcon.textContent = icon;
