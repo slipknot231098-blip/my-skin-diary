@@ -1303,7 +1303,7 @@
         }
     }
 
-    function updateRecommendation() {
+        function updateRecommendation() {
         const recText = document.getElementById('rec-text');
         const recIcon = document.getElementById('rec-icon');
         if (!recText) return;
@@ -1320,19 +1320,30 @@
         const efizelChecked = efiEl ? efiEl.checked : false;
         const moisturizerChecked = moiEl ? moiEl.checked : false;
 
+        // Проверяем, что вообще запланировано на сегодня
+        const isSpfScheduled = currentSkinSettings['spf'] && currentSkinSettings['spf'][todayIdx] === 1;
+        const isCleanserScheduled = currentSkinSettings['cleanser'] && currentSkinSettings['cleanser'][todayIdx] === 1;
+        const isEfizelScheduled = currentSkinSettings['efizel'] && currentSkinSettings['efizel'][todayIdx] === 1;
+        const isMoisturizerScheduled = currentSkinSettings['moisturizer'] && currentSkinSettings['moisturizer'][todayIdx] === 1;
+
         let msg = "", icon = "💡";
         let isUvAlert = false;
 
-        if (currentUv >= 3 && !spfChecked && hour >= 6 && hour < 12) {
-            icon = "☀️"; msg = `Высокий UV (<b>${currentUv}</b>). Нанесите <b>СПФ</b>!`;
-            isUvAlert = true;
-        } else if (hour >= 6 && hour < 12) {
-            icon = "🌅";
-            msg = spfChecked ? "СПФ нанесен. Доброе утро! ☕" : "Начните день с <b>СПФ</b>.";
+        if (hour >= 6 && hour < 12) {
+            if (isSpfScheduled) {
+                if (currentUv >= 3 && !spfChecked) {
+                    icon = "☀️"; msg = `Высокий UV (<b>${currentUv}</b>). Нанесите <b>СПФ</b>!`;
+                    isUvAlert = true;
+                } else {
+                    icon = "🌅"; msg = spfChecked ? "СПФ нанесен. Доброе утро! ☕" : "Начните день с <b>СПФ</b>.";
+                }
+            } else {
+                icon = "🌅"; msg = "Доброе утро! Ознакомьтесь с планом на сегодня.";
+            }
         } else if (hour >= 17 && hour < 23) {
             icon = "🌙";
-            if (efizelChecked && moisturizerChecked) msg = "Рутина выполнена! ✨";
-            else if (cleanserChecked && !efizelChecked) msg = "Нанесите <b>Эффезел</b>, через 20 мин — крем.";
+            if (isEfizelScheduled && isMoisturizerScheduled && efizelChecked && moisturizerChecked) msg = "Рутина выполнена! ✨";
+            else if (isCleanserScheduled && isEfizelScheduled && cleanserChecked && !efizelChecked) msg = "Нанесите <b>Эффезел</b>, через 20 мин — крем.";
             else msg = "Время вечерней рутины. Смойте СПФ и нанесите <b>крем</b>.";
         } else if (hour >= 23 || hour < 6) {
             icon = "😴"; msg = "Ложитесь спать. Сон — лучший уход.";
