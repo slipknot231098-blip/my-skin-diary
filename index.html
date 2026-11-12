@@ -1739,14 +1739,34 @@
         queueSync();
     }
 
-    function renderSkinSparkline(data) {
+     function renderSkinSparkline(data) {
         const ctx = document.getElementById('skinSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (skinSparkInstance) skinSparkInstance.destroy();
+        
+        const isDark = document.body.classList.contains('dark-mode');
+        const barColor = isDark ? '#81B29A' : '#7C9A88';
+        
         skinSparkInstance = new Chart(ctx, {
-            type: 'line',
-            data: { labels: daysOfWeek, datasets: [{ data: data, borderColor: document.body.classList.contains('dark-mode') ? '#81B29A' : '#7C9A88', borderWidth: 2, pointRadius: 0, fill: false }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } } }
+            type: 'bar', // Меняем тип на 'bar'
+            data: { 
+                labels: daysOfWeek, 
+                datasets: [{ 
+                    data: data, 
+                    backgroundColor: barColor, 
+                    borderRadius: 4, // Закругляем края баров
+                    barPercentage: 0.6 // Делаем бары чуть тоньше
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }, // Отключаем лишние подсказки для мини-графика
+                scales: { 
+                    x: { display: false }, 
+                    y: { display: false, beginAtZero: true, suggestedMax: Math.max(...data, 1) + 1 } 
+                } 
+            }
         });
     }
 
@@ -1977,10 +1997,30 @@ let goals = [];
         const ctx = document.getElementById('habitSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (habitSparkInstance) habitSparkInstance.destroy();
+        
+        const isDark = document.body.classList.contains('dark-mode');
+        const barColor = isDark ? '#81B29A' : '#7C9A88';
+        
         habitSparkInstance = new Chart(ctx, {
-            type: 'line',
-            data: { labels: daysOfWeek, datasets: [{ data: data, borderColor: document.body.classList.contains('dark-mode') ? '#81B29A' : '#7C9A88', borderWidth: 2, pointRadius: 0, fill: false }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false, min: 0 } } }
+            type: 'bar',
+            data: { 
+                labels: daysOfWeek, 
+                datasets: [{ 
+                    data: data, 
+                    backgroundColor: barColor, 
+                    borderRadius: 4,
+                    barPercentage: 0.6
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { 
+                    x: { display: false }, 
+                    y: { display: false, beginAtZero: true, suggestedMax: Math.max(...data, 1) + 1 } 
+                } 
+            }
         });
     }
 
