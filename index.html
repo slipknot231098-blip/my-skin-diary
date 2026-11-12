@@ -226,7 +226,7 @@
         .stat-label { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .progress-bar-bg { width: 100%; height: 6px; background-color: var(--border-color); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
         .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--primary-hover)); border-radius: 10px; transition: width 0.8s; }
-        .sparkline-wrapper { height: 40px; width: 100%; margin-top: auto; position: relative; }
+        .sparkline-wrapper { height: 65px; width: 100%; margin-top: auto; position: relative; }
 
         .stat-mini-grid {
             display: grid;
@@ -1739,31 +1739,64 @@
         queueSync();
     }
 
-     function renderSkinSparkline(data) {
+ function renderSkinSparkline(data) {
         const ctx = document.getElementById('skinSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (skinSparkInstance) skinSparkInstance.destroy();
         
         const isDark = document.body.classList.contains('dark-mode');
         const barColor = isDark ? '#81B29A' : '#7C9A88';
+        const txtColor = isDark ? '#A0AEC0' : '#718096';
+
+        // Плагин для отрисовки цифр над столбиками
+        const valueLabelPlugin = {
+            id: 'valueLabel',
+            afterDatasetsDraw(chart) {
+                const { ctx, data } = chart;
+                ctx.save();
+                data.datasets[0].data.forEach((datapoint, index) => {
+                    if (datapoint > 0) {
+                        const meta = chart.getDatasetMeta(0);
+                        const x = meta.data[index].x;
+                        const y = meta.data[index].y;
+                        ctx.fillStyle = txtColor;
+                        ctx.font = 'bold 10px Inter';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(datapoint, x, y - 6);
+                    }
+                });
+            }
+        };
         
         skinSparkInstance = new Chart(ctx, {
-            type: 'bar', // Меняем тип на 'bar'
+            type: 'bar',
             data: { 
                 labels: daysOfWeek, 
                 datasets: [{ 
                     data: data, 
                     backgroundColor: barColor, 
-                    borderRadius: 4, // Закругляем края баров
-                    barPercentage: 0.6 // Делаем бары чуть тоньше
+                    borderRadius: 4,
+                    barPercentage: 0.6
                 }] 
             },
+            plugins: [valueLabelPlugin], // Подключаем плагин
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false, 
-                plugins: { legend: { display: false }, tooltip: { enabled: false } }, // Отключаем лишние подсказки для мини-графика
+                layout: { padding: { top: 15 } }, // Отступ сверху для цифр
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: { 
+                        enabled: true,
+                        callbacks: { label: (ctx) => `Сделано: ${ctx.raw}` }
+                    } 
+                },
                 scales: { 
-                    x: { display: false }, 
+                    x: { 
+                        display: true, 
+                        ticks: { color: txtColor, font: { size: 10, family: 'Inter' } }, 
+                        grid: { display: false } 
+                    }, 
                     y: { display: false, beginAtZero: true, suggestedMax: Math.max(...data, 1) + 1 } 
                 } 
             }
@@ -1993,13 +2026,33 @@ let goals = [];
         queueSync();
     }
 
-    function renderHabitSparkline(data) {
+   function renderHabitSparkline(data) {
         const ctx = document.getElementById('habitSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (habitSparkInstance) habitSparkInstance.destroy();
         
         const isDark = document.body.classList.contains('dark-mode');
         const barColor = isDark ? '#81B29A' : '#7C9A88';
+        const txtColor = isDark ? '#A0AEC0' : '#718096';
+
+        const valueLabelPlugin = {
+            id: 'valueLabel',
+            afterDatasetsDraw(chart) {
+                const { ctx, data } = chart;
+                ctx.save();
+                data.datasets[0].data.forEach((datapoint, index) => {
+                    if (datapoint > 0) {
+                        const meta = chart.getDatasetMeta(0);
+                        const x = meta.data[index].x;
+                        const y = meta.data[index].y;
+                        ctx.fillStyle = txtColor;
+                        ctx.font = 'bold 10px Inter';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(datapoint, x, y - 6);
+                    }
+                });
+            }
+        };
         
         habitSparkInstance = new Chart(ctx, {
             type: 'bar',
@@ -2012,12 +2065,24 @@ let goals = [];
                     barPercentage: 0.6
                 }] 
             },
+            plugins: [valueLabelPlugin],
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false, 
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                layout: { padding: { top: 15 } },
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: { 
+                        enabled: true,
+                        callbacks: { label: (ctx) => `Выполнено: ${ctx.raw}` }
+                    } 
+                },
                 scales: { 
-                    x: { display: false }, 
+                    x: { 
+                        display: true, 
+                        ticks: { color: txtColor, font: { size: 10, family: 'Inter' } }, 
+                        grid: { display: false } 
+                    }, 
                     y: { display: false, beginAtZero: true, suggestedMax: Math.max(...data, 1) + 1 } 
                 } 
             }
