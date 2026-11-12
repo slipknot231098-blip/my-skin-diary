@@ -594,6 +594,18 @@
             </div>
         </div>
 
+        <!-- Блок Продукта дня -->
+            <div class="hero-product-area" id="product-of-the-day" style="display: none; border-top: 2px dashed var(--border-color); padding-top: 15px; width: 100%; margin-top: 5px;">
+                <div class="rec-today-title" id="product-title">🧴 Продукт дня:</div>
+                <div class="product-tip-text" id="product-tip-text" style="font-size: 13px; color: var(--text-muted); line-height: 1.5; max-width: 600px; margin: 0 auto;"></div>
+            </div>
+
+            <!-- Блок Совета дня -->
+            <div class="hero-advice-area" style="border-top: 2px dashed var(--border-color); padding-top: 15px; width: 100%; margin-top: 5px;">
+                <div class="rec-today-title">💡 Совет по уходу:</div>
+                <div class="advice-tip-text" id="advice-tip-text" style="font-size: 13px; color: var(--text); line-height: 1.5; max-width: 700px; margin: 0 auto; font-style: italic;"></div>
+            </div>
+
         <!-- НОВЫЙ БЛОК СТАТИСТИКИ -->
         <div class="stats-grid">
             <!-- Главная карточка прогресса -->
@@ -2601,6 +2613,8 @@ let goals = [];
             renderQuickTags();
             updateRecommendation();
             fetchWeatherByCity(savedCity);
+            fetchDailyProduct();
+            renderDailyAdvice();
         } catch(e) {
             console.error("Init error:", e);
             alert("Ошибка при загрузке данных. Проверьте консоль (F12).");
@@ -2654,6 +2668,117 @@ let goals = [];
         } catch (e) { loading.textContent = '☁️ Ошибка'; }
     }
     function setCity() { fetchWeatherByCity(document.getElementById('city-input').value.trim()); }
+        
+    // --- БАЗА СОВЕТОВ ДЛЯ САЙТА ---
+    const siteTips = [
+        "🧼 <b>Двойное очищение:</b> Вечером важно не просто смыть макияж, а очистить поры от себума и солнцезащитного крема. Начните с гидрофильного масла, а затем умойтесь пенкой.",
+        "🧴 <b>Правило 20 минут:</b> Если вы используете активы (Эффезел, ретинол, кислоты), наносите их только на сухую и чистую кожу. Подождите 20 минут, прежде чем наносить увлажняющий крем.",
+        "😴 <b>Сон и регенерация:</b> С 23:00 до 2:00 часов ночи в коже активно вырабатывается коллаген и происходит восстановление клеток. Старайтесь ложиться спать в это время.",
+        "🛏️ <b>Чистота наволочки:</b> Пока вы спите, кожа контактирует с наволочкой 7-8 часов. Меняйте наволочку минимум 2 раза в неделю, чтобы избежать появления акне.",
+        "👁️ <b>Уход за глазами:</b> Кожа вокруг глаз в 4 раза тоньше остальной. Наносите крем для глаз легкими похлопывающими движениями безымянным пальцем (на нем меньше всего силы нажима).",
+        "💋 <b>Бальзам для губ:</b> На ночь наносите толстый слой питательного бальзама. Во сне кожа восстанавливается, а бальзам создаст защитный барьер и предотвратит сухость.",
+        "💧 <b>Увлажнение воздуха:</b> Сухой воздух в спальне (особенно зимой при отоплении) обезвоживает кожу. Используйте увлажнитель или поставьте рядом с кроватью стакан воды.",
+        "🧖‍♀️ <b>Не забываем про шею:</b> Кожа шеи стареет раньше лица, так как там меньше сальных желез. Наносите на шею те же средства (сыворотки, кремы), что и на лицо.",
+        "🌬️ <b>Проветривание:</b> Перед сном обязательно проветрите комнату. Прохладный воздух (18-20°C) улучшает качество сна, а клетки кожи лучше восстанавливаются в прохладе.",
+        "🤲 <b>Крем для рук:</b> Держите крем для рук на прикроватной тумбочке и наносите перед сном. Ночью он работает эффективнее.",
+        "☀️ <b>СПФ каждый день:</b> Ультрафиолет проникает через облака и стекло. Наносите СПФ даже зимой и в пасмурную погоду, если находитесь у окна.",
+        "💦 <b>Влажная кожа:</b> Наносите увлажняющий крем или сыворотку на слегка влажную после умывания кожу. Так активные вещества проникают глубже."
+    ];
+
+    // Функция для вывода совета дня (обновляется каждые 3 часа)
+    function renderDailyAdvice() {
+        const textEl = document.getElementById('advice-tip-text');
+        if (!textEl) return;
+
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const block = Math.floor(now.getHours() / 3); // Делим сутки на блоки по 3 часа
+        const cacheKey = 'daily_advice_' + todayStr + '_block' + block;
+
+        const cached = localStorage.getItem(cacheKey);
+
+        if (cached) {
+            textEl.innerHTML = cached;
+            return;
+        }
+
+        const randomTip = siteTips[Math.floor(Math.random() * siteTips.length)];
+        localStorage.setItem(cacheKey, randomTip);
+        textEl.innerHTML = randomTip;
+    }
+
+    // Функция для загрузки продукта дня (с привязкой ко времени суток и обновлением каждые 3 часа)
+    async function fetchDailyProduct() {
+        const container = document.getElementById('product-of-the-day');
+        const textEl = document.getElementById('product-tip-text');
+        const titleEl = document.getElementById('product-title');
+        if (!container || !textEl || !titleEl) return;
+
+        const now = new Date();
+        const hour = now.getHours();
+        const todayStr = now.toISOString().split('T')[0];
+        const block = Math.floor(hour / 3); // 3-часовой блок
+        
+        let categoryUrl = 'en:skincare';
+        let cacheKey = 'daily_product_day_' + todayStr + '_block' + block;
+        let titleText = '🧴 Продукт дня:';
+
+        // Определяем категорию по времени суток
+        if (hour >= 6 && hour < 12) {
+            categoryUrl = 'en:sunscreens,en:moisturizers';
+            cacheKey = 'daily_product_morning_' + todayStr + '_block' + block;
+            titleText = '☀️ Утренний продукт:';
+        } else if (hour >= 17 && hour < 23) {
+            categoryUrl = 'en:night-creams,en:face-masks';
+            cacheKey = 'daily_product_evening_' + todayStr + '_block' + block;
+            titleText = '🌙 Вечерний продукт:';
+        }
+
+        titleEl.textContent = titleText;
+
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            displayProduct(JSON.parse(cached), textEl, container);
+            return;
+        }
+
+        try {
+            const url = `https://world.openbeautyfacts.org/api/v2/search?categories_tags=${categoryUrl}&fields=product_name,brands,ingredients_text&page_size=50`;
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.products && data.products.length > 0) {
+                let validProducts = data.products.filter(p => p.product_name);
+                if (validProducts.length === 0) {
+                    const fallbackRes = await fetch(`https://world.openbeautyfacts.org/api/v2/search?categories_tags=en:skincare&fields=product_name,brands,ingredients_text&page_size=50`);
+                    const fallbackData = await fallbackRes.json();
+                    validProducts = fallbackData.products.filter(p => p.product_name);
+                    if (validProducts.length === 0) return;
+                }
+
+                const randomProduct = validProducts[Math.floor(Math.random() * validProducts.length)];
+                localStorage.setItem(cacheKey, JSON.stringify(randomProduct));
+                displayProduct(randomProduct, textEl, container);
+            }
+        } catch (e) {
+            console.error("Ошибка загрузки продукта дня:", e);
+        }
+    }
+
+    function displayProduct(product, textEl, container) {
+        let html = `<b>${product.product_name}</b>`;
+        if (product.brands) html += ` от бренда <b>${product.brands}</b>`;
+        html += `.`;
+        
+        if (product.ingredients_text) {
+            let ing = product.ingredients_text.substring(0, 120).replace(/\n/g, ' ');
+            html += `<br><span style="font-size: 11px; opacity: 0.8;">Состав: ${ing}...</span>`;
+        }
+        
+        textEl.innerHTML = html;
+        container.style.display = 'block';
+    }
+    
 </script>
 </body>
 </html>
