@@ -1733,13 +1733,13 @@
         if(document.getElementById('skinBestStreak')) document.getElementById('skinBestStreak').textContent = `${best} 🏅`;
         
         updateSkinCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails);
-        renderSkinSparkline(dailyData);
+        renderSkinSparkline(dailyData, dayDetails);
         renderTagsAnalytics();
         updateRecommendation(); 
         queueSync();
     }
 
- function renderSkinSparkline(data) {
+  function renderSkinSparkline(data, details) {
         const ctx = document.getElementById('skinSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (skinSparkInstance) skinSparkInstance.destroy();
@@ -1748,7 +1748,6 @@
         const barColor = isDark ? '#81B29A' : '#7C9A88';
         const txtColor = isDark ? '#A0AEC0' : '#718096';
 
-        // Плагин для отрисовки цифр над столбиками
         const valueLabelPlugin = {
             id: 'valueLabel',
             afterDatasetsDraw(chart) {
@@ -1772,31 +1771,39 @@
             type: 'bar',
             data: { 
                 labels: daysOfWeek, 
-                datasets: [{ 
-                    data: data, 
-                    backgroundColor: barColor, 
-                    borderRadius: 4,
-                    barPercentage: 0.6
-                }] 
+                datasets: [{ data: data, backgroundColor: barColor, borderRadius: 4, barPercentage: 0.6 }] 
             },
-            plugins: [valueLabelPlugin], // Подключаем плагин
+            plugins: [valueLabelPlugin],
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false, 
-                layout: { padding: { top: 15 } }, // Отступ сверху для цифр
+                layout: { padding: { top: 15 } }, 
                 plugins: { 
                     legend: { display: false }, 
                     tooltip: { 
                         enabled: true,
-                        callbacks: { label: (ctx) => `Сделано: ${ctx.raw}` }
+                        backgroundColor: isDark ? '#2D3748' : '#FFFFFF',
+                        titleColor: isDark ? '#E2E8F0' : '#2D3748',
+                        bodyColor: isDark ? '#A0AEC0' : '#718096',
+                        borderColor: isDark ? '#4A5568' : '#E2E8F0',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false, // Убираем цветной квадратик слева
+                        callbacks: { 
+                            title: (context) => {
+                                return `${context[0].label} (Сделано: ${context[0].raw})`;
+                            },
+                            label: (context) => {
+                                let items = details[context.dataIndex];
+                                if (!items || items.length === 0) return 'Ничего не сделано';
+                                // Очищаем от цифр ("1. СПФ" -> "СПФ")
+                                return items.map(n => '• ' + n.replace(/^\d+\.\s*/, '')).join('\n');
+                            }
+                        } 
                     } 
                 },
                 scales: { 
-                    x: { 
-                        display: true, 
-                        ticks: { color: txtColor, font: { size: 10, family: 'Inter' } }, 
-                        grid: { display: false } 
-                    }, 
+                    x: { display: true, ticks: { color: txtColor, font: { size: 10, family: 'Inter' } }, grid: { display: false } }, 
                     y: { display: false, beginAtZero: true, suggestedMax: Math.max(...data, 1) + 1 } 
                 } 
             }
@@ -2022,11 +2029,11 @@ let goals = [];
         updateHabitsRecommendation(pendingHabits);
 
         updateHabitCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails);
-        renderHabitSparkline(dailyData);
+        renderHabitSparkline(dailyData, dayDetails);
         queueSync();
     }
 
-   function renderHabitSparkline(data) {
+   function renderHabitSparkline(data, details) {
         const ctx = document.getElementById('habitSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (habitSparkInstance) habitSparkInstance.destroy();
@@ -2058,12 +2065,7 @@ let goals = [];
             type: 'bar',
             data: { 
                 labels: daysOfWeek, 
-                datasets: [{ 
-                    data: data, 
-                    backgroundColor: barColor, 
-                    borderRadius: 4,
-                    barPercentage: 0.6
-                }] 
+                datasets: [{ data: data, backgroundColor: barColor, borderRadius: 4, barPercentage: 0.6 }] 
             },
             plugins: [valueLabelPlugin],
             options: { 
@@ -2074,15 +2076,27 @@ let goals = [];
                     legend: { display: false }, 
                     tooltip: { 
                         enabled: true,
-                        callbacks: { label: (ctx) => `Выполнено: ${ctx.raw}` }
+                        backgroundColor: isDark ? '#2D3748' : '#FFFFFF',
+                        titleColor: isDark ? '#E2E8F0' : '#2D3748',
+                        bodyColor: isDark ? '#A0AEC0' : '#718096',
+                        borderColor: isDark ? '#4A5568' : '#E2E8F0',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
+                        callbacks: { 
+                            title: (context) => {
+                                return `${context[0].label} (Сделано: ${context[0].raw})`;
+                            },
+                            label: (context) => {
+                                let items = details[context.dataIndex];
+                                if (!items || items.length === 0) return 'Ничего не сделано';
+                                return items.map(n => '• ' + n.replace(/^\d+\.\s*/, '')).join('\n');
+                            }
+                        } 
                     } 
                 },
                 scales: { 
-                    x: { 
-                        display: true, 
-                        ticks: { color: txtColor, font: { size: 10, family: 'Inter' } }, 
-                        grid: { display: false } 
-                    }, 
+                    x: { display: true, ticks: { color: txtColor, font: { size: 10, family: 'Inter' } }, grid: { display: false } }, 
                     y: { display: false, beginAtZero: true, suggestedMax: Math.max(...data, 1) + 1 } 
                 } 
             }
