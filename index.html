@@ -44,6 +44,32 @@
             --checkbox-border: #CBD5E1;
         }
 
+        .stat-toggle {
+            display: flex;
+            background: var(--bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2px;
+        }
+        .stat-toggle-btn {
+            border: none;
+            background: transparent;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .stat-toggle-btn:hover { color: var(--text); }
+        .stat-toggle-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
         body.dark-mode {
             --bg: #1A202C; 
             --text: #E2E8F0;
@@ -683,13 +709,17 @@
         <!-- НОВЫЙ БЛОК СТАТИСТИКИ -->
         <div class="stats-grid">
             <!-- Главная карточка прогресса -->
-            <div class="stat-main-card">
+         <div class="stat-main-card">
                 <div class="stat-main-header">
                     <div>
-                        <div class="stat-label">Прогресс недели</div>
-                        <div class="stat-value-large" id="progressValue">0%</div>
+                        <div class="stat-label">ПРОГРЕСС</div>
+                        <div class="stat-value-large" id="progressValue" data-today="0%" data-week="0%">0%</div>
                     </div>
-                    <div id="progressDelta" style="font-size:14px; font-weight:700; padding-bottom:5px; display:none;"></div>
+                    <!-- Переключатель -->
+                    <div class="stat-toggle">
+                        <button class="stat-toggle-btn active" id="btn-skin-today" onclick="switchStat('skin', 'today')">Сегодня</button>
+                        <button class="stat-toggle-btn" id="btn-skin-week" onclick="switchStat('skin', 'week')">Неделя</button>
+                    </div>
                 </div>
                 <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBarFill"></div></div>
                 <div class="sparkline-wrapper"><canvas id="skinSparkline"></canvas></div>
@@ -765,11 +795,15 @@
         </div>
 
         <div class="stats-grid">
-            <div class="stat-main-card">
+                <div class="stat-main-card">
                 <div class="stat-main-header">
                     <div>
-                        <div class="stat-label">Выполнение</div>
-                        <div class="stat-value-large" id="habitsProgressValue">0%</div>
+                        <div class="stat-label">ПРОГРЕСС</div>
+                        <div class="stat-value-large" id="habitsProgressValue" data-today="0%" data-week="0%">0%</div>
+                    </div>
+                    <div class="stat-toggle">
+                        <button class="stat-toggle-btn active" id="btn-habit-today" onclick="switchStat('habit', 'today')">Сегодня</button>
+                        <button class="stat-toggle-btn" id="btn-habit-week" onclick="switchStat('habit', 'week')">Неделя</button>
                     </div>
                 </div>
                 <div class="progress-bar-bg"><div class="progress-bar-fill" id="habitsProgressBarFill"></div></div>
@@ -1783,15 +1817,20 @@
         let progress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
         if(progress > 100) progress = 100; 
 
-                if(document.getElementById('progressValue')) {
-            if (totalExp === 0) {
-                document.getElementById('progressValue').textContent = `Отдых`;
-                document.getElementById('progressValue').style.fontSize = '32px';
-            } else {
-                document.getElementById('progressValue').textContent = `${progress}%`;
-                document.getElementById('progressValue').style.fontSize = '48px';
-            }
+const valEl = document.getElementById('progressValue');
+        if (valEl) {
+            // Проверяем, есть ли переменная weekProgress. Если нет, считаем её здесь.
+            let wp = typeof weekProgress !== 'undefined' ? weekProgress : (totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0);
+            
+            // Записываем значения в скрытые атрибуты
+            valEl.setAttribute('data-today', todayExp === 0 ? 'Отдых' : `${progress}%`);
+            valEl.setAttribute('data-week', totalExp === 0 ? 'Отдых' : `${wp}%`);
+            
+            // Применяем то, что выбрано в переключателе
+            let currentPeriod = document.getElementById('btn-skin-week').classList.contains('active') ? 'week' : 'today';
+            switchStat('skin', currentPeriod);
         }
+        
         if(document.getElementById('streakValue')) document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
         if(document.getElementById('progressBarText')) document.getElementById('progressBarText').textContent = `${progress}%`; 
         if(document.getElementById('progressBarFill')) document.getElementById('progressBarFill').style.width = `${progress}%`;
@@ -2104,17 +2143,25 @@ let goals = [];
         if(document.getElementById('habitBestStreak')) document.getElementById('habitBestStreak').textContent = `${best} 🏅`;
         if (currentStreak >= 7) unlockAchievement('streak_7');
 
-        let progress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
+        let progress = todayExp > 0 ? Math.round((todayChecked / todayExp) * 100) : 0;
         if(progress > 100) progress = 100; 
         
-        if(document.getElementById('habitsProgressValue')) document.getElementById('habitsProgressValue').textContent = `${progress}%`;
-        if(document.getElementById('habitsProgressBarText')) document.getElementById('habitsProgressBarText').textContent = `${progress}%`;
-        if(document.getElementById('habitsProgressBarFill')) document.getElementById('habitsProgressBarFill').style.width = `${progress}%`;
+        // Считаем прогресс за неделю
+        let weekProgress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
+
+        const habitsValEl = document.getElementById('habitsProgressValue');
+        if (habitsValEl) {
+            habitsValEl.setAttribute('data-today', todayExp === 0 ? 'Отдых' : `${progress}%`);
+            habitsValEl.setAttribute('data-week', totalExp === 0 ? 'Отдых' : `${weekProgress}%`);
+            
+            let currentPeriod = document.getElementById('btn-habit-week').classList.contains('active') ? 'week' : 'today';
+            switchStat('habit', currentPeriod);
+        }
         if(document.getElementById('habitDailyStreak')) document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
 
         updateHabitsRecommendation(pendingHabits);
 
-        updateHabitCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails);
+        updateHabitCharts(barData, dailyData, weekProgress, totalExp, procDetails, dayDetails);
         renderHabitSparkline(dailyData, dayDetails);
         queueSync();
     }
