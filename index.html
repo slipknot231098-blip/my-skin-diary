@@ -462,21 +462,29 @@
         .report-item-value { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
         .report-item-value b { color: var(--primary); }
 
-                /* Стили для карточек с советами */
- .hero-info-card {
+        /* Сетка для двух карточек */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Две колонки */
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .hero-info-card {
             display: flex;
-            align-items: center; /* Центрируем иконку по вертикали */
+            align-items: flex-start;
             gap: 16px;
-            background: var(--card-bg); /* Более контрастный фон */
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             padding: 16px 20px;
             width: 100%;
-            max-width: 700px;
-            margin: 0 auto;
             text-align: left;
-            box-shadow: var(--shadow); /* Добавляем легкую тень */
+            box-shadow: var(--shadow);
+            box-sizing: border-box;
+            margin: 0; /* Убираем автоматические отступы */
         }
+        
         .hero-info-icon {
             font-size: 28px; /* Делаем иконку чуть крупнее */
             display: flex;
@@ -518,6 +526,10 @@
 
         /* Мобильная адаптация */
         @media (max-width: 900px) {
+            .info-grid {
+                grid-template-columns: 1fr; /* Одна колонка на телефонах */
+                gap: 12px;
+            }
             body { padding: 10px; }
             .topbar { flex-direction: column; padding: 15px; gap: 15px; }
             .nav-group { width: 100%; justify-content: center; flex-wrap: wrap; }
@@ -645,7 +657,10 @@
                 <!-- Сюда рендерятся задачи -->
             </div>
         </div>
+      </div> 
 
+ <!-- НОВЫЙ БЛОК С ДВУМЯ КОЛОНКАМИ -->
+    <div class="info-grid">
         <!-- Блок Продукта дня -->
         <div class="hero-info-card" id="product-of-the-day" style="display: none;">
             <div class="hero-info-icon">🧴</div>
@@ -663,6 +678,7 @@
                 <div class="hero-info-text" id="advice-tip-text"></div>
             </div>
         </div>
+    </div>
 
         <!-- НОВЫЙ БЛОК СТАТИСТИКИ -->
         <div class="stats-grid">
