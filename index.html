@@ -1759,13 +1759,41 @@
         return bestStreak;
     }
 
-    function updateSkinStats(changedDayIndex = -1) {
+        function switchStat(type, period) {
+        const valEl = document.getElementById(type === 'skin' ? 'progressValue' : 'habitsProgressValue');
+        const barEl = document.getElementById(type === 'skin' ? 'progressBarFill' : 'habitsProgressBarFill');
+        if (!valEl || !barEl) return;
+
+        const btnToday = document.getElementById(`btn-${type}-today`);
+        const btnWeek = document.getElementById(`btn-${type}-week`);
+        if (btnToday && btnWeek) {
+            btnToday.classList.toggle('active', period === 'today');
+            btnWeek.classList.toggle('active', period === 'week');
+        }
+
+        const val = valEl.getAttribute(`data-${period}`);
+        if (val === 'Отдых') {
+            valEl.textContent = 'Отдых';
+            valEl.style.fontSize = '32px';
+            barEl.style.width = '0%';
+        } else {
+            valEl.textContent = val;
+            valEl.style.fontSize = '48px';
+            barEl.style.width = val;
+        }
+    }
+    
+   function updateSkinStats(changedDayIndex = -1) {
         let totalChecked = 0, perfectDaysCount = 0;
         let barData = new Array(skinColumns.length).fill(0); 
         let dailyData = new Array(7).fill(0); 
         let procDetails = Array(skinColumns.length).fill().map(() => []);
         let dayDetails = Array(7).fill().map(() => []);
         let totalExp = 0;
+        
+        // Переменные для сегодняшнего дня
+        let todayChecked = 0, todayExp = 0;
+        let todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
         
         skinWeekSchedule.forEach(day => { totalExp += day.expected.reduce((a,b)=>a+b, 0); });
 
@@ -1786,7 +1814,87 @@
                     dayExpected++;
                     if (input.checked) dayChecked++; 
                 }
+                
+                // Считаем прогресс за сегодня
+                if (dayIndex === todayIdx) {
+                    if (dayData.expected[colIndex] === 1) {
+                        todayExp++;
+                        if (input.checked) todayChecked++;
+                    }
+                }
             });
+            
+            const streakCell = document.getElementById(`streak-${dayIndex}`);
+            const tr = document.getElementById(`skin-row-${dayIndex}`);
+            
+            if(streakCell) {
+                if (dayExpected === 0) {
+                    streakCell.innerHTML = `<span class="rest-icon">💤</span>`;
+                    if(tr) tr.classList.remove('perfect-row');
+                } else {
+                    const isPerfect = (dayChecked >= dayExpected);
+                    if (isPerfect) {
+                        runningStreak++;
+                        streakCell.innerHTML = `<span class="streak-badge">🔥 ${runningStreak}</span>`;
+                        perfectDaysCount++;
+                        if(tr) tr.classList.add('perfect-row');
+                        if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
+                        previousPerfectDays.add(dayIndex);
+                    } else { 
+                        runningStreak = 0; 
+                        streakCell.innerHTML = `<span style="display: inline-block; color: var(--text-muted); font-size: 14px; opacity: 0.4;">—</span>`;
+                        if(tr) tr.classList.remove('perfect-row');
+                        previousPerfectDays.delete(dayIndex); 
+                    }
+                }
+            }
+        });
+        
+        let progress = todayExp > 0 ? Math.round((todayChecked / todayExp) * 100) : 0;
+        if(progress > 100) progress = 100; 
+
+        let weekProgress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
+        if(weekProgress > 100) weekProgress = 100;
+
+        const valEl = document.getElementById('progressValue');
+        if (valEl) {
+            valEl.setAttribute('data-today', todayExp === 0 ? 'Отдых' : `${progress}%`);
+            valEl.setAttribute('data-week', totalExp === 0 ? 'Отдых' : `${weekProgress}%`);
+            
+            let currentPeriod = document.getElementById('btn-skin-week').classList.contains('active') ? 'week' : 'today';
+            switchStat('skin', currentPeriod);
+        }
+        
+        if(document.getElementById('streakValue')) document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
+        
+        let history = safeParse('weeklyHistory', []);
+        let globalPerfect = perfectDaysCount;
+        if (Array.isArray(history)) {
+            history.forEach(week => {
+                let checks = week.skinChecks || {};
+                for(let i=0; i<7; i++) {
+                    let exp = 0;
+                    skinColumns.forEach(c => { if(currentSkinSettings[c.id] && currentSkinSettings[c.id][i] === 1) exp++; });
+                    if(exp === 0) continue;
+                    let chk = 0; 
+                    skinColumns.forEach(c => { 
+                        if(currentSkinSettings[c.id] && currentSkinSettings[c.id][i] === 1 && checks[`check-${i}-${c.id}`]) chk++; 
+                    });
+                    if(chk >= exp) globalPerfect++;
+                }
+            });
+        }
+        if(document.getElementById('globalStreakValue')) document.getElementById('globalStreakValue').textContent = `${globalPerfect} 🏆`;
+        
+        const best = computeBestSkinStreak();
+        if(document.getElementById('skinBestStreak')) document.getElementById('skinBestStreak').textContent = `${best} 🏅`;
+        
+        updateSkinCharts(barData, dailyData, weekProgress, totalExp, procDetails, dayDetails);
+        renderSkinSparkline(dailyData);
+        renderTagsAnalytics();
+        updateRecommendation(); 
+        queueSync();
+    }
             
             const streakCell = document.getElementById(`streak-${dayIndex}`);
             const tr = document.getElementById(`skin-row-${dayIndex}`);
@@ -2085,7 +2193,7 @@ let goals = [];
         updateHabitsStats();
     }
 
-    function updateHabitsStats(changedDayIndex = -1) {
+        function updateHabitsStats(changedDayIndex = -1) {
         let totalChecked = 0, totalExp = 0, perfectDays = 0;
         let barData = new Array(habitColumns.length).fill(0);
         let dailyData = new Array(7).fill(0);
@@ -2093,7 +2201,9 @@ let goals = [];
         let todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
         let procDetails = Array(habitColumns.length).fill().map(() => []);
         let dayDetails = Array(7).fill().map(() => []);
-
+        
+        // Переменные для сегодняшнего дня
+        let todayChecked = 0, todayExp = 0;
         let pendingHabits = [];
 
         daysOfWeek.forEach((day, dayIndex) => {
@@ -2116,7 +2226,62 @@ let goals = [];
                         pendingHabits.push(col.name);
                     }
                 }
+                
+                // Считаем прогресс за сегодня
+                if (dayIndex === todayIdx) {
+                    if (currentHabitSettings[col.id][dayIndex] === 1) {
+                        todayExp++;
+                        if (input.checked) todayChecked++;
+                    }
+                }
             });
+            
+            const tr = document.getElementById(`habit-row-${dayIndex}`);
+            const isPerfect = (dayChecked >= dayExpected && dayExpected > 0);
+            if (isPerfect) {
+                perfectDays++;
+                if(tr) tr.classList.add('perfect-row');
+                if (changedDayIndex === dayIndex) {
+                    const was = localStorage.getItem(`habit_perfect_${dayIndex}`) === 'true';
+                    if (!was) { triggerCelebration(dayIndex); localStorage.setItem(`habit_perfect_${dayIndex}`, 'true'); }
+                }
+            } else { 
+                if(tr) tr.classList.remove('perfect-row');
+                localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); 
+            }
+        });
+
+        for (let i = todayIdx; i >= 0; i--) {
+            if (localStorage.getItem(`habit_perfect_${i}`) === 'true') currentStreak++;
+            else break;
+        }
+
+        const best = computeBestHabitStreak();
+        if(document.getElementById('habitBestStreak')) document.getElementById('habitBestStreak').textContent = `${best} 🏅`;
+        if (currentStreak >= 7) unlockAchievement('streak_7');
+
+        let progress = todayExp > 0 ? Math.round((todayChecked / todayExp) * 100) : 0;
+        if(progress > 100) progress = 100; 
+        
+        let weekProgress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
+        if(weekProgress > 100) weekProgress = 100;
+
+        const habitsValEl = document.getElementById('habitsProgressValue');
+        if (habitsValEl) {
+            habitsValEl.setAttribute('data-today', todayExp === 0 ? 'Отдых' : `${progress}%`);
+            habitsValEl.setAttribute('data-week', totalExp === 0 ? 'Отдых' : `${weekProgress}%`);
+            
+            let currentPeriod = document.getElementById('btn-habit-week').classList.contains('active') ? 'week' : 'today';
+            switchStat('habit', currentPeriod);
+        }
+        
+        if(document.getElementById('habitDailyStreak')) document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
+
+        updateHabitsRecommendation(pendingHabits);
+        updateHabitCharts(barData, dailyData, weekProgress, totalExp, procDetails, dayDetails);
+        renderHabitSparkline(dailyData, dayDetails);
+        queueSync();
+    }
             
             const tr = document.getElementById(`habit-row-${dayIndex}`);
             
