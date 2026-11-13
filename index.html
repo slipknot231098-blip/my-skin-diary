@@ -545,10 +545,6 @@
         body.dark-mode .hero-info-icon {
             background: var(--bg);
         }
-        
-        body.dark-mode .hero-info-card {
-            background: rgba(255, 255, 255, 0.03);
-        }
 
         /* Мобильная адаптация */
         @media (max-width: 900px) {
@@ -670,46 +666,46 @@
 
     <div id="content-skin" class="tab-content active">
         <!-- ОБНОВЛЕННЫЙ БЛОК РЕКОМЕНДАЦИЙ -->
- <div class="hero-widget" id="recommendation-card">
-        <div class="hero-tip-area">
-            <div class="rec-icon" id="rec-icon">💡</div>
-            <div class="rec-content">
-                <div class="rec-text" id="rec-text">Анализируем ваши данные...</div>
+        <div class="hero-widget" id="recommendation-card">
+            <div class="hero-tip-area">
+                <div class="rec-icon" id="rec-icon">💡</div>
+                <div class="rec-content">
+                    <div class="rec-text" id="rec-text">Анализируем ваши данные...</div>
+                </div>
             </div>
-        </div>
-        <div class="hero-today-area">
-            <div class="rec-today-title">📋 На сегодня:</div>
-            <div class="rec-today-list" id="rec-today-list">
-                <!-- Сюда рендерятся задачи -->
-            </div>
-        </div>
-      </div> 
-
- <!-- НОВЫЙ БЛОК С ДВУМЯ КОЛОНКАМИ -->
-    <div class="info-grid">
-        <!-- Блок Продукта дня -->
-        <div class="hero-info-card" id="product-of-the-day" style="display: none;">
-            <div class="hero-info-icon">🧴</div>
-            <div class="hero-info-content">
-                <div class="hero-info-title" id="product-title">Продукт дня</div>
-                <div class="hero-info-text" id="product-tip-text"></div>
+            <div class="hero-today-area">
+                <div class="rec-today-title">📋 На сегодня:</div>
+                <div class="rec-today-list" id="rec-today-list">
+                    <!-- Сюда рендерятся задачи -->
+                </div>
             </div>
         </div>
 
-        <!-- Блок Совета дня -->
-        <div class="hero-info-card">
-            <div class="hero-info-icon">💡</div>
-            <div class="hero-info-content">
-                <div class="hero-info-title">Совет по уходу</div>
-                <div class="hero-info-text" id="advice-tip-text"></div>
+        <!-- НОВЫЙ БЛОК С ДВУМЯ КОЛОНКАМИ -->
+        <div class="info-grid">
+            <!-- Блок Продукта дня -->
+            <div class="hero-info-card" id="product-of-the-day" style="display: none;">
+                <div class="hero-info-icon">🧴</div>
+                <div class="hero-info-content">
+                    <div class="hero-info-title" id="product-title">Продукт дня</div>
+                    <div class="hero-info-text" id="product-tip-text"></div>
+                </div>
+            </div>
+
+            <!-- Блок Совета дня -->
+            <div class="hero-info-card">
+                <div class="hero-info-icon">💡</div>
+                <div class="hero-info-content">
+                    <div class="hero-info-title">Совет по уходу</div>
+                    <div class="hero-info-text" id="advice-tip-text"></div>
+                </div>
             </div>
         </div>
-    </div>
 
         <!-- НОВЫЙ БЛОК СТАТИСТИКИ -->
         <div class="stats-grid">
             <!-- Главная карточка прогресса -->
-         <div class="stat-main-card">
+            <div class="stat-main-card">
                 <div class="stat-main-header">
                     <div>
                         <div class="stat-label">ПРОГРЕСС</div>
@@ -795,7 +791,7 @@
         </div>
 
         <div class="stats-grid">
-                <div class="stat-main-card">
+            <div class="stat-main-card">
                 <div class="stat-main-header">
                     <div>
                         <div class="stat-label">ПРОГРЕСС</div>
@@ -1759,7 +1755,7 @@
         return bestStreak;
     }
 
-        function switchStat(type, period) {
+    function switchStat(type, period) {
         const valEl = document.getElementById(type === 'skin' ? 'progressValue' : 'habitsProgressValue');
         const barEl = document.getElementById(type === 'skin' ? 'progressBarFill' : 'habitsProgressBarFill');
         if (!valEl || !barEl) return;
@@ -1782,8 +1778,8 @@
             barEl.style.width = val;
         }
     }
-    
-   function updateSkinStats(changedDayIndex = -1) {
+
+    function updateSkinStats(changedDayIndex = -1) {
         let totalChecked = 0, perfectDaysCount = 0;
         let barData = new Array(skinColumns.length).fill(0); 
         let dailyData = new Array(7).fill(0); 
@@ -1791,7 +1787,6 @@
         let dayDetails = Array(7).fill().map(() => []);
         let totalExp = 0;
         
-        // Переменные для сегодняшнего дня
         let todayChecked = 0, todayExp = 0;
         let todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
         
@@ -1815,7 +1810,6 @@
                     if (input.checked) dayChecked++; 
                 }
                 
-                // Считаем прогресс за сегодня
                 if (dayIndex === todayIdx) {
                     if (dayData.expected[colIndex] === 1) {
                         todayExp++;
@@ -1890,89 +1884,13 @@
         if(document.getElementById('skinBestStreak')) document.getElementById('skinBestStreak').textContent = `${best} 🏅`;
         
         updateSkinCharts(barData, dailyData, weekProgress, totalExp, procDetails, dayDetails);
-        renderSkinSparkline(dailyData);
-        renderTagsAnalytics();
-        updateRecommendation(); 
-        queueSync();
-    }
-            
-            const streakCell = document.getElementById(`streak-${dayIndex}`);
-            const tr = document.getElementById(`skin-row-${dayIndex}`);
-            
-            if(streakCell) {
-                if (dayExpected === 0) {
-                    streakCell.innerHTML = `<span class="rest-icon">💤</span>`;
-                    if(tr) tr.classList.remove('perfect-row');
-                } else {
-                    const isPerfect = (dayChecked >= dayExpected);
-                    if (isPerfect) {
-                        runningStreak++;
-                        streakCell.innerHTML = `<span class="streak-badge">🔥 ${runningStreak}</span>`;
-                        perfectDaysCount++;
-                        if(tr) tr.classList.add('perfect-row');
-                        if (!previousPerfectDays.has(dayIndex) && changedDayIndex === dayIndex) triggerCelebration(dayIndex);
-                        previousPerfectDays.add(dayIndex);
-                    } else { 
-                        runningStreak = 0; 
-                        streakCell.innerHTML = `<span style="display: inline-block; color: var(--text-muted); font-size: 14px; opacity: 0.4;">—</span>`;
-                        if(tr) tr.classList.remove('perfect-row');
-                        previousPerfectDays.delete(dayIndex); 
-                    }
-                }
-            }
-        });
-        
-        let progress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
-        if(progress > 100) progress = 100; 
-
-const valEl = document.getElementById('progressValue');
-        if (valEl) {
-            // Проверяем, есть ли переменная weekProgress. Если нет, считаем её здесь.
-            let wp = typeof weekProgress !== 'undefined' ? weekProgress : (totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0);
-            
-            // Записываем значения в скрытые атрибуты
-            valEl.setAttribute('data-today', todayExp === 0 ? 'Отдых' : `${progress}%`);
-            valEl.setAttribute('data-week', totalExp === 0 ? 'Отдых' : `${wp}%`);
-            
-            // Применяем то, что выбрано в переключателе
-            let currentPeriod = document.getElementById('btn-skin-week').classList.contains('active') ? 'week' : 'today';
-            switchStat('skin', currentPeriod);
-        }
-        
-        if(document.getElementById('streakValue')) document.getElementById('streakValue').textContent = `${perfectDaysCount} 🔥`;
-        if(document.getElementById('progressBarText')) document.getElementById('progressBarText').textContent = `${progress}%`; 
-        if(document.getElementById('progressBarFill')) document.getElementById('progressBarFill').style.width = `${progress}%`;
-        
-        let history = safeParse('weeklyHistory', []);
-        let globalPerfect = perfectDaysCount;
-        if (Array.isArray(history)) {
-            history.forEach(week => {
-                let checks = week.skinChecks || {};
-                for(let i=0; i<7; i++) {
-                    let exp = 0;
-                    skinColumns.forEach(c => { if(currentSkinSettings[c.id] && currentSkinSettings[c.id][i] === 1) exp++; });
-                    if(exp === 0) continue;
-                    let chk = 0; 
-                    skinColumns.forEach(c => { 
-                        if(currentSkinSettings[c.id] && currentSkinSettings[c.id][i] === 1 && checks[`check-${i}-${c.id}`]) chk++; 
-                    });
-                    if(chk >= exp) globalPerfect++;
-                }
-            });
-        }
-        if(document.getElementById('globalStreakValue')) document.getElementById('globalStreakValue').textContent = `${globalPerfect} 🏆`;
-        
-        const best = computeBestSkinStreak();
-        if(document.getElementById('skinBestStreak')) document.getElementById('skinBestStreak').textContent = `${best} 🏅`;
-        
-        updateSkinCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails);
         renderSkinSparkline(dailyData, dayDetails);
         renderTagsAnalytics();
         updateRecommendation(); 
         queueSync();
     }
 
-  function renderSkinSparkline(data, details) {
+    function renderSkinSparkline(data, details) {
         const ctx = document.getElementById('skinSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (skinSparkInstance) skinSparkInstance.destroy();
@@ -2050,7 +1968,7 @@ const valEl = document.getElementById('progressValue');
         const gridC = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
         const accC = isDark ? '#81B29A' : '#7C9A88';
         
-let goals = []; 
+        let goals = []; 
         skinColumns.forEach(c => { let arr = currentSkinSettings[c.id] || [0,0,0,0,0,0,0]; goals.push(arr.reduce((a,b)=>a+b, 0)); }); 
         
         let chartLabels = [];
@@ -2193,7 +2111,7 @@ let goals = [];
         updateHabitsStats();
     }
 
-        function updateHabitsStats(changedDayIndex = -1) {
+    function updateHabitsStats(changedDayIndex = -1) {
         let totalChecked = 0, totalExp = 0, perfectDays = 0;
         let barData = new Array(habitColumns.length).fill(0);
         let dailyData = new Array(7).fill(0);
@@ -2202,7 +2120,6 @@ let goals = [];
         let procDetails = Array(habitColumns.length).fill().map(() => []);
         let dayDetails = Array(7).fill().map(() => []);
         
-        // Переменные для сегодняшнего дня
         let todayChecked = 0, todayExp = 0;
         let pendingHabits = [];
 
@@ -2227,7 +2144,6 @@ let goals = [];
                     }
                 }
                 
-                // Считаем прогресс за сегодня
                 if (dayIndex === todayIdx) {
                     if (currentHabitSettings[col.id][dayIndex] === 1) {
                         todayExp++;
@@ -2282,56 +2198,8 @@ let goals = [];
         renderHabitSparkline(dailyData, dayDetails);
         queueSync();
     }
-            
-            const tr = document.getElementById(`habit-row-${dayIndex}`);
-            
-            const isPerfect = (dayChecked >= dayExpected && dayExpected > 0);
-            if (isPerfect) {
-                perfectDays++;
-                if(tr) tr.classList.add('perfect-row');
-                if (changedDayIndex === dayIndex) {
-                    const was = localStorage.getItem(`habit_perfect_${dayIndex}`) === 'true';
-                    if (!was) { triggerCelebration(dayIndex); localStorage.setItem(`habit_perfect_${dayIndex}`, 'true'); }
-                }
-            } else { 
-                if(tr) tr.classList.remove('perfect-row');
-                localStorage.setItem(`habit_perfect_${dayIndex}`, 'false'); 
-            }
-        });
 
-        for (let i = todayIdx; i >= 0; i--) {
-            if (localStorage.getItem(`habit_perfect_${i}`) === 'true') currentStreak++;
-            else break;
-        }
-
-        const best = computeBestHabitStreak();
-        if(document.getElementById('habitBestStreak')) document.getElementById('habitBestStreak').textContent = `${best} 🏅`;
-        if (currentStreak >= 7) unlockAchievement('streak_7');
-
-        let progress = todayExp > 0 ? Math.round((todayChecked / todayExp) * 100) : 0;
-        if(progress > 100) progress = 100; 
-        
-        // Считаем прогресс за неделю
-        let weekProgress = totalExp > 0 ? Math.round((totalChecked / totalExp) * 100) : 0;
-
-        const habitsValEl = document.getElementById('habitsProgressValue');
-        if (habitsValEl) {
-            habitsValEl.setAttribute('data-today', todayExp === 0 ? 'Отдых' : `${progress}%`);
-            habitsValEl.setAttribute('data-week', totalExp === 0 ? 'Отдых' : `${weekProgress}%`);
-            
-            let currentPeriod = document.getElementById('btn-habit-week').classList.contains('active') ? 'week' : 'today';
-            switchStat('habit', currentPeriod);
-        }
-        if(document.getElementById('habitDailyStreak')) document.getElementById('habitDailyStreak').textContent = `${currentStreak} 🔥`;
-
-        updateHabitsRecommendation(pendingHabits);
-
-        updateHabitCharts(barData, dailyData, weekProgress, totalExp, procDetails, dayDetails);
-        renderHabitSparkline(dailyData, dayDetails);
-        queueSync();
-    }
-
-   function renderHabitSparkline(data, details) {
+    function renderHabitSparkline(data, details) {
         const ctx = document.getElementById('habitSparkline');
         if (!ctx || typeof Chart === 'undefined') return;
         if (habitSparkInstance) habitSparkInstance.destroy();
@@ -3051,7 +2919,7 @@ let goals = [];
         }
     }
 
-function displayProduct(product, textEl, container) {
+    function displayProduct(product, textEl, container) {
         let html = `<b>${product.product_name}</b>`;
         if (product.brands) html += ` от бренда <b>${product.brands}</b>`;
         html += `.`;
