@@ -1073,23 +1073,42 @@
 
     function pullFromCloud(uid) {
         if(!db) return;
+        
+        // Защита от бесконечной перезагрузки
+        if (sessionStorage.getItem('sync_reloaded')) {
+            sessionStorage.removeItem('sync_reloaded');
+            isCloudDataLoaded = true;
+            queueSync();
+            return;
+        }
+
         db.collection('users').doc(uid).get().then(doc => {
             if (doc.exists && doc.data().diaryData) {
                 const cloudData = JSON.parse(doc.data().diaryData);
                 
+                // Проверяем, есть ли ЛЮБЫЕ данные в localStorage (галочки, заметки или привычки)
                 let hasLocalData = false;
-                for (let i = 0; i < 7; i++) {
-                    if (localStorage.getItem(`check-${i}-spf`) !== null) hasLocalData = true;
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('check-') || key.startsWith('habit-') || key.startsWith('note-') || key.startsWith('customSkin')) {
+                        hasLocalData = true;
+                        break;
+                    }
                 }
 
                 if (!hasLocalData) {
                     let changed = false;
                     for (let key in cloudData) {
-                        localStorage.setItem(key, cloudData[key]);
-                        changed = true;
+                        if (localStorage.getItem(key) !== cloudData[key]) {
+                            localStorage.setItem(key, cloudData[key]);
+                            changed = true;
+                        }
                     }
                     isCloudDataLoaded = true;
-                    if (changed) location.reload();
+                    if (changed) {
+                        sessionStorage.setItem('sync_reloaded', 'true');
+                        location.reload();
+                    }
                 } else {
                     isCloudDataLoaded = true;
                     queueSync();
