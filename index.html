@@ -698,20 +698,6 @@
             </div>
         </div>
 
-        <!-- БЛОК СОВЕТА ДНЯ -->
-        <div class="info-grid" style="grid-template-columns: 1fr;">
-            <div class="hero-info-card advice-card">
-                <div class="hero-info-icon">💡</div>
-                <div class="hero-info-content">
-                    <div class="hero-info-title">Совет по уходу</div>
-                    <div class="hero-info-text" id="advice-tip-text" style="margin-bottom: 8px;"></div>
-                    <!-- Добавленный текст -->
-                    <div style="font-size: 12px; color: var(--text-muted); font-weight: 600; border-top: 1px dashed var(--border-color); padding-top: 8px; margin-top: 4px;">
-                        ☀️ Обновляйте СПФ, если вы на улице.
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- НОВЫЙ БЛОК СТАТИСТИКИ -->
         <div class="stats-grid">
@@ -1437,7 +1423,8 @@
         skinColumns.forEach(col => {
             if (currentSkinSettings[col.id] && currentSkinSettings[col.id][todayIdx] === 1) {
                 count++;
-                const isDone = document.getElementById(`check-${todayIdx}-${col.id}`)?.checked;
+                // Читаем статус из localStorage, а не из чекбокса в таблице
+                const isDone = localStorage.getItem(`check-${todayIdx}-${col.id}`) === 'true';
                 html += `<span class="rec-today-item ${isDone ? 'done' : ''}">${isDone ? '✅' : '⏳'} ${col.name}</span>`;
             }
         });
@@ -1453,84 +1440,22 @@
         const recText = document.getElementById('rec-text');
         const recIcon = document.getElementById('rec-icon');
         if (!recText) return;
-        const hour = new Date().getHours();
-        const todayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
-        let msg = "", icon = "💡";
-        let isUvAlert = false;
-
-        // Функция для очистки названий (убирает "1. " в начале)
-        const cleanName = (name) => name.replace(/^\d+\.\s*/, '');
-
-        // УТРО (с 6 до 10)
-        if (hour >= 6 && hour < 10) {
-            let pendingMorning = [];
-            let totalMorning = 0;
-            
-            // Ищем все утренние процедуры, запланированные на сегодня
-            skinColumns.forEach(col => {
-                if (col.type === 'morning' && currentSkinSettings[col.id] && currentSkinSettings[col.id][todayIdx] === 1) {
-                    totalMorning++;
-                    const el = document.getElementById(`check-${todayIdx}-${col.id}`);
-                    if (el && !el.checked) pendingMorning.push(cleanName(col.name));
-                }
-            });
-
-            if (totalMorning === 0) {
-                icon = "🌅"; msg = "Доброе утро! На сегодня утренний уход не запланирован.";
-            } else if (pendingMorning.length === 0) {
-                icon = "☀️"; msg = "Утренний уход выполнен. Отличный старт дня! ☕";
-            } else {
-                // Если UV высокий и среди задач есть СПФ
-                if (currentUv >= 3 && pendingMorning.some(n => n.toLowerCase().includes('спф'))) {
-                    icon = "☀️"; msg = `Высокий UV (<b>${currentUv}</b>). Не забудь нанести <b>СПФ</b>!`;
-                    isUvAlert = true;
-                } else {
-                    icon = "🌅"; msg = `Доброе утро! Осталось сделать: <b>${pendingMorning.join(', ')}</b>.`;
-                }
-            }
-        } 
-        // ВЕЧЕР (с 17 до 23)
-        else if (hour >= 17 && hour < 23) {
-            icon = "🌙";
-            let pendingEvening = [];
-            let totalEvening = 0;
-            
-            // Ищем все вечерние процедуры, запланированные на сегодня
-            skinColumns.forEach(col => {
-                if (col.type === 'evening' && currentSkinSettings[col.id] && currentSkinSettings[col.id][todayIdx] === 1) {
-                    totalEvening++;
-                    const el = document.getElementById(`check-${todayIdx}-${col.id}`);
-                    if (el && !el.checked) pendingEvening.push(cleanName(col.name));
-                }
-            });
-
-            if (totalEvening === 0) {
-                msg = "На сегодня вечерний уход не запланирован. Отдыхайте! 🛋️";
-            } else if (pendingEvening.length === 0) {
-                msg = "Вечерняя рутина полностью выполнена! ✨";
-            } else {
-                msg = `Время вечерней рутины. Осталось сделать: <b>${pendingEvening.join(', ')}</b>.`;
-            }
-        } 
-        // НОЧЬ
-        else if (hour >= 23 || hour < 6) {
-            icon = "😴"; msg = "Ложитесь спать. Сон — лучший уход.";
-        } 
-        // ДЕНЬ (с 10 до 17)
-        else {
-            if (currentTemp !== null && currentTemp < 0) { icon = "❄️"; msg = `На улице <b>${currentTemp}°C</b>. Добавьте плотный крем.`; }
-            else if (currentTemp !== null && currentTemp > 25) { icon = "🥵"; msg = `Жарко (<b>${currentTemp}°C</b>). Пейте воду.`; }
-            else { icon = "✨"; msg = "Обновляйте СПФ, если вы на улице."; }
-        }
-
-        recText.innerHTML = msg;
-        if(recIcon) {
-            recIcon.textContent = icon;
-            if (isUvAlert) recIcon.classList.add('pulse-alert');
-            else recIcon.classList.remove('pulse-alert');
-        }
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+        const block = Math.floor(now.getHours() / 3);
+        const cacheKey = 'daily_advice_' + todayStr + '_block' + block;
         
+        let advice = localStorage.getItem(cacheKey);
+        if (!advice) {
+            advice = siteTips[Math.floor(Math.random() * siteTips.length)];
+            localStorage.setItem(cacheKey, advice);
+        }
+
+        // Выводим совет и текст про СПФ в верхнюю карточку
+        recText.innerHTML = `<b>Совет по уходу:</b><br><span style="font-size: 14px; font-weight: 500; color: var(--text-muted);">${advice}</span><br><br><span style="font-size: 12px; font-weight: 700; color: var(--primary);">☀️ Обновляйте СПФ, если вы на улице.</span>`;
+        if(recIcon) recIcon.textContent = '💡';
+
         renderTodayRecommendations();
     }
 
