@@ -1420,12 +1420,19 @@
         let html = '';
         let count = 0;
 
-        skinColumns.forEach(col => {
+        // Берем колонки в том же порядке, что и в таблице
+        let orderedCols = [
+            ...skinColumns.filter(c => c.type === 'morning'),
+            ...skinColumns.filter(c => c.type === 'evening'),
+            ...skinColumns.filter(c => c.type === 'body')
+        ];
+
+        orderedCols.forEach(col => {
             if (currentSkinSettings[col.id] && currentSkinSettings[col.id][todayIdx] === 1) {
                 count++;
-                // Читаем статус из localStorage, а не из чекбокса в таблице
                 const isDone = localStorage.getItem(`check-${todayIdx}-${col.id}`) === 'true';
-                html += `<span class="rec-today-item ${isDone ? 'done' : ''}">${isDone ? '✅' : '⏳'} ${col.name}</span>`;
+                let cleanName = col.name.replace(/^\d+\.\s*/, '');
+                html += `<span class="rec-today-item ${isDone ? 'done' : ''}">${isDone ? '✅' : '⏳'} ${cleanName}</span>`;
             }
         });
 
@@ -1452,8 +1459,10 @@
             localStorage.setItem(cacheKey, advice);
         }
 
-        // Выводим совет и текст про СПФ в верхнюю карточку
-        recText.innerHTML = `<b>Совет по уходу:</b><br><span style="font-size: 14px; font-weight: 500; color: var(--text-muted);">${advice}</span><br><br><span style="font-size: 12px; font-weight: 700; color: var(--primary);">☀️ Обновляйте СПФ, если вы на улице.</span>`;
+        // Выводим совет в верхнюю карточку
+        recText.innerHTML = `<b style="font-size: 12px; text-transform: uppercase; color: var(--primary); letter-spacing: 1px;">Совет по уходу:</b><br>
+                             <span style="font-size: 15px;">${advice}</span><br><br>
+                             <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">☀️ Обновляйте СПФ, если вы на улице.</span>`;
         if(recIcon) recIcon.textContent = '💡';
 
         renderTodayRecommendations();
@@ -1593,13 +1602,21 @@
         tbody.innerHTML = '';
         const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
 
+        // ИСПРАВЛЕНИЕ: Группируем колонки так же, как и в заголовках
+        let orderedCols = [
+            ...skinColumns.filter(c => c.type === 'morning'),
+            ...skinColumns.filter(c => c.type === 'evening'),
+            ...skinColumns.filter(c => c.type === 'body')
+        ];
+
         skinWeekSchedule.forEach((dayData, dayIndex) => {
             const tr = document.createElement('tr'); 
             tr.id = `skin-row-${dayIndex}`;
             if (dayIndex === todayIndex) tr.classList.add('today-row');
             const tdDay = document.createElement('td'); tdDay.className = 'day-cell'; tdDay.textContent = dayData.day + (dayIndex === todayIndex ? ' (Сегодня)' : ''); tr.appendChild(tdDay);
             
-            skinColumns.forEach((col) => {
+            // ИСПОЛЬЗУЕМ orderedCols ВМЕСТО skinColumns
+            orderedCols.forEach((col) => {
                 const td = document.createElement('td'); td.setAttribute('data-label', col.name);
                 const label = document.createElement('label'); label.className = 'checkbox-container';
                 const input = document.createElement('input'); input.type = 'checkbox'; input.id = `check-${dayIndex}-${col.id}`;
