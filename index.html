@@ -1951,9 +1951,7 @@
 
         skinColumns.forEach((c, i) => {
             if (goals[i] > 0) {
-                // Убираем цифры в начале названия (например, "1. СПФ" -> "СПФ")
                 let cleanName = c.name.replace(/^\d+\.\s*/, '');
-                // Формат: "СПФ (Сделано из Плана)"
                 chartLabels.push(`${cleanName} (${barData[i]} из ${goals[i]})`);
                 chartData.push(barData[i]);
                 chartColors.push(bgColors[i % bgColors.length]);
@@ -1967,25 +1965,15 @@
         if(bc) {
             barChartInstance = new Chart(bc, {
                 type: 'bar', 
-                data: { 
-                    labels: chartLabels, 
-                    datasets: [{ 
-                        data: chartData, 
-                        backgroundColor: chartColors, 
-                        borderRadius: 8 
-                    }] 
-                },
+                data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderRadius: 8 }] },
                 options: { 
-                    indexAxis: 'y', 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false, 
                     plugins: { 
                         legend: { display: false }, 
                         tooltip: { 
                             callbacks: { 
                                 label: (context) => {
                                     let done = context.raw;
-                                    // Ищем оригинальный индекс процедуры, чтобы правильно показать инфо
                                     let originalIndex = skinColumns.findIndex(col => col.name.replace(/^\d+\.\s*/, '') === context.label.split(' (')[0]);
                                     let total = goals[originalIndex];
                                     let days = procDetails[originalIndex] ? procDetails[originalIndex].join(', ') : 'Нет';
@@ -1995,16 +1983,8 @@
                         } 
                     }, 
                     scales: { 
-                        x: { 
-                            beginAtZero: true, 
-                            max: maxGoal, 
-                            ticks: { stepSize: 1, color: txtC }, 
-                            grid: { color: gridC } 
-                        }, 
-                        y: { 
-                            ticks: { color: txtC, font: { size: 13, family: 'Inter' } }, 
-                            grid: { display: false } 
-                        } 
+                        x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
+                        y: { ticks: { color: txtC, font: { size: 13, family: 'Inter' } }, grid: { display: false } } 
                     } 
                 }
             });
@@ -2020,7 +2000,24 @@
                     responsive: true, maintainAspectRatio: false, 
                     plugins: { 
                         legend: { display: false }, 
-                        tooltip: { enabled: false } 
+                        tooltip: { 
+                            enabled: true, // ВКЛЮЧАЕМ ПОДСКАЗКИ
+                            backgroundColor: isDark ? '#2D3748' : '#FFFFFF',
+                            titleColor: isDark ? '#E2E8F0' : '#2D3748',
+                            bodyColor: isDark ? '#A0AEC0' : '#718096',
+                            borderColor: isDark ? '#4A5568' : '#E2E8F0',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: { 
+                                title: (context) => `Сделано: ${context[0].raw}`,
+                                label: (context) => {
+                                    let items = dayDetails[context.dataIndex];
+                                    if (!items || items.length === 0) return 'Ничего не сделано';
+                                    return items.map(n => '• ' + n.replace(/^\d+\.\s*/, '')).join('\n');
+                                }
+                            } 
+                        } 
                     }, 
                     scales: { 
                         y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
@@ -2047,7 +2044,26 @@
             lineChartInstance = new Chart(lc, {
                 type: 'line', 
                 data: { labels: labels, datasets: [{ data: data, borderColor: accC, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 3, fill: true, tension: 0.4, pointBackgroundColor: accC }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: txtC }, grid: { color: gridC } }, x: { ticks: { color: txtC }, grid: { display: false } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: isDark ? '#2D3748' : '#FFFFFF',
+                            titleColor: isDark ? '#E2E8F0' : '#2D3748',
+                            bodyColor: isDark ? '#A0AEC0' : '#718096',
+                            borderColor: isDark ? '#4A5568' : '#E2E8F0',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: (context) => `Выполнено: ${context.raw}%`
+                            }
+                        }
+                    }, 
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: txtC }, grid: { color: gridC } }, x: { ticks: { color: txtC }, grid: { display: false } } } 
+                }
             });
         }
     }
@@ -2241,7 +2257,7 @@
         });
     }
 
-    function updateHabitCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails) {
+        function updateHabitCharts(barData, dailyData, progress, totalExp, procDetails, dayDetails) {
         if (typeof Chart === 'undefined') return;
         const isDark = document.body.classList.contains('dark-mode'); 
         const txtC = isDark ? '#E2E8F0' : '#2D3748'; 
@@ -2258,7 +2274,7 @@
         if(hbc) {
             habitBarChartInstance = new Chart(hbc, {
                 type: 'bar', 
-                data: { labels: habitColumns.map((c, i) => `${c.name} (${goals[i]})`), datasets: [{ data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
+                data: { labels: habitColumns.map((c, i) => `${c.name.replace(/^\d+\.\s*/, '')} (${goals[i]})`), datasets: [{ data: barData, backgroundColor: bgColors, borderRadius: 8 }] },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `Сделано: ${c.raw}. Дни: ${procDetails[c.dataIndex].join(', ')}` } } }, scales: { x: { beginAtZero: true, max: maxGoal, ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, y: { ticks: { color: txtC }, grid: { display: false } } } }
             });
         }
@@ -2273,7 +2289,24 @@
                     responsive: true, maintainAspectRatio: false, 
                     plugins: { 
                         legend: { display: false }, 
-                        tooltip: { enabled: false } 
+                        tooltip: { 
+                            enabled: true, // ВКЛЮЧАЕМ ПОДСКАЗКИ
+                            backgroundColor: isDark ? '#2D3748' : '#FFFFFF',
+                            titleColor: isDark ? '#E2E8F0' : '#2D3748',
+                            bodyColor: isDark ? '#A0AEC0' : '#718096',
+                            borderColor: isDark ? '#4A5568' : '#E2E8F0',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: { 
+                                title: (context) => `Выполнено: ${context[0].raw}`,
+                                label: (context) => {
+                                    let items = dayDetails[context.dataIndex];
+                                    if (!items || items.length === 0) return 'Ничего не сделано';
+                                    return items.map(n => '• ' + n.replace(/^\d+\.\s*/, '')).join('\n');
+                                }
+                            } 
+                        } 
                     }, 
                     scales: { 
                         y: { beginAtZero: true, max: Math.max(...dailyData, 6), ticks: { stepSize: 1, color: txtC }, grid: { color: gridC } }, 
@@ -2296,13 +2329,29 @@
             habitLineChartInstance = new Chart(hlc, {
                 type: 'line', 
                 data: { labels: labels, datasets: [{ data: data, borderColor: accC, backgroundColor: 'rgba(124, 154, 136, 0.1)', borderWidth: 3, fill: true, tension: 0.4, pointBackgroundColor: accC }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: txtC }, grid: { color: gridC } }, x: { ticks: { color: txtC }, grid: { display: false } } } }
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: isDark ? '#2D3748' : '#FFFFFF',
+                            titleColor: isDark ? '#E2E8F0' : '#2D3748',
+                            bodyColor: isDark ? '#A0AEC0' : '#718096',
+                            borderColor: isDark ? '#4A5568' : '#E2E8F0',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: (context) => `Выполнено: ${context.raw}%`
+                            }
+                        }
+                    }, 
+                    scales: { y: { beginAtZero: true, max: 100, ticks: { stepSize: 20, color: txtC }, grid: { color: gridC } }, x: { ticks: { color: txtC }, grid: { display: false } } } 
+                }
             });
         }
     }
-
-    let skinSortable = null;
-    let habitSortable = null;
 
     function openManageItems() { 
         document.getElementById('manageItemsModal').style.display = 'block'; 
