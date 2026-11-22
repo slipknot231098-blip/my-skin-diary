@@ -426,7 +426,31 @@
         .btn-delete-small { background-color: transparent; color: var(--red); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; border: none; }
         .btn-delete-small:hover { background-color: var(--red-bg); }
 
-        .product-form { background: var(--bg); padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+                .product-form { 
+            background: var(--bg); 
+            padding: 20px; 
+            border-radius: 16px; 
+            border: 1px solid var(--border-color); 
+            margin: 0 auto 20px auto; /* Центрируем саму форму */
+            display: flex; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+            align-items: flex-end; 
+            max-width: 900px; /* Ограничиваем ширину, чтобы она не растягивалась */
+            width: 100%;
+        }
+        
+        #productsModal h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #monthlySpendDisplay {
+            display: block;
+            margin: 0 auto 20px auto; /* Центрируем плашку */
+            text-align: center;
+            width: fit-content;
+        }
+        
         .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 130px; }
         .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
         .form-input { padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 13px; width: 100%; box-sizing: border-box; }
