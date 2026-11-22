@@ -199,11 +199,11 @@
         }
         .hero-tip-area {
             display: flex;
+            flex-direction: column; /* Иконка сверху, текст снизу */
             align-items: center;
             justify-content: center;
-            gap: 16px;
+            gap: 12px;
             width: 100%;
-            flex-wrap: wrap;
         }
         .rec-icon { 
             font-size: 32px; background: var(--bg); padding: 12px; border-radius: 50%; 
@@ -1530,22 +1530,26 @@
             localStorage.setItem(cacheKey, advice);
         }
 
-        // Выводим красивый и ровный блок
+        // Идеально центрированный блок
         recText.innerHTML = `
-            <div style="text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
-                <div style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
-                    💡 Совет по уходу
+            <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 12px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                    Совет по уходу
                 </div>
-                <div style="font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; margin-bottom: 12px;">
+                <div style="font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; margin-bottom: 14px; max-width: 800px;">
                     ${advice}
                 </div>
-                <div style="display: inline-block; background: var(--bg); padding: 6px 14px; border-radius: 10px; font-size: 12px; font-weight: 600; color: var(--text-muted); border: 1px dashed var(--border-color);">
+                <div style="background: var(--bg); padding: 6px 16px; border-radius: 12px; font-size: 12px; font-weight: 600; color: var(--text-muted); border: 1px dashed var(--border-color); display: inline-block;">
                     ☀️ Обновляйте СПФ, если вы на улице.
                 </div>
             </div>
         `;
         
-        if(recIcon) recIcon.textContent = '💡';
+        // Оставляем иконку, но она теперь будет красиво висеть над текстом
+        if(recIcon) {
+            recIcon.textContent = '💡';
+            recIcon.style.margin = '0 auto'; // Центрируем иконку
+        }
 
         renderTodayRecommendations();
     }
