@@ -432,20 +432,20 @@
         .btn-delete-small { background-color: transparent; color: var(--red); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; border: none; }
         .btn-delete-small:hover { background-color: var(--red-bg); }
 
+        /* Идеально ровная форма */
         .product-form { 
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
             background: var(--bg); 
             padding: 20px; 
             border-radius: 16px; 
             border: 1px solid var(--border-color); 
-            margin: 0 auto 20px auto; /* Центрируем форму */
-            display: flex; 
-            gap: 12px; 
-            flex-wrap: wrap; 
-            justify-content: center; /* Элементы формы по центру */
-            align-items: flex-end; 
-            max-width: 900px; /* Ограничиваем ширину */
+            margin: 0 auto 20px auto; 
+            max-width: 900px; 
             width: 100%;
             box-sizing: border-box;
+            align-items: end;
         }
         
         #productsModal h2 {
@@ -459,19 +459,31 @@
             width: fit-content;
         }
         
-          .form-group { 
+           .form-group { 
             display: flex; 
             flex-direction: column; 
             gap: 6px; 
-            flex: 1 1 120px; /* Позволяет полям гибко менять ширину */
-            max-width: 200px; /* Чтобы поля не были слишком широкими */
             text-align: left; 
+            width: 100%;
         }
         .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
         .form-input { padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 13px; width: 100%; box-sizing: border-box; }
         
         .product-table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; }
-        .product-table { width: 100%; min-width: 650px; border-collapse: collapse; background: var(--bg); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+               .product-table { 
+            width: 100%; 
+            min-width: 650px; 
+            border-collapse: collapse; 
+            background: var(--bg); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            border: 1px solid var(--border-color); 
+            table-layout: fixed; /* Фиксируем ширину колонок */
+        }
+        .product-table td:nth-child(1) { width: 45%; } /* Название */
+        .product-table td:nth-child(2) { width: 15%; white-space: nowrap; } /* Цена */
+        .product-table td:nth-child(3) { width: 25%; } /* Годен до */
+        .product-table td:nth-child(4) { width: 15%; } /* Действия */
         .product-table th, .product-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
         .product-table th { background: var(--hover-bg); font-weight: 600; color: var(--text-muted); font-size: 12px; }
         .product-table a { color: var(--primary); font-weight: 600; text-decoration: none; }
@@ -932,19 +944,19 @@
 
 <div id="productsModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeProductsModal()">&times;</span><h2>🛍️ Мои средства</h2><div id="monthlySpendDisplay" class="spend-badge">0 ₽</div>
         <div class="product-form">
-            <div class="form-group" style="flex: 2; min-width: 180px;"><label>Название</label><input type="text" id="prodName" class="form-input"></div>
-            <div class="form-group" style="flex: 1; min-width: 120px;"><label>Категория</label><select id="prodCategory" class="form-input"><option>Очищение</option><option>Уход</option><option>СПФ</option><option>Активы</option><option>Тело</option><option>Другое</option></select></div>
-            <div class="form-group" style="max-width: 90px;"><label>Цена</label><input type="text" id="prodPrice" class="form-input"></div>
-            <div class="form-group" style="max-width: 130px;"><label>Дата покупки</label><input type="date" id="prodBuyDate" class="form-input"></div>
+            <div class="form-group" style="grid-column: span 2;"><label>Название</label><input type="text" id="prodName" class="form-input"></div>
+            <div class="form-group"><label>Категория</label><select id="prodCategory" class="form-input"><option>Очищение</option><option>Уход</option><option>СПФ</option><option>Активы</option><option>Тело</option><option>Другое</option></select></div>
+            <div class="form-group"><label>Цена (₽)</label><input type="number" id="prodPrice" class="form-input"></div>
             
-            <div class="form-group" style="flex: 2; min-width: 180px;"><label>Ссылка</label><input type="text" id="prodLink" class="form-input"></div>
-            <div class="form-group" style="max-width: 130px;"><label>Годен до</label><input type="month" id="prodExpDate" class="form-input"></div>
-            <div class="form-group" style="max-width: 130px;"><label>Дата вскрытия</label><input type="date" id="prodOpenDate" class="form-input"></div>
-            <div class="form-group" style="max-width: 100px;"><label>ПАО (мес)</label><input type="number" id="prodPao" class="form-input" placeholder="6"></div>
+            <div class="form-group" style="grid-column: span 2;"><label>Ссылка</label><input type="text" id="prodLink" class="form-input"></div>
+            <div class="form-group"><label>Дата покупки</label><input type="date" id="prodBuyDate" class="form-input"></div>
+            <div class="form-group"><label>Годен до</label><input type="month" id="prodExpDate" class="form-input"></div>
             
-            <div class="form-group" style="min-width: 120px; flex-grow: 0; justify-content: flex-end;">
-                <button id="prodSubmitBtn" class="btn btn-primary" onclick="addProduct()" style="height: 40px;">➕ Добавить</button>
-                <button id="prodCancelBtn" class="btn btn-danger" style="display:none; height: 40px; margin-top: 5px;" onclick="cancelEditProduct()">Отмена</button>
+            <div class="form-group"><label>Дата вскрытия</label><input type="date" id="prodOpenDate" class="form-input"></div>
+            <div class="form-group"><label>ПАО (мес)</label><input type="number" id="prodPao" class="form-input" placeholder="6"></div>
+            <div class="form-group" style="grid-column: span 2; justify-content: flex-end;">
+                <button id="prodSubmitBtn" class="btn btn-primary" onclick="addProduct()" style="width: 100%; height: 40px; justify-content: center;">➕ Добавить</button>
+                <button id="prodCancelBtn" class="btn btn-danger" style="display:none; width: 100%; height: 40px; justify-content: center; margin-top: 5px;" onclick="cancelEditProduct()">Отмена</button>
             </div>
         </div>
 <div id="productsContainer"></div>
@@ -2621,7 +2633,7 @@
         return { status: 'pao-ok', text: `✅ ${mm}.${yy}${text}` };
     }
 
-    function renderProducts() {
+        function renderProducts() {
         const container = document.getElementById('productsContainer'); 
         if(!container) return;
         container.innerHTML = '';
@@ -2653,27 +2665,51 @@
             h.innerHTML = `<span>📁 ${c}</span> <span>${groups[c].length} шт.</span>`; container.appendChild(h);
             let wrapper = document.createElement('div'); wrapper.className = 'product-table-wrapper';
             let tbl = document.createElement('table'); tbl.className = 'product-table';
-            tbl.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>Годен до</th><th>Ссылка</th><th style="text-align:center;">Действия</th></tr></thead>`;
+            
+            // Убрали колонку "Ссылка"
+            tbl.innerHTML = `<thead><tr><th>Средство</th><th>Цена</th><th>Срок годности</th><th style="text-align:center;">Действия</th></tr></thead>`;
             let tb = document.createElement('tbody');
+            
             groups[c].forEach(p => {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td><div style="font-weight:600;">${p.name}</div></td><td>${p.price ? p.price + ' ₽' : '—'}</td>`;
-                                let tdPao = document.createElement('td');
-                if (p.expDate || (p.openDate && p.pao)) {
-                    let info = calculateExpiration(p.expDate, p.openDate, p.pao);
-                    tdPao.innerHTML = `<span class="pao-badge ${info.status}">${info.text}</span>`;
+                
+                // 1. Название (со ссылкой рядом, если она есть)
+                let nameHtml = `<div style="font-weight:600; font-size: 14px; margin-bottom: 2px;">${p.name}</div>`;
+                if (p.link) nameHtml += `<a href="${p.link}" target="_blank" style="color: var(--primary); font-size: 12px; text-decoration: none;">🔗 Перейти по ссылке</a>`;
+                tr.innerHTML = `<td>${nameHtml}</td>`;
+                
+                // 2. Цена
+                let priceHtml = p.price ? `${p.price} ₽` : '—';
+                tr.innerHTML += `<td style="font-weight: 700;">${priceHtml}</td>`;
+                
+                // 3. Срок годности
+                let tdPao = document.createElement('td');
+                if (p.expDate || (p.openDate && p.pao)) { 
+                    let info = calculateExpiration(p.expDate, p.openDate, p.pao); 
+                    tdPao.innerHTML = `<span class="pao-badge ${info.status}">${info.text}</span>`; 
                 } 
-                else { tdPao.innerHTML = `<span>-</span>`; }
+                else { tdPao.innerHTML = `<span style="color:var(--text-muted);">—</span>`; }
                 tr.appendChild(tdPao);
-                let tdLink = document.createElement('td');
-                if (p.link) tdLink.innerHTML = `<a href="${p.link}" target="_blank">Ссылка 🔗</a>`;
-                else tdLink.textContent = '—';
-                tr.appendChild(tdLink);
-                let tdAct = document.createElement('td'); tdAct.style.textAlign = 'center';
-                let bE = document.createElement('button'); bE.className = 'btn-action btn-edit-product'; bE.textContent = '✏️'; bE.onclick = (e) => { e.preventDefault(); editProduct(p.idx); };
-                let bD = document.createElement('button'); bD.className = 'btn-action btn-delete-product'; bD.textContent = '✕'; bD.onclick = (e) => { e.preventDefault(); deleteProduct(p.idx); };
-                tdAct.appendChild(bE); tdAct.appendChild(bD);
-                tr.appendChild(tdAct); tb.appendChild(tr);
+                
+                // 4. Действия (кнопки в ряд)
+                let tdAct = document.createElement('td'); 
+                tdAct.style.textAlign = 'center';
+                tdAct.style.whiteSpace = 'nowrap'; // Кнопки не будут переноситься
+                
+                let bE = document.createElement('button'); 
+                bE.className = 'btn-action btn-edit-product'; 
+                bE.textContent = '✏️'; 
+                bE.onclick = (e) => { e.preventDefault(); editProduct(p.idx); };
+                
+                let bD = document.createElement('button'); 
+                bD.className = 'btn-action btn-delete-product'; 
+                bD.textContent = '✕'; 
+                bD.onclick = (e) => { e.preventDefault(); deleteProduct(p.idx); };
+                
+                tdAct.appendChild(bE); 
+                tdAct.appendChild(bD);
+                tr.appendChild(tdAct); 
+                tb.appendChild(tr);
             });
             tbl.appendChild(tb); wrapper.appendChild(tbl); container.appendChild(wrapper);
         }
