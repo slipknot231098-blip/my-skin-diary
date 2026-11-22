@@ -898,6 +898,7 @@
         setTimeout(() => ripple.remove(), 600);
     });
 
+    let noteSaveTimeout = null;
     let timerInterval = null;
     function toggleTimer() {
         const end = parseInt(localStorage.getItem('routine_timer_end') || '0');
@@ -1638,7 +1639,16 @@
             const noteInput = document.createElement('textarea'); noteInput.className = 'notes-input'; noteInput.placeholder = 'Заметки...'; noteInput.id = `note-${dayIndex}`; noteInput.value = localStorage.getItem(noteInput.id) || '';
             
             noteInput.addEventListener('focus', () => { lastFocusedNoteInput = noteInput; });
-            noteInput.addEventListener('input', (e) => { localStorage.setItem(e.target.id, e.target.value); autoResize(e.target); updateSkinStats(); queueSync(); });
+            noteInput.addEventListener('input', (e) => { 
+                autoResize(e.target); // Высота меняется мгновенно (чтобы было удобно печатать)
+                
+                clearTimeout(noteSaveTimeout);
+                noteSaveTimeout = setTimeout(() => {
+                    localStorage.setItem(e.target.id, e.target.value); 
+                    updateSkinStats(); 
+                    queueSync(); 
+                }, 800); // Сохраняем через 0.8 сек после остановки ввода
+            });
             
             tdNotes.appendChild(noteInput); tr.appendChild(tdNotes); tbody.appendChild(tr);
             setTimeout(() => autoResize(noteInput), 0);
