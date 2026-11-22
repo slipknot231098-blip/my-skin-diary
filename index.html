@@ -426,18 +426,20 @@
         .btn-delete-small { background-color: transparent; color: var(--red); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; border: none; }
         .btn-delete-small:hover { background-color: var(--red-bg); }
 
-                .product-form { 
+        .product-form { 
             background: var(--bg); 
             padding: 20px; 
             border-radius: 16px; 
             border: 1px solid var(--border-color); 
-            margin: 0 auto 20px auto; /* Центрируем саму форму */
+            margin: 0 auto 20px auto; /* Центрируем форму */
             display: flex; 
             gap: 12px; 
             flex-wrap: wrap; 
+            justify-content: center; /* Элементы формы по центру */
             align-items: flex-end; 
-            max-width: 900px; /* Ограничиваем ширину, чтобы она не растягивалась */
+            max-width: 900px; /* Ограничиваем ширину */
             width: 100%;
+            box-sizing: border-box;
         }
         
         #productsModal h2 {
@@ -451,7 +453,14 @@
             width: fit-content;
         }
         
-        .form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 130px; }
+          .form-group { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            flex: 1 1 120px; /* Позволяет полям гибко менять ширину */
+            max-width: 200px; /* Чтобы поля не были слишком широкими */
+            text-align: left; 
+        }
         .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
         .form-input { padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 13px; width: 100%; box-sizing: border-box; }
         
@@ -587,6 +596,26 @@
             background: var(--bg);
         }
 
+           /* Центрируем заголовок модалки и плашку */
+        #productsModal .modal-content {
+            text-align: center;
+        }
+        #productsModal .modal-content h2 {
+            margin-bottom: 15px;
+        }
+        #monthlySpendDisplay {
+            display: inline-block;
+            margin: 0 auto 20px auto;
+        }
+
+        /* Контейнер для таблиц со средствами */
+        #productsContainer {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left; /* Возвращаем тексту в таблицах левое выравнивание */
+        }
+        
         /* Мобильная адаптация */
         @media (max-width: 900px) {
             .info-grid {
