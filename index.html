@@ -199,11 +199,15 @@
         }
         .hero-tip-area {
             display: flex;
-            flex-direction: column; /* Иконка сверху, текст снизу */
             align-items: center;
-            justify-content: center;
-            gap: 12px;
+            justify-content: flex-start;
+            gap: 16px;
             width: 100%;
+            background: var(--bg); /* Легкий фон для выделения */
+            padding: 16px 20px;
+            border-radius: 16px;
+            box-sizing: border-box;
+            text-align: left; /* Текст слева */
         }
         .rec-icon { 
             font-size: 32px; background: var(--bg); padding: 12px; border-radius: 50%; 
@@ -1514,7 +1518,7 @@
         }
     }
 
-    function updateRecommendation() {
+        function updateRecommendation() {
         const recText = document.getElementById('rec-text');
         const recIcon = document.getElementById('rec-icon');
         if (!recText) return;
@@ -1530,25 +1534,25 @@
             localStorage.setItem(cacheKey, advice);
         }
 
-        // Идеально центрированный блок
+        // Горизонтальный блок
         recText.innerHTML = `
-            <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center;">
-                <div style="font-size: 12px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+            <div style="display: flex; flex-direction: column; width: 100%;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">
                     Совет по уходу
                 </div>
-                <div style="font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; margin-bottom: 14px; max-width: 800px;">
+                <div style="font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.5; margin-bottom: 10px;">
                     ${advice}
                 </div>
-                <div style="background: var(--bg); padding: 6px 16px; border-radius: 12px; font-size: 12px; font-weight: 600; color: var(--text-muted); border: 1px dashed var(--border-color); display: inline-block;">
+                <div style="display: inline-block; background: rgba(124, 154, 136, 0.1); padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: var(--primary); width: fit-content;">
                     ☀️ Обновляйте СПФ, если вы на улице.
                 </div>
             </div>
         `;
         
-        // Оставляем иконку, но она теперь будет красиво висеть над текстом
         if(recIcon) {
             recIcon.textContent = '💡';
-            recIcon.style.margin = '0 auto'; // Центрируем иконку
+            // На мобилках иконка будет сверху, на ПК — слева
+            recIcon.style.margin = '0'; 
         }
 
         renderTodayRecommendations();
