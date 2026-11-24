@@ -741,8 +741,8 @@
                 <button class="btn" onclick="toggleDropdown(event)">⚙️ Меню ▾</button>
                 <div class="dropdown-content" id="dataDropdown">
                     <button class="dropdown-item" onclick="closeDropdownAndOpen(showWeeklyReport)"><span class="dropdown-title">🔄 Новая неделя</span><span class="dropdown-desc">Завершить и начать заново</span></button>
-                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openSettings)"><span class="dropdown-title">⚙️ Настройки</span><span class="dropdown-desc">Расписание</span></button>
-                    <button class="dropdown-item" onclick="closeDropdownAndOpen(openHistory)"><span class="dropdown-title">📜 Архив</span><span class="dropdown-desc">Прошлые недели</span></button>
+<button class="dropdown-item" onclick="document.getElementById('dataDropdown').classList.remove('show'); openSettings();"><span class="dropdown-title">⚙️ Настройки</span><span class="dropdown-desc">Расписание</span></button>
+<button class="dropdown-item" onclick="document.getElementById('dataDropdown').classList.remove('show'); openHistory();"><span class="dropdown-title">📜 Архив</span><span class="dropdown-desc">Прошлые недели</span></button>
                     <button class="dropdown-item" onclick="exportToPDF()"><span class="dropdown-title">📄 PDF</span><span class="dropdown-desc">Скачать отчет</span></button>
                     <button class="dropdown-item" onclick="document.getElementById('restoreInput').click()"><span class="dropdown-title">📂 Восстановить</span><span class="dropdown-desc">Загрузить (.json)</span></button>
                     <button class="dropdown-item" onclick="downloadBackup()"><span class="dropdown-title">💾 Бэкап</span><span class="dropdown-desc">Скачать копию</span></button>
