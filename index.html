@@ -2776,22 +2776,36 @@
     }
 
     function openSettings() {
-        const modal = document.getElementById('settingsModal');
-        const tbS = document.getElementById('settingsBody'); if(tbS) tbS.innerHTML = '';
-        skinColumns.forEach(col => {
-            const tr = document.createElement('tr'); let h = `<td>${col.name}</td>`;
-            let arr = currentSkinSettings[col.id] || [0,0,0,0,0,0,0];
-            for (let i = 0; i < 7; i++) h += `<td><input type="checkbox" id="set-${col.id}-${i}" ${arr[i] === 1 ? 'checked' : ''}></td>`;
-            tr.innerHTML = h; if(tbS) tbS.appendChild(tr);
-        });
-        const tbH = document.getElementById('habitsSettingsBody'); if(tbH) tbH.innerHTML = '';
-        habitColumns.forEach(col => {
-            const tr = document.createElement('tr'); let h = `<td>${col.name}</td>`;
-            let arr = currentHabitSettings[col.id] || [0,0,0,0,0,0,0];
-            for (let i = 0; i < 7; i++) h += `<td><input type="checkbox" id="set-habit-${col.id}-${i}" ${arr[i] === 1 ? 'checked' : ''}></td>`;
-            tr.innerHTML = h; if(tbH) tbH.appendChild(tr);
-        });
-        if(modal) modal.style.display = "block";
+        try {
+            const modal = document.getElementById('settingsModal');
+            const tbS = document.getElementById('settingsBody'); 
+            if(tbS) tbS.innerHTML = '';
+            
+            skinColumns.forEach(col => {
+                const tr = document.createElement('tr'); 
+                let h = `<td>${col.name}</td>`;
+                let arr = currentSkinSettings[col.id] || [0,0,0,0,0,0,0];
+                for (let i = 0; i < 7; i++) h += `<td><input type="checkbox" id="set-${col.id}-${i}" ${arr[i] === 1 ? 'checked' : ''}></td>`;
+                tr.innerHTML = h; 
+                if(tbS) tbS.appendChild(tr);
+            });
+            
+            const tbH = document.getElementById('habitsSettingsBody'); 
+            if(tbH) tbH.innerHTML = '';
+            habitColumns.forEach(col => {
+                const tr = document.createElement('tr'); 
+                let h = `<td>${col.name}</td>`;
+                let arr = currentHabitSettings[col.id] || [0,0,0,0,0,0,0];
+                for (let i = 0; i < 7; i++) h += `<td><input type="checkbox" id="set-habit-${col.id}-${i}" ${arr[i] === 1 ? 'checked' : ''}></td>`;
+                tr.innerHTML = h; 
+                if(tbH) tbH.appendChild(tr);
+            });
+            
+            if(modal) modal.style.display = "block";
+        } catch (error) {
+            console.error("Ошибка в openSettings:", error);
+            alert("Ошибка при открытии настроек: " + error.message);
+        }
     }
 
     function saveSettings() {
@@ -2897,38 +2911,64 @@
     }
 
     function openHistory() {
-        const modal = document.getElementById('historyModal'); 
-        const list = document.getElementById('historyList'); if(!list) return;
-        list.innerHTML = '';
-        let hist = safeParse('weeklyHistory', []);
-        
-        if (hist.length === 0) {
-            list.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">📜</div>
-                    <div class="empty-title">Архив пуст</div>
-                    <div class="empty-desc">Когда вы нажмете «Новая неделя», ваши текущие результаты сохранятся здесь.</div>
-                </div>`; 
-        } 
-        else {
-            for (let i = hist.length - 1; i >= 0; i--) {
-                let w = hist[i];
-                let div = document.createElement('div'); div.className = 'history-card';
-                let sh = '', tsc = 0;
-                for (let d = 0; d < 7; d++) {
-                    let dc = [];
-                    skinColumns.forEach(col => { if (w.skinChecks && w.skinChecks[`check-${d}-${col.id}`]) { dc.push(col.name); tsc++; } });
-                    let n = w.notes && w.notes[`note-${d}`] ? w.notes[`note-${d}`] : '';
-                    if (dc.length > 0 || n.trim() !== '') sh += `<div style="margin-bottom:6px; padding:6px; background:var(--bg); border-radius:6px;"><b>${daysOfWeek[d]}:</b> ${dc.join(', ')} ${n ? '📝 ' + n : ''}</div>`;
+        try {
+            const modal = document.getElementById('historyModal'); 
+            const list = document.getElementById('historyList'); 
+            if(!list) return;
+            list.innerHTML = '';
+            let hist = safeParse('weeklyHistory', []);
+            
+            if (hist.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📜</div>
+                        <div class="empty-title">Архив пуст</div>
+                        <div class="empty-desc">Когда вы нажмете «Новая неделя», ваши текущие результаты сохранятся здесь.</div>
+                    </div>`; 
+            } 
+            else {
+                for (let i = hist.length - 1; i >= 0; i--) {
+                    let w = hist[i];
+                    let div = document.createElement('div'); 
+                    div.className = 'history-card';
+                    let sh = '', tsc = 0;
+                    
+                    for (let d = 0; d < 7; d++) {
+                        let dc = [];
+                        skinColumns.forEach(col => { 
+                            if (w.skinChecks && w.skinChecks[`check-${d}-${col.id}`]) { 
+                                dc.push(col.name); 
+                                tsc++; 
+                            } 
+                        });
+                        let n = w.notes && w.notes[`note-${d}`] ? w.notes[`note-${d}`] : '';
+                        if (dc.length > 0 || n.trim() !== '') {
+                            sh += `<div style="margin-bottom:6px; padding:6px; background:var(--bg); border-radius:6px;"><b>${daysOfWeek[d]}:</b> ${dc.join(', ')} ${n ? '📝 ' + n : ''}</div>`;
+                        }
+                    }
+                    
+                    let hh = '';
+                    if (w.habitChecks) { 
+                        for (let d = 0; d < 7; d++) { 
+                            let dh = []; 
+                            habitColumns.forEach(col => { 
+                                if (w.habitChecks[`habit-${d}-${col.id}`]) dh.push(col.name); 
+                            }); 
+                            if (dh.length > 0) {
+                                hh += `<div style="margin-bottom:6px; padding:6px; background:var(--bg); border-radius:6px;"><b>${daysOfWeek[d]}:</b> ${dh.join(', ')}</div>`; 
+                            } 
+                        } 
+                    }
+                    
+                    div.innerHTML = `<div class="history-header"><h4>Неделя от ${w.date}</h4><button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️</button></div><div style="display:flex; gap:15px; flex-wrap:wrap;"><div style="flex:1; min-width:200px;"><b>🧴 Уход (${tsc})</b><div style="margin-top:8px; max-height:150px; overflow-y:auto;">${sh || 'Нет данных'}</div></div><div style="flex:1; min-width:200px;"><b>🧠 Привычки</b><div style="margin-top:8px; max-height:150px; overflow-y:auto;">${hh || 'Нет данных'}</div></div></div>`;
+                    list.appendChild(div);
                 }
-                let hh = '';
-                if (w.habitChecks) { for (let d = 0; d < 7; d++) { let dh = []; habitColumns.forEach(col => { if (w.habitChecks[`habit-${d}-${col.id}`]) dh.push(col.name); }); if (dh.length > 0) hh += `<div style="margin-bottom:6px; padding:6px; background:var(--bg); border-radius:6px;"><b>${daysOfWeek[d]}:</b> ${dh.join(', ')}</div>`; } }
-                
-                div.innerHTML = `<div class="history-header"><h4>Неделя от ${w.date}</h4><button class="btn-delete-small" onclick="deleteWeek(${i})">🗑️</button></div><div style="display:flex; gap:15px; flex-wrap:wrap;"><div style="flex:1; min-width:200px;"><b>🧴 Уход (${tsc})</b><div style="margin-top:8px; max-height:150px; overflow-y:auto;">${sh || 'Нет данных'}</div></div><div style="flex:1; min-width:200px;"><b>🧠 Привычки</b><div style="margin-top:8px; max-height:150px; overflow-y:auto;">${hh || 'Нет данных'}</div></div></div>`;
-                list.appendChild(div);
             }
+            if(modal) modal.style.display = "block";
+        } catch (error) {
+            console.error("Ошибка в openHistory:", error);
+            alert("Ошибка при открытии архива: " + error.message);
         }
-        if(modal) modal.style.display = "block";
     }
 
     function deleteWeek(index) {
